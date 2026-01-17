@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
+    default: 'Emmanuel Prouvèze | Global Account Manager & AI Builder',
     template: '%s | Emmanuel Prouvèze',
   },
   description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
+    title: 'Emmanuel Prouvèze | Global Account Manager & AI Builder',
     description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
     url: 'https://emmanuel.prouveze.fr',
     siteName: 'Emmanuel Prouvèze',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
+    title: 'Emmanuel Prouvèze | Global Account Manager & AI Builder',
     description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
   },
   robots: {
