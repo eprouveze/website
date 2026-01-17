@@ -110,6 +110,27 @@ export default async function Image() {
               Building AI tools
             </div>
           </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '32px',
+              padding: '12px 24px',
+              backgroundColor: '#2563eb',
+              borderRadius: '8px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 20,
+                color: '#ffffff',
+                fontWeight: 600,
+                fontFamily: 'system-ui, sans-serif',
+              }}
+            >
+              View Projects & Writing →
+            </div>
+          </div>
         </div>
       </div>
     ),
