@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   },
   description: 'Enterprise sales leader. 20+ years in Japanese tech market. I build AI tools as a hobby.',
   metadataBase: new URL('https://emmanuel.prouveze.fr'),
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'Emmanuel Prouvèze',
     description: 'Enterprise sales leader. 20+ years in Japanese tech market. I build AI tools as a hobby.',
