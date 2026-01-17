@@ -1,0 +1,131 @@
+---
+title: "From Templates to Component Vocabulary: Letting the AI Decide UI Structure"
+description: "A practical guide to building schema-driven generative UI for domain-specific applications"
+publishedAt: "2025-01-17"
+tags: ["AI", "GenUI", "Technical"]
+---
+
+Our first approach used rigid templates. The AI filled in predefined sections. It worked, but the template decided what mattered, not the AI. A critical deal slippage got the same visual weight as a routine observation.
+
+We rebuilt it using a component vocabulary approach. Instead of templates, we give the AI a set of typed components and let it compose them based on what the data demands.
+
+Context: we build a financial forecasting tool that reconciles data from Salesforce, manager judgments, and commission systems. The AI synthesizes this into guidance for sales managers.
+
+This post covers what we built, what broke, and what we learned.
+
+## The Pattern
+
+The AI receives a vocabulary of components and outputs a composition:
+
+```json
+{
+  "type": "Accordion",
+  "props": { "defaultOpen": ["critical-section"] },
+  "children": [
+    {
+      "type": "AccordionSection",
+      "props": { "title": "3 Deals Need Action", "variant": "danger" },
+      "children": [
+        { "type": "DealInsight", "props": { "status": "blocked" } }
+      ]
+    }
+  ]
+}
+```
+
+The frontend renders it through a recursive component registry:
+
+```typescript
+function ComponentRenderer({ component, data }) {
+  const Component = Registry[component.type];
+  return (
+    <Component {...component.props}>
+      {component.children?.map(child =>
+        <ComponentRenderer component={child} data={data} />
+      )}
+    </Component>
+  );
+}
+```
+
+The AI decides structure, emphasis, and ordering. We control styling and behavior.
+
+## What We Built
+
+**Layout components**: `Accordion`, `Grid`, `Collapsible`. The AI chooses structure and what's expanded by default.
+
+**Emphasis via variants**: Cards and text have variants (`danger`, `warning`, `success`). The AI picks based on severity.
+
+**Domain components**: `DealInsight` shows opportunity details with status assessment. `VerifiedMetric` displays numbers that the backend validates against the database.
+
+**Embedded charts**: The AI specifies chart type and embeds data directly in the schema.
+
+## What Broke
+
+### 1. Schema replacement destroyed response quality
+
+We had templates stored in the database. A well-intentioned refactor replaced them at runtime with minimal file-based schemas. Result: responses were 50% smaller with critical fields missing.
+
+**Fix**: Database templates became the single source of truth. No runtime replacement.
+
+### 2. The AI invented syntax the renderer couldn't parse
+
+The AI generated data paths like `"quarterly_data[*].opportunities[*].amount"`. Wildcard notation that looked reasonable but `lodash.get()` doesn't support.
+
+**Fix**: Explicit documentation in the prompt with WRONG vs CORRECT examples:
+```
+WRONG:  "quarterly_data[*].field"
+CORRECT: "quarterly_data"  (renderer iterates automatically)
+```
+
+### 3. Pre-defined risks killed insight quality
+
+Early templates had variables like `{{TOP_RISK_1}}`, `{{TOP_RISK_2}}`. The AI filled slots instead of analyzing.
+
+**Fix**: Removed pre-defined slots. Added instructions: "Analyze the data and identify risks. There may be zero, one, or many."
+
+### 4. Debugging was blind
+
+When responses were wrong, we had no way to see what prompt produced them.
+
+**Fix**: Store the full prompt with every response. Essential for investigating discrepancies.
+
+## Trade-offs
+
+**Debugging is harder.** With templates, you inspect a fixed structure. With AI composition, every response differs. We added JSON schema validation and extensive logging.
+
+**Testing is harder.** You can't assert exact output. We test component rendering in isolation and validate schema structure, not specific compositions.
+
+**Prompt engineering becomes critical.** Template changes are simple text edits. Vocabulary changes require careful prompt updates, examples, and testing across scenarios.
+
+**Model quality affects UI quality.** Different models produce different composition styles. Model upgrades can change output structure.
+
+**Bad editorial choices happen.** Sometimes the AI buries important information. We don't have user override yet; it's on the roadmap.
+
+## Practical Notes
+
+**Prompt templates live in the database**, versioned with `is_active` flags. We create new versions rather than editing in place. Rollback is one flag flip.
+
+**Schema validation happens twice**: Pydantic on the backend, TypeScript on the frontend. Unknown component types fall back to a JSON viewer.
+
+**Security comes from the vocabulary constraint.** The AI can't inject scripts or styles because those aren't in the component set. We validate prop types and enforce depth limits.
+
+**Store everything.** Full prompts, raw responses, parsed schemas. When something breaks, you need full context.
+
+**Performance**: Generation takes 3-8 seconds depending on data complexity. Typical prompts run 3,000-5,000 tokens. We've generated several hundred responses over two months of use.
+
+## What We'd Do Differently
+
+1. **Start with fewer components.** We built 15+ component types before knowing which ones mattered. Could have started with 5 and added based on actual needs.
+
+2. **Build transformation layers first.** Our existing chart components expected different prop formats than the AI generated. The mismatch cost days. Abstract the interface early.
+
+3. **Add usage tracking from day one.** We still don't have systematic data on whether managers prefer AI-composed layouts. Should have instrumented preference tracking immediately.
+
+4. **Version prompts more aggressively.** We went from v1.0 to v1.9 in weeks. Each version should have been a tracked experiment.
+
+---
+
+The pattern is straightforward: give the AI a vocabulary, let it compose, render faithfully. The complexity is in the details: prompt engineering, transformation layers, debugging infrastructure.
+
+Build the infrastructure for iteration. You'll need it.
