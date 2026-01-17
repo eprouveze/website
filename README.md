@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# emmanuel.prouveze.fr
 
-## Getting Started
+Personal portfolio website for Emmanuel Prouvèze.
 
-First, run the development server:
+**Live:** https://emmanuel.prouveze.fr
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS
+- **Content:** MDX for blog posts and project pages
+- **Hosting:** Vercel
+- **Analytics:** Vercel Analytics
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+content/
+  posts/          # Blog posts as MDX
+  projects/       # Project pages as MDX
+src/
+  app/            # Next.js App Router pages
+  components/     # React components
+  lib/            # Utilities (MDX parsing, etc.)
+  types/          # TypeScript types
+public/
+  images/         # Static images
+  resume.pdf      # Resume
+```
 
-## Learn More
+## Adding Content
 
-To learn more about Next.js, take a look at the following resources:
+**New blog post:**
+```bash
+# Create content/posts/my-post.mdx
+---
+title: "Post Title"
+description: "Brief description"
+publishedAt: "2026-01-17"
+tags: ["Tag1", "Tag2"]
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Content here...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**New project:**
+```bash
+# Create content/projects/my-project.mdx
+---
+title: "Project Name"
+description: "Brief description"
+tech: ["Tech1", "Tech2"]
+status: "active"
+github: "https://github.com/..."
+---
 
-## Deploy on Vercel
+Content here...
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Push to main branch. Vercel auto-deploys.
+
+Or manually: `vercel --prod`
