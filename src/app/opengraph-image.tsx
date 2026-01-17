@@ -74,7 +74,7 @@ export default async function Image() {
               fontFamily: 'system-ui, sans-serif',
             }}
           >
-            Enterprise Sales Leader
+            Global Account Manager
           </div>
           <div
             style={{

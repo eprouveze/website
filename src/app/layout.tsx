@@ -13,18 +13,18 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Emmanuel Prouvèze | Enterprise Sales Leader & AI Builder',
+    default: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
     template: '%s | Emmanuel Prouvèze',
   },
-  description: 'Enterprise sales leader with 20+ years in the Japanese technology market. I build AI-powered tools for sales forecasting, document translation, and health tracking.',
+  description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
   metadataBase: new URL('https://emmanuel.prouveze.fr'),
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'Emmanuel Prouvèze | Enterprise Sales Leader & AI Builder',
-    description: 'Enterprise sales leader with 20+ years in the Japanese technology market. I build AI-powered tools for sales forecasting, document translation, and health tracking.',
+    title: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
+    description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
     url: 'https://emmanuel.prouveze.fr',
     siteName: 'Emmanuel Prouvèze',
     locale: 'en_US',
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Emmanuel Prouvèze | Enterprise Sales Leader & AI Builder',
-    description: 'Enterprise sales leader with 20+ years in the Japanese technology market. I build AI-powered tools for sales forecasting, document translation, and health tracking.',
+    title: 'Emmanuel Prouvèze | Global Account Manager | AI Builder & AI Builder',
+    description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
   },
   robots: {
     index: true,

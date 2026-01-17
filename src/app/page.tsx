@@ -26,7 +26,7 @@ export default function Home() {
                 Emmanuel Prouvèze
               </h1>
               <p className="text-xl sm:text-2xl text-slate-600 leading-relaxed text-center sm:text-left">
-                Enterprise sales leader. 20+ years in Japanese tech market. I build AI tools as a hobby.
+                Global Account Manager at Salesforce Japan. 20+ years in Japanese tech. Co-founder with exit. I build AI tools as a hobby.
               </p>
             </div>
           </div>
