@@ -7,7 +7,7 @@ LinkedIn posts and blog articles based on personal AI experimentation.
 | File | Description |
 |------|-------------|
 | `CONTENT_PLAN.md` | Strategic plan: persona, framing guidelines, publishing strategy |
-| `CONTENT_OUTLINES.md` | 5 article outlines with titles, hooks, articulation points, conclusions |
+| `CONTENT_OUTLINES.md` | 7 article outlines with titles, hooks, articulation points, conclusions |
 
 ## Articles
 
@@ -16,6 +16,8 @@ LinkedIn posts and blog articles based on personal AI experimentation.
 3. **What Japanese Enterprise Taught Me About AI Adoption** — LinkedIn post
 4. **From Empty Repo to Working AI in 6 Months** — Blog piece
 5. **Building My Digital Twin: Gemini Voice Training** — Blog piece
+6. **My AI Coding Journey: Lapsed Hobbyist to Wannabe Enterprise Builder** — Blog piece
+7. **Why AI Companies Need Sales Leaders Who Actually Use AI** — LinkedIn post
 
 ## Framing
 

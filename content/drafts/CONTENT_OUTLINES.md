@@ -1,4 +1,4 @@
-# Content Outlines: 5 Articles
+# Content Outlines: 7 Articles
 
 ---
 
@@ -296,6 +296,160 @@ My experiment with voice personalization helped me see how hard that is. And how
 
 ---
 
+## Article 6: "My AI Coding Journey: From Lapsed Hobbyist to Wannabe Enterprise Builder"
+
+**Format**: Blog piece (2000-2500 words)
+
+### Title
+My AI Coding Journey: From Lapsed Hobbyist to Wannabe Enterprise Builder
+
+### Hook
+I've been coding since I was a teenager. Databases. Websites. Backends. APIs. Mobile apps. Decades of hobby projects, accumulated knowledge, real understanding of how software works.
+
+And then I stopped.
+
+The gap between what I could imagine and what I could build had become too wide. Every project felt like pushing a boulder uphill. The effort required for my amateur skill level just wasn't worth it anymore.
+
+AI changed everything.
+
+### Main Articulation Points
+
+**1. The background: not a beginner, but not a pro**
+- Decades of hobby coding: databases, websites, backends, APIs, mobile apps
+- Solid understanding of architectures, components, how systems fit together
+- But always amateur—never professional, never full-time
+- The curse of knowing enough to see your own limitations
+
+**2. Why I stopped**
+- The effort-to-output ratio became unbearable
+- I could design systems in my head but couldn't execute them efficiently
+- Debugging took hours. Features took weeks. Motivation died.
+- Watching real engineers ship in days what took me months
+- Eventually, the joy disappeared. I stopped building.
+
+**3. AI enters: frustration first**
+- Early AI coding tools: promising but maddening
+- Generated code that looked right but didn't work
+- Hallucinated APIs, invented libraries, confident nonsense
+- More time debugging AI output than writing code myself
+- Almost gave up again
+
+**4. The turning point: model upgrades**
+- Each new model version: noticeably better
+- GPT-3.5 → GPT-4: suddenly it understood context
+- Claude 2 → Claude 3: finally, code that ran
+- The gap between "almost useful" and "actually useful" closed
+- For the first time: AI accelerated me instead of slowing me down
+
+**5. What changed: the productivity unlock**
+- My decades of knowledge became leverage, not limitation
+- I knew what to ask for—AI knew how to write it
+- Architecture decisions: still mine. Implementation: collaborative.
+- Debugging: "explain what's wrong here" actually worked
+- The boulder started rolling downhill
+
+**6. The confidence cycle**
+- Better AI → faster progress → more confidence → bigger projects
+- Each success built on the last
+- From scripts to apps to systems
+- From "can I build this?" to "how should I build this?"
+- The joy came back
+
+**7. Where I am now**
+- Building software that's actually useful—to me, to others
+- Shipping projects I'd only dreamed about before
+- Still amateur, but productive amateur
+- AI as genuine collaborator, not magic wand
+- The gap between imagination and execution: finally manageable
+
+**8. The meta-lesson**
+- AI didn't make me a better coder—it made my existing knowledge useful again
+- The bottleneck was implementation speed, not understanding
+- AI removed the bottleneck
+- Decades of accumulated knowledge finally had an outlet
+- This is why AI changes everything for technical-adjacent people
+
+### Conclusion
+I'm not an engineer. I'll never be one. But I understand software—how it's built, how it breaks, how systems fit together.
+
+For years, that understanding was frustrating. I could see what needed to be built but couldn't build it efficiently. The gap between vision and execution was too painful. So I stopped.
+
+AI closed that gap.
+
+Not by making me smarter. By making my existing knowledge productive again. The architecture thinking, the systems understanding, the decades of context—all of it suddenly had leverage.
+
+Now I'm building again. Actually shipping. Creating things that work, that are useful, that I'm proud of. Not because AI does the thinking for me—but because it handles the implementation friction that used to stop me cold.
+
+For anyone who's technically fluent but professionally amateur: this is your moment. The tools finally match the ambition. The gap is closeable.
+
+Start building again.
+
+---
+
+## Article 7: "Why AI Companies Need Sales Leaders Who Actually Use AI"
+
+**Format**: LinkedIn post (800-1000 words)
+
+### Title
+Why AI Companies Need Sales Leaders Who Actually Use AI
+
+### Hook
+Most AI sales leaders sell AI. Few actually use it.
+
+I don't mean using ChatGPT for email drafts. I mean building with it. Breaking it. Understanding its limits from the inside.
+
+Here's why that matters—and why AI companies should care.
+
+### Main Articulation Points
+
+**1. The credibility gap**
+- Customers are getting smarter about AI. They've tried it. They know the gap between demos and reality.
+- Sales leaders who only know the pitch deck can't answer the hard questions.
+- "How does it handle edge cases?" "What happens when it's wrong?" "Why should I trust this?"
+- If you haven't built, you're guessing.
+
+**2. The translation problem**
+- Engineers build. Customers buy. Sales sits in between.
+- Most sales leaders translate marketing → customer. One direction.
+- Sales leaders who build can translate customer → engineering too.
+- That bidirectional fluency changes everything: better qualification, better feedback loops, better product.
+
+**3. What changes when you build**
+- You stop overselling. You've felt the limitations yourself.
+- You ask better discovery questions. You know what actually matters.
+- You spot real use cases vs. fantasy use cases.
+- You can tell when a customer's expectations are realistic—or headed for disappointment.
+
+**4. The objection handling difference**
+- Customer: "AI hallucinates. How do I trust it?"
+- Sales leader who hasn't built: "Our guardrails prevent that." (Recites talking points)
+- Sales leader who has built: "Here's exactly when it happens, here's how we catch it, here's what you should verify." (Speaks from experience)
+- Which one builds more trust?
+
+**5. What I've learned from building**
+- Prompts need testing like code needs testing
+- "Simple" integrations aren't simple
+- The gap between demo and production is enormous
+- Users will do things you never anticipated
+- AI confidence ≠ AI accuracy
+
+**6. The hiring implication**
+- AI companies: stop hiring sales leaders who "understand AI"
+- Hire ones who've actually used it. Built with it. Been frustrated by it.
+- The next generation of enterprise AI sales requires hands-on fluency
+- Not engineers—but people who've gotten their hands dirty
+
+### Conclusion
+I'm not suggesting every sales leader needs to write Python. But in AI, the gap between "understanding" and "using" is vast.
+
+The sales leaders who will win in this market are the ones who've felt the friction themselves. Who can speak to limitations honestly. Who know what questions to ask because they've asked them of their own projects.
+
+AI companies are selling trust. The people selling it should have earned that trust themselves—by building, failing, and learning.
+
+If you're in AI sales leadership and you haven't built anything yet: start. Not because you need to become an engineer. Because your customers deserve someone who actually knows what they're talking about.
+
+---
+
 ## Summary Table
 
 | # | Title | Hook (first line) | Key Tension | Conclusion (core message) |
@@ -305,3 +459,5 @@ My experiment with voice personalization helped me see how hard that is. And how
 | 3 | Japanese Enterprise & AI | "Japanese enterprises don't move fast and break things." | Speed vs. trust | Different, not behind |
 | 4 | Empty Repo to Working AI | "4 providers tried, 3 abandoned." | Clean demos vs. messy reality | The journey is the learning |
 | 5 | Building My Digital Twin | "ChatGPT writes like ChatGPT. I wanted it to write like me." | Generic vs. personal | Draft partner, not replacement |
+| 6 | AI Coding Journey | "I've been coding since I was a teenager. And then I stopped." | Lapsed hobbyist vs. productive builder | Start building again |
+| 7 | Sales Leaders Who Use AI | "Most AI sales leaders sell AI. Few actually use it." | Selling vs. using | Your customers deserve someone who knows |

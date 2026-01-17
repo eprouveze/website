@@ -212,14 +212,18 @@ This is unique to your situation:
 ### Suggested Order
 1. **#1 (I'm 50, Started Coding)** — establishes your unique position
 2. **#3 (Japanese Enterprise)** — differentiates you in Japan market
-3. **#5 (Digital Twin Voice)** — practical, shareable, multilingual hook
-4. **#2 (HealthPulse)** — shows breadth beyond work-related tools
-5. **#4 (6-Month Journey)** — deep dive for engaged audience
+3. **#7 (Sales Leaders Who Use AI)** — bold POV, high engagement potential
+4. **#5 (Digital Twin Voice)** — practical, shareable, multilingual hook
+5. **#2 (HealthPulse)** — shows breadth beyond work-related tools
+6. **#4 (6-Month Journey)** — deep dive for engaged audience
+7. **#6 (15-Month Journey)** — capstone piece, full arc reflection
 
 ### Format Notes
-- #1 and #3: LinkedIn-native, shorter, punchy
-- #2, #4, and #5: Blog pieces with cross-post summary to LinkedIn
+- #1, #3, and #7: LinkedIn-native, shorter, punchy
+- #2, #4, #5, and #6: Blog pieces with cross-post summary to LinkedIn
 - #5 especially: High shareability—"how to make AI write like you" is universally appealing
+- #6: Longer reflective piece—works well as a year-in-review or milestone post
+- #7: Strong POV piece—may generate discussion/debate
 - All: First-person, specific, honest about failures
 
 ---
