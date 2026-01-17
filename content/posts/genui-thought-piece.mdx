@@ -5,21 +5,21 @@ publishedAt: "2026-01-15"
 tags: ["AI", "GenUI", "Design"]
 ---
 
-Templates decide what matters. Not the AI.
+I've been experimenting with AI-assisted GAM sales forecasting. Fixed templates, structured outputs, the whole proper setup.
 
-When I built an AI assistant for sales forecasting, I started with the obvious approach: structured outputs, fixed HTML templates, predefined sections. Executive Summary here. Risks there. Recommendations at the bottom.
+And at some point I noticed something: the biggest risk in my pipeline was buried in the "Risks" section alongside five minor concerns. Same font. Same box. Same visual weight.
 
-It worked. It was also wrong.
+The AI knew it was a problem. I could see it in the data. But my beautiful template treated every risk the same.
 
-Three deals representing 80% of quarterly risk appeared in the Risks section with the same visual weight as minor concerns. A dangerously thin forward-year pipeline sat in its designated accordion, unexpanded, waiting to be noticed. The AI saw the problem. The template wouldn't let it say so.
-
-We've been asking AI to answer questions when we should be asking it to compose communications.
+That's when I realized: I'd built a form when I should have built a canvas.
 
 ## The Template Trap
 
 [Google's Generative UI research](https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/) articulated what we were missing: *"explaining the microbiome to a 5 year old requires different content and a different set of features than explaining it to an adult."*
 
 The same applies to data. A healthy pipeline needs different presentation than a pipeline in crisis. The AI sees the data. The AI should decide the form.
+
+Google has a name for this now: Generative UI. Salesforce calls it Generative Canvas. The idea is simple. Instead of making AI fill slots in a fixed layout, you give it a vocabulary of components and let it decide how to compose them.
 
 ## Vocabulary, Not Grammar
 
@@ -33,11 +33,11 @@ The styling is ours. The structure is ours. The composition is the AI's.
 
 ## What We Learned
 
-Letting AI control form sounds simple. The implementation revealed complications.
+Letting AI control form sounds simple. Rebuilding my tool this way took experimentation.
 
-**The AI invents things.** We documented data path syntax carefully. The AI still generated creative variations that broke the renderer. Explicit examples of wrong patterns helped more than documentation of right ones.
+**The AI invents things.** We documented data path syntax carefully. The API kept returning non-compliant syntax that broke the renderer. Explicit examples of wrong patterns helped more than documentation of right ones.
 
-**Editorial choices can be wrong.** The AI occasionally buries important information. We haven't solved this; user override is on the roadmap.
+**Editorial choices can be wrong.** Early versions buried important information instead of surfacing it. I went through nine prompt versions before things stabilized. User override is still on the roadmap.
 
 **Debugging gets harder.** When every response has different structure, you can't diff against expected output. We store full prompts with responses. Investigating issues means understanding what the AI saw and why it chose what it chose.
 
@@ -53,17 +53,17 @@ We made the trade because predictability was costing us value. The AI had insigh
 
 We don't have systematic data on whether managers prefer the adaptive layouts. That measurement should have been built in from day one. Early feedback has been positive, but we're operating on intuition more than evidence. If you build something similar, instrument it.
 
-Not every domain needs this trade. Chat interfaces work fine as forms. Search results work fine as lists. But analysis (synthesis of complex data into actionable understanding) benefits from adaptive form.
-
 ## Beyond Fill-in-the-Blank
+
+Not every interface needs this. Chat is fine as a chat. Search results work as a list. But data analysis—synthesizing complex information into something actionable—needs a canvas, not a form.
+
+Salesforce is going the same direction with Generative Canvas in Agentforce. Dynamically generated layouts, grounded in your org's Lightning components, respecting your data permissions. Same philosophy, enterprise trust built in.
 
 The shift from templates to component vocabulary reflects a broader principle: stop treating AI as a function that maps inputs to outputs and start treating it as a collaborator that can make judgment calls within constraints.
 
 We define the vocabulary. We control the styling. We set the boundaries. Within those boundaries, the AI has agency to communicate effectively.
 
-The AI provides guidance. The human makes the judgment call. The interface should serve both.
-
-The best AI interface isn't a form with smart answers. It's a canvas with smart composition.
+Once it worked, I started noticing things I'd missed before. That felt like progress.
 
 ---
 
