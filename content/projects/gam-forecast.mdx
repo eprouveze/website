@@ -1,0 +1,66 @@
+---
+title: "GAM Forecast Tool"
+description: "AI-powered sales forecast reconciliation and analysis tool with generative UI"
+tech: ["Python", "FastAPI", "React", "DuckDB", "Google Gemini"]
+status: "active"
+---
+
+A local-first application for automating sales forecast reconciliation and financial analysis. Processes data from multiple sales systems (Salesforce CRMA, Xactly, Org62) and produces unified datasets for visualization.
+
+## The Problem
+
+Sales managers spend hours each quarter manually reconciling data from multiple systems. Discrepancies between Salesforce forecasts, commission system data, and corporate projections create confusion and erode confidence in the numbers.
+
+## The Solution
+
+An automated reconciliation engine that:
+
+- **Matches data across systems** using fuzzy matching and business rules
+- **Identifies discrepancies** and surfaces them for human review
+- **Generates AI-powered guidance** using Google Gemini to analyze pipeline health
+- **Produces Tableau-ready exports** for executive reporting
+
+## Key Features
+
+### AI Forecast Guidance
+
+The tool uses a generative UI approach where the AI composes the interface based on what the data demands. Critical deals get prominent placement. Healthy pipelines get summary views. The AI decides structure and emphasis; we control styling and behavior.
+
+### Reasoning Engine
+
+Beyond simple analysis, the system provides:
+- Confidence scores for forecast accuracy
+- Risk detection for deals showing warning signs
+- Deal-by-deal analysis with supporting evidence
+
+### Delta Analysis
+
+Compare forecast runs over time to understand:
+- What changed since last week
+- Which deals moved stages
+- Where attrition occurred
+
+### Agent Conversation
+
+Natural language interface for querying the data. Ask questions like "What are my biggest risks in Q3?" or "Show me deals that slipped this month."
+
+## Architecture
+
+| Component | Technology |
+|-----------|------------|
+| Backend | FastAPI (Python 3.12) |
+| Frontend | React + Vite (TypeScript) |
+| Database | DuckDB (local-first) |
+| AI | Google Gemini API |
+
+## What I Learned
+
+Building this tool taught me several lessons about AI-powered enterprise applications:
+
+1. **Generative UI requires careful vocabulary design.** Giving the AI too much freedom creates inconsistency; too little defeats the purpose.
+
+2. **Prompt engineering is software engineering.** Prompts need versioning, testing, and rollback capabilities just like code.
+
+3. **Local-first architecture simplifies deployment.** No cloud database to manage, no data privacy concerns, instant startup.
+
+4. **Domain expertise matters more than technical sophistication.** The reconciliation rules came from understanding how sales teams actually work, not from clever algorithms.

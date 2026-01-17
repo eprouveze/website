@@ -1,0 +1,75 @@
+---
+title: "AI Deck Translator"
+description: "Automatically translate presentations while preserving formatting and structure"
+tech: ["Python", "Claude API", "Google Slides API", "PowerPoint"]
+status: "active"
+---
+
+A tool that automatically translates presentations (Google Slides and PowerPoint) between languages while preserving formatting, images, and slide structure.
+
+## The Problem
+
+Translating a 50-slide presentation manually takes hours. Copy text, translate, paste back, fix formatting that broke. Repeat for every text box, table cell, and speaker note.
+
+Existing translation tools either:
+- Don't preserve formatting
+- Can't handle complex layouts
+- Produce awkward machine translations
+
+## The Solution
+
+Feed the tool a presentation and a target language. It:
+
+1. **Extracts all text** including tables, SmartArt, and speaker notes
+2. **Deduplicates content** to reduce translation costs (repeated phrases only translate once)
+3. **Translates via Claude** for natural, context-aware output
+4. **Rebuilds the presentation** with translated text in the original formatting
+5. **Creates a copy** rather than overwriting the original
+
+## Key Features
+
+### Format Preservation
+
+The tool maintains:
+- Font styles, sizes, and colors
+- Text positioning and alignment
+- Table structures and cell formatting
+- SmartArt and diagram layouts
+- Image placement
+
+### Smart Deduplication
+
+Corporate decks often repeat phrases: product names, taglines, legal disclaimers. The tool identifies duplicates and translates each unique string once, then applies the translation everywhere it appears.
+
+### Multiple Formats
+
+Supports both:
+- **Google Slides** via the Slides API (creates a translated copy in your Drive)
+- **PowerPoint (.pptx)** via direct file manipulation
+
+### Progress Tracking
+
+Real-time progress bar showing percentage completion. Useful for large decks that take several minutes to process.
+
+## Technical Approach
+
+The architecture separates concerns cleanly:
+
+1. **Extraction layer** handles format-specific parsing
+2. **Translation layer** batches requests to Claude
+3. **Reconstruction layer** applies translations back to source format
+
+This separation means adding support for new formats (Keynote, for example) only requires new extraction and reconstruction modules.
+
+## Use Cases
+
+- **Sales teams** localizing pitch decks for regional markets
+- **Marketing** adapting campaign materials across geographies
+- **Training departments** translating onboarding materials
+- **Executives** preparing presentations for international meetings
+
+## Limitations
+
+- Complex animations may not transfer perfectly
+- Embedded videos remain in original language
+- Very large presentations (200+ slides) may hit API rate limits
