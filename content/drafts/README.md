@@ -6,6 +6,7 @@ LinkedIn posts and blog articles based on personal AI experimentation.
 
 | File | Description |
 |------|-------------|
+| `CONTENT_GUIDELINES.md` | Author context, tone, Salesforce alignment rules, dos/don'ts |
 | `CONTENT_PLAN.md` | Strategic plan: persona, framing guidelines, publishing strategy |
 | `CONTENT_OUTLINES.md` | 7 article outlines with titles, hooks, articulation points, conclusions |
 
