@@ -209,14 +209,46 @@ This is unique to your situation:
 
 ## Publishing Strategy
 
-### Suggested Order
-1. **#1 (I'm 50, Started Coding)** — establishes your unique position
-2. **#3 (Japanese Enterprise)** — differentiates you in Japan market
-3. **#7 (Sales Leaders Who Use AI)** — bold POV, high engagement potential
-4. **#5 (Digital Twin Voice)** — practical, shareable, multilingual hook
-5. **#2 (HealthPulse)** — shows breadth beyond work-related tools
-6. **#4 (6-Month Journey)** — deep dive for engaged audience
-7. **#6 (15-Month Journey)** — capstone piece, full arc reflection
+### ALREADY PUBLISHED (January 2026)
+These pieces are live with updated "sales exec who builds" framing:
+- **GenUI Thought Piece**: "The Canvas, Not the Form" — personal framing, security note added
+- **GenUI Technical Piece**: "From Templates to Component Vocabulary" — first-person, hobby project framing
+- **GenUI LinkedIn Version**: Condensed version with same positioning
+
+### NEXT TO PUBLISH: Anchor Pieces (establish positioning)
+1. **#1 (I'm 50, Started Coding)** — establishes your unique position FIRST
+2. **#6 (AI Coding Journey: Lapsed Hobbyist)** — full career arc narrative, emotional resonance
+
+### THEN: Technical Pieces with Business Stakes
+These have clear business consequences, not just technical architecture:
+
+3. **Anti-Hallucination Grounding** (from publications folder)
+   - Source: `/publications/ANTI_HALLUCINATION_GROUNDING.md`
+   - Hook: "$2.5M phantom pipeline" — terrifying, relatable to sales leaders
+   - Why it works: Shows you understand enterprise risk, not just code
+   - Needs: Personal framing applied (same treatment as GenUI pieces)
+
+4. **Local-First AI Architecture** (from publications folder)
+   - Source: `/publications/LOCAL_FIRST_AI_ARCHITECTURE.md`
+   - Hook: "Briefing room" analogy — AI that helps without data access
+   - Why it works: Supports "I'm careful with company data" positioning
+   - Needs: Personal framing, connect to GenUI security note
+
+### LATER: Other Pieces
+5. **#3 (Japanese Enterprise)** — differentiates in Japan market
+6. **#7 (Sales Leaders Who Use AI)** — bold POV, high engagement
+7. **#5 (Digital Twin Voice)** — practical, shareable
+8. **#2 (HealthPulse)** — shows breadth
+9. **#4 (6-Month Journey)** — deep dive for engaged audience
+
+### TECHNICAL DEEP-DIVES (for later or as appendices)
+These are strong but read as "developer for developers" — save for audience that wants more depth:
+- Agentic Reasoning Deep Dive (`/publications/AGENTIC_REASONING_DEEP_DIVE.md`)
+- Atlas Architecture Comparison (`/publications/ATLAS_ARCHITECTURE_COMPARISON.md`)
+- Confidence Scoring System (`/publications/CONFIDENCE_SCORING_SYSTEM.md`)
+- ReAct Loop Implementation Patterns (`/publications/REACT_LOOP_IMPLEMENTATION_PATTERNS.md`)
+- Commit History Evolution (`/publications/COMMIT_HISTORY_EVOLUTION.md`)
+- Tool Taxonomy and Protocol (`/publications/TOOL_TAXONOMY_AND_PROTOCOL.md`)
 
 ### Format Notes
 - #1, #3, and #7: LinkedIn-native, shorter, punchy
@@ -224,6 +256,7 @@ This is unique to your situation:
 - #5 especially: High shareability—"how to make AI write like you" is universally appealing
 - #6: Longer reflective piece—works well as a year-in-review or milestone post
 - #7: Strong POV piece—may generate discussion/debate
+- Technical pieces: Need personal framing before publishing (same treatment as GenUI)
 - All: First-person, specific, honest about failures
 
 ---
