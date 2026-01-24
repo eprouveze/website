@@ -222,9 +222,9 @@ These pieces are live with updated "sales exec who builds" framing:
 ### THEN: Technical Pieces with Business Stakes
 These have clear business consequences, not just technical architecture:
 
-3. **Anti-Hallucination Grounding** — PUBLISHED: `content/posts/phantom-pipeline-liar-catcher.mdx`
+3. **Anti-Hallucination Grounding** — DRAFT: `content/drafts/phantom-pipeline-liar-catcher.mdx`
    - Hook: "Phantom pipeline kills credibility" + real caught hallucinations example
-   - Pairs well with anchor piece
+   - Needs: Final review before publishing
 
 4. **Local-First AI Architecture**
    - Source: `content/drafts/technical-pieces/LOCAL_FIRST_AI_ARCHITECTURE.md`
