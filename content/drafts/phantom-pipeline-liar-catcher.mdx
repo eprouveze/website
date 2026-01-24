@@ -35,7 +35,7 @@ Knowing hallucinations would happen, I built three layers:
 
 **Evidence first.** The AI never operates from memory. Tools gather all data before synthesis begins. It can only work with what's actually retrieved.
 
-**Structured constraints.** Every prompt enforces output format and explicitly prohibits fabrication. Not foolproof, but necessary.
+**Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes Pydantic just fine. That's where the fact-checker earns its keep.
 
 **The fact-checker.** Before any response reaches me, a separate AI pass validates claims against source data. Like an editor reviewing a story before publication—if a claim can't be verified, it gets flagged or stripped.
 
