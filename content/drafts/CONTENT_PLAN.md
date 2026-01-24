@@ -215,9 +215,9 @@ These pieces are live with updated "sales exec who builds" framing:
 - **GenUI Technical Piece**: "From Templates to Component Vocabulary" — first-person, hobby project framing
 - **GenUI LinkedIn Version**: Condensed version with same positioning
 
-### NEXT TO PUBLISH: Anchor Pieces (establish positioning)
-1. **#1 (I'm 50, Started Coding)** — establishes your unique position FIRST
-2. **#6 (AI Coding Journey: Lapsed Hobbyist)** — full career arc narrative, emotional resonance
+### ANCHOR PIECES
+1. **#1 (I'm 50, Started Coding)** — PUBLISHED: `content/posts/im-50-started-coding-ai.mdx`
+2. **#6 (AI Coding Journey: Lapsed Hobbyist)** — longer version, full career arc narrative (pending)
 
 ### THEN: Technical Pieces with Business Stakes
 These have clear business consequences, not just technical architecture:
