@@ -1,11 +1,13 @@
 ---
 title: "The Canvas, Not the Form: Rethinking AI Interfaces"
-description: "Why AI should compose communications, not just answer questions"
+description: "What a sales exec learned building his own AI forecasting tool"
 publishedAt: "2026-01-15"
 tags: ["AI", "GenUI", "Design"]
 ---
 
-I've been experimenting with AI-assisted GAM sales forecasting. Fixed templates, structured outputs, the whole proper setup.
+I run enterprise sales for a living. But I've been coding as a hobby since I was a teenager—databases, websites, the occasional mobile app. AI tools reignited that spark, and I started building things again.
+
+One of those things: an AI-assisted forecasting tool for my own GAM pipeline—runs locally, data anonymized before any API calls, the whole proper setup.
 
 And at some point I noticed something: the biggest risk in my pipeline was buried in the "Risks" section alongside five minor concerns. Same font. Same box. Same visual weight.
 
@@ -27,31 +29,31 @@ The solution isn't arbitrary interface generation. That way lies inconsistency a
 
 Think of it as the difference between asking someone to write a sentence (grammar constrains but expression is free) versus asking them to fill a form (slots constrain and expression is limited).
 
-Our vocabulary includes structural components, emphasis signals, and domain-specific elements. The AI composes these based on what the data demands. Three blocked deals? Lead with them, expanded, highlighted. Strong coverage? Summary with confident indicators. Mixed signals? Side-by-side comparison.
+My vocabulary includes structural components, emphasis signals, and domain-specific elements. The AI composes these based on what the data demands. Three blocked deals? Lead with them, expanded, highlighted. Strong coverage? Summary with confident indicators. Mixed signals? Side-by-side comparison.
 
-The styling is ours. The structure is ours. The composition is the AI's.
+The styling is mine. The structure is mine. The composition is the AI's.
 
-## What We Learned
+## What I Learned
 
-Letting AI control form sounds simple. Rebuilding my tool this way took experimentation.
+Letting AI control form sounds simple. Rebuilding my tool this way took experimentation—and reminded me why I stopped coding for years before AI made it fun again.
 
-**The AI invents things.** We documented data path syntax carefully. The API kept returning non-compliant syntax that broke the renderer. Explicit examples of wrong patterns helped more than documentation of right ones.
+**The AI invents things.** I documented data path syntax carefully. The API kept returning non-compliant syntax that broke the renderer. Explicit examples of wrong patterns helped more than documentation of right ones.
 
 **Editorial choices can be wrong.** Early versions buried important information instead of surfacing it. I went through nine prompt versions before things stabilized. User override is still on the roadmap.
 
-**Debugging gets harder.** When every response has different structure, you can't diff against expected output. We store full prompts with responses. Investigating issues means understanding what the AI saw and why it chose what it chose.
+**Debugging gets harder.** When every response has different structure, you can't diff against expected output. I store full prompts with responses. Investigating issues means understanding what the AI saw and why it chose what it chose.
 
 **Vocabulary design is harder than template design.** Adding a new component means updating types, rendering logic, documentation, and prompts. The barrier to change is higher. This is probably good: it forces intentionality.
 
-## The Trade We Made
+## The Trade I Made
 
 Templates are predictable. You know exactly what you're getting. Testing is straightforward. Debugging is simple.
 
 Component vocabulary is adaptive. The AI can emphasize what matters. But testing is harder, debugging requires more context, and prompt engineering becomes a critical skill.
 
-We made the trade because predictability was costing us value. The AI had insights the template wouldn't let it express.
+I made the trade because predictability was costing me value. The AI had insights the template wouldn't let it express.
 
-We don't have systematic data on whether managers prefer the adaptive layouts. That measurement should have been built in from day one. Early feedback has been positive, but we're operating on intuition more than evidence. If you build something similar, instrument it.
+This is a personal tool, not a product. I don't have systematic data on whether the adaptive layouts are objectively better—I built it to scratch my own itch. What I can say: I notice things I missed before. For my purposes, that's enough. If you're building something similar at scale, instrument it properly.
 
 ## Beyond Fill-in-the-Blank
 
@@ -61,7 +63,7 @@ Salesforce is going the same direction with Generative Canvas in Agentforce. Dyn
 
 The shift from templates to component vocabulary reflects a broader principle: stop treating AI as a function that maps inputs to outputs and start treating it as a collaborator that can make judgment calls within constraints.
 
-We define the vocabulary. We control the styling. We set the boundaries. Within those boundaries, the AI has agency to communicate effectively.
+I define the vocabulary. I control the styling. I set the boundaries. Within those boundaries, the AI has agency to communicate effectively.
 
 Once it worked, I started noticing things I'd missed before. That felt like progress.
 
