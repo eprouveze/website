@@ -222,14 +222,14 @@ These pieces are live with updated "sales exec who builds" framing:
 ### THEN: Technical Pieces with Business Stakes
 These have clear business consequences, not just technical architecture:
 
-3. **Anti-Hallucination Grounding** (from publications folder)
-   - Source: `/publications/ANTI_HALLUCINATION_GROUNDING.md`
+3. **Anti-Hallucination Grounding**
+   - Source: `content/drafts/technical-pieces/ANTI_HALLUCINATION_GROUNDING.md`
    - Hook: "$2.5M phantom pipeline" — terrifying, relatable to sales leaders
    - Why it works: Shows you understand enterprise risk, not just code
    - Needs: Personal framing applied (same treatment as GenUI pieces)
 
-4. **Local-First AI Architecture** (from publications folder)
-   - Source: `/publications/LOCAL_FIRST_AI_ARCHITECTURE.md`
+4. **Local-First AI Architecture**
+   - Source: `content/drafts/technical-pieces/LOCAL_FIRST_AI_ARCHITECTURE.md`
    - Hook: "Briefing room" analogy — AI that helps without data access
    - Why it works: Supports "I'm careful with company data" positioning
    - Needs: Personal framing, connect to GenUI security note
@@ -242,13 +242,15 @@ These have clear business consequences, not just technical architecture:
 9. **#4 (6-Month Journey)** — deep dive for engaged audience
 
 ### TECHNICAL DEEP-DIVES (for later or as appendices)
-These are strong but read as "developer for developers" — save for audience that wants more depth:
-- Agentic Reasoning Deep Dive (`/publications/AGENTIC_REASONING_DEEP_DIVE.md`)
-- Atlas Architecture Comparison (`/publications/ATLAS_ARCHITECTURE_COMPARISON.md`)
-- Confidence Scoring System (`/publications/CONFIDENCE_SCORING_SYSTEM.md`)
-- ReAct Loop Implementation Patterns (`/publications/REACT_LOOP_IMPLEMENTATION_PATTERNS.md`)
-- Commit History Evolution (`/publications/COMMIT_HISTORY_EVOLUTION.md`)
-- Tool Taxonomy and Protocol (`/publications/TOOL_TAXONOMY_AND_PROTOCOL.md`)
+These are strong but read as "developer for developers" — save for audience that wants more depth.
+All located in `content/drafts/technical-pieces/`:
+- `AGENTIC_REASONING_DEEP_DIVE.md` — Full ReAct loop architecture
+- `ATLAS_ARCHITECTURE_COMPARISON.md` — Reverse-engineering Salesforce Atlas
+- `CONFIDENCE_SCORING_SYSTEM.md` — Dual scoring (deal health vs analysis quality)
+- `REACT_LOOP_IMPLEMENTATION_PATTERNS.md` — Implementation patterns
+- `COMMIT_HISTORY_EVOLUTION.md` — Git history as architecture documentation
+- `TOOL_TAXONOMY_AND_PROTOCOL.md` — Tool architecture reference
+- `README.md` — Index of all technical pieces
 
 ### Format Notes
 - #1, #3, and #7: LinkedIn-native, shorter, punchy
