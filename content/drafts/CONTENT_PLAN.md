@@ -222,11 +222,9 @@ These pieces are live with updated "sales exec who builds" framing:
 ### THEN: Technical Pieces with Business Stakes
 These have clear business consequences, not just technical architecture:
 
-3. **Anti-Hallucination Grounding**
-   - Source: `content/drafts/technical-pieces/ANTI_HALLUCINATION_GROUNDING.md`
-   - Hook: "$2.5M phantom pipeline" — terrifying, relatable to sales leaders
-   - Why it works: Shows you understand enterprise risk, not just code
-   - Needs: Personal framing applied (same treatment as GenUI pieces)
+3. **Anti-Hallucination Grounding** — PUBLISHED: `content/posts/phantom-pipeline-liar-catcher.mdx`
+   - Hook: "Phantom pipeline kills credibility" + real caught hallucinations example
+   - Pairs well with anchor piece
 
 4. **Local-First AI Architecture**
    - Source: `content/drafts/technical-pieces/LOCAL_FIRST_AI_ARCHITECTURE.md`
