@@ -19,7 +19,11 @@ export const metadata: Metadata = {
   description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
   metadataBase: new URL('https://emmanuel.prouveze.fr'),
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-for-light-mode.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-for-dark-mode.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
+    ],
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
