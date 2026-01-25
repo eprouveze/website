@@ -33,6 +33,8 @@ But here's the insight: forecasting isn't just arithmetic. It's interpretation.
 
 Knowing hallucinations would happen, I built three layers:
 
+![Defense-in-depth: three layers protecting the trusted forecast from hallucinations](/images/defense-in-depth-shields.png)
+
 **Evidence first.** The AI never operates from memory. Tools gather all data before synthesis begins. It can only work with what's actually retrieved.
 
 **Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes Pydantic just fine. That's where the fact-checker earns its keep.
