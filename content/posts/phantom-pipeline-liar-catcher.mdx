@@ -15,9 +15,11 @@ But I didn't abandon AI. I built a system to catch it lying—and now it's one o
 
 ## Why build this myself?
 
-Salesforce ships Agentforce with the Atlas Reasoning Engine—enterprise-grade AI with built-in guardrails. Atlas uses **ReAct-based orchestration** (Reasoning and Acting): a cyclic process where the system reasons about the task, takes an action, observes the result, and repeats. It can even request clarifications from users if its plan is flawed. But I built my own. Why?
+Salesforce ships Agentforce with the Atlas Reasoning Engine, and the Einstein Trust Layer provides guardrails like dynamic grounding and prompt defense. These are production-grade systems with years of engineering behind them. But I built my own. Why?
 
 Simple: I wanted to understand how these systems actually work, not just consume them. Reading architecture docs is one thing. Implementing a working agentic loop—even a simplified one—teaches you what the docs leave out.
+
+My implementation borrows from the same principles. Like Atlas, I use a **ReAct-based loop** (Reasoning and Acting): the system reasons about the task, selects a tool, executes it, observes the result, and repeats until it has what it needs. But my defense layers are my own design—inspired by industry patterns, not a replica of Salesforce's architecture.
 
 ## Why use an LLM for forecasting at all?
 
