@@ -226,11 +226,13 @@ These have clear business consequences, not just technical architecture:
    - Hook: "Phantom pipeline kills credibility" + real caught hallucinations example
    - Fact-checked against production logs
 
-4. **Local-First AI Architecture**
-   - Source: `content/drafts/technical-pieces/LOCAL_FIRST_AI_ARCHITECTURE.md`
-   - Hook: "Briefing room" analogy — AI that helps without data access
-   - Why it works: Supports "I'm careful with company data" positioning
-   - Needs: Personal framing, connect to GenUI security note
+4. **Local-First AI Architecture** — DRAFT READY: `content/drafts/local-first-ai-reframed.mdx`
+   - Title: "The AI Knows Your Numbers, Not Your Customers"
+   - Hook: "Briefing room" analogy — AI sees patterns, not identities
+   - Reframed: Honest about what anonymization protects (identities) vs exposes (amounts)
+   - Includes: Einstein Trust Layer comparison (positions Salesforce favorably)
+   - Illustrations: Hero (briefing room split) + technical diagram (anonymization flow)
+   - Status: Awaiting manager approval before publishing
 
 ### LATER: Other Pieces
 5. **#3 (Japanese Enterprise)** — differentiates in Japan market
