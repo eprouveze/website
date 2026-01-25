@@ -37,6 +37,8 @@ But here's the insight: forecasting isn't just arithmetic. It's interpretation.
 
 Knowing hallucinations would happen, I built what researchers call a **defense-in-depth** strategy—a multi-layer mitigation stack where each layer catches what the previous one misses:
 
+![Defense-in-depth: three layers protecting the trusted forecast from hallucinations, phantom pipeline, and invalid data](/images/defense-in-depth-shields.png)
+
 **Evidence first (Retrieval-Augmented Generation).** The AI never operates from memory. This is what researchers call a **retrieve-then-read** pipeline—tools gather all data before synthesis begins. LLMs have **temporal boundaries**: their training data has a cutoff date, and they can't update in real-time. By forcing retrieval first, I sidestep the model's stale parametric knowledge entirely. The AI can only work with what's actually retrieved.
 
 **Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. Researchers distinguish between **instruction consistency** (following the format) and **factuality** (telling the truth). A model can be perfectly **faithful** to my instructions while being completely **non-factual** about the content. An invented stage name like "Perception Analysis" passes Pydantic just fine—it's valid JSON, just not valid reality. That's where the fact-checker earns its keep.
