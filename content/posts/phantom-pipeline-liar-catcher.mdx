@@ -33,13 +33,13 @@ But here's the insight: forecasting isn't just arithmetic. It's interpretation.
 
 Knowing hallucinations would happen, I built three layers:
 
-![Defense-in-depth: three layers protecting the trusted forecast from hallucinations](/images/defense-in-depth-shields.png)
+![Defense-in-depth: three layers protecting the trusted forecast](/images/defense-in-depth-shields.png)
 
-**Evidence first.** The AI never operates from memory. Tools gather all data before synthesis begins. It can only work with what's actually retrieved.
+**Evidence first.** The LLM never operates from memory. It doesn't "know" that Stage 4 deals typically close at 75%—it only sees what's actually in my CRM right now. Tools retrieve all relevant data before synthesis begins. No retrieval, no response.
 
-**Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes Pydantic just fine. That's where the fact-checker earns its keep.
+**Structured output.** Every response must be valid JSON matching a strict schema. This powers my [generative UI system](/writing/genui-thought-piece)—the AI outputs structured components, not freeform text. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes validation just fine. That's where the fact-checker earns its keep.
 
-**The fact-checker.** Before any response reaches me, a separate AI pass validates claims against source data. Like an editor reviewing a story before publication—if a claim can't be verified, it gets flagged or stripped.
+**The fact-checker.** Before any response reaches me, a separate LLM call validates claims against source data. I'm using AI to catch AI: "Does this response contain anything not supported by the evidence?" The same model that might hallucinate is surprisingly good at *spotting* hallucinations when given an explicit verification task. If a claim can't be verified, it gets flagged or stripped.
 
 ## Caught in the act
 
