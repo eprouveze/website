@@ -13,7 +13,7 @@ In enterprise forecasting, this isn't a quirk. It's a firing offense. Phantom pi
 
 ## Why build this myself?
 
-Salesforce ships Agentforce with the Atlas Reasoning Engine—enterprise-grade AI with built-in guardrails. But I built my own. Why?
+Salesforce ships Agentforce with the Atlas Reasoning Engine—enterprise-grade AI with built-in guardrails. Atlas uses **ReAct-based orchestration** (Reasoning and Acting): a cyclic process where the system reasons about the task, takes an action, observes the result, and repeats. It can even request clarifications from users if its plan is flawed. But I built my own. Why?
 
 Simple: I wanted to understand how these systems actually work, not just consume them. Reading architecture docs is one thing. Implementing a working agentic loop—even a simplified one—teaches you what the docs leave out.
 
@@ -31,13 +31,13 @@ But here's the insight: forecasting isn't just arithmetic. It's interpretation.
 
 ## The defense system
 
-Knowing hallucinations would happen, I built three layers:
+Knowing hallucinations would happen, I built what researchers call a **defense-in-depth** strategy—a multi-layer mitigation stack where each layer catches what the previous one misses:
 
-**Evidence first.** The AI never operates from memory. Tools gather all data before synthesis begins. It can only work with what's actually retrieved.
+**Evidence first (Retrieval-Augmented Generation).** The AI never operates from memory. This is what researchers call a **retrieve-then-read** pipeline—tools gather all data before synthesis begins. LLMs have **temporal boundaries**: their training data has a cutoff date, and they can't update in real-time. By forcing retrieval first, I sidestep the model's stale parametric knowledge entirely. The AI can only work with what's actually retrieved.
 
-**Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes Pydantic just fine. That's where the fact-checker earns its keep.
+**Structured constraints.** Every response must be valid JSON matching a Pydantic schema—required fields, correct types, proper format. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. Researchers distinguish between **instruction consistency** (following the format) and **factuality** (telling the truth). A model can be perfectly **faithful** to my instructions while being completely **non-factual** about the content. An invented stage name like "Perception Analysis" passes Pydantic just fine—it's valid JSON, just not valid reality. That's where the fact-checker earns its keep.
 
-**The fact-checker.** Before any response reaches me, a separate AI pass validates claims against source data. Like an editor reviewing a story before publication—if a claim can't be verified, it gets flagged or stripped.
+**The fact-checker (Chain-of-Verification).** Before any response reaches me, a separate AI pass validates claims against source data. This mirrors what researchers call **Chain-of-Verification (CoVe)** or **generate-then-reflect** patterns: generate a baseline response, create verification questions, answer them independently, then revise. Like an editor reviewing a story before publication—if a claim can't be verified, it gets flagged or stripped.
 
 ## Caught in the act
 
@@ -58,9 +58,21 @@ The AI drafted a response about one of my opportunities. The grounding layer cau
 
 The liar-catcher stripped the hallucinations before they reached me.
 
+## Are hallucinations getting better?
+
+The evidence is mixed.
+
+**The optimistic view:** OpenAI claims newer reasoning models have lowered error rates significantly by rewarding uncertainty acknowledgment over confident guessing. If the model says "I don't know," that's better than a plausible-sounding fabrication.
+
+**The skeptical view:** Practical evaluations of recent models in specialized domains—like legal citations—show hallucination rates remain dangerously high. Models confidently reach conclusions that directly contradict their source text.
+
+**The hidden risk:** Here's what concerns me most. As models improve their Chain-of-Thought reasoning, hallucinations may become *harder to detect*. More persuasive step-by-step justifications create what researchers call **semantic amplification**—the fabricated claim *looks* more plausible because it's wrapped in convincing reasoning. The lie gets better at hiding.
+
+This is why I don't rely on model improvements alone. External verification isn't a temporary workaround until AI gets better. It's a permanent architectural requirement.
+
 ## The point
 
-We talk about AI replacing managers. But right now, AI is the over-eager junior rep who pads the numbers to look good. We don't need smarter AI. We need AI that's terrified of being wrong.
+We talk about AI replacing managers. But right now, AI exhibits what researchers call **sycophancy**—the tendency to pander to user preferences and look "good" even at the cost of truthfulness. It's the over-eager junior rep who pads the numbers to impress you. The model also lacks **knowledge boundary awareness**: it can't recognize when it doesn't know something, so instead of rejecting a query, it fabricates an answer. We don't need smarter AI. We need AI that's terrified of being wrong.
 
 I still use AI insights to challenge my own analysis. The AI complements my judgment—it doesn't replace it. But I only trust it because I built the verification layer myself.
 
