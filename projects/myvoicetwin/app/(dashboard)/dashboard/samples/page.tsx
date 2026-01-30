@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { createClient, type Sample, type SampleType } from '@/lib/supabase';
+import { createClient, type Sample, type SampleType, type QuestionnaireResponse } from '@/lib/supabase';
 import Link from 'next/link';
 import {
   Plus,
@@ -28,6 +28,9 @@ import {
   DollarSign,
   Clock,
   Loader2,
+  AlertTriangle,
+  Users,
+  Wrench,
 } from 'lucide-react';
 
 // Types
@@ -39,6 +42,21 @@ interface SampleFormData {
   audience: string;
   content: string;
   is_transcript: boolean;
+}
+
+interface MatrixSection {
+  id: string;
+  language: string;
+  tool: string;
+  target: string;
+  label: string;
+}
+
+interface SectionProgress {
+  section: MatrixSection;
+  samples: Sample[];
+  count: number;
+  isComplete: boolean;
 }
 
 // Constants
@@ -58,22 +76,39 @@ const SAMPLE_TYPES: { value: SampleType; label: string; icon: typeof Mail }[] = 
 ];
 
 const LANGUAGES = [
-  { value: 'en', label: 'English' },
-  { value: 'ja', label: 'Japanese' },
-  { value: 'fr', label: 'French' },
-  { value: 'es', label: 'Spanish' },
-  { value: 'de', label: 'German' },
-  { value: 'other', label: 'Other' },
+  { value: 'en', label: 'English', fullName: 'English' },
+  { value: 'ja', label: 'Japanese', fullName: 'Japanese' },
+  { value: 'fr', label: 'French', fullName: 'French' },
+  { value: 'es', label: 'Spanish', fullName: 'Spanish' },
+  { value: 'de', label: 'German', fullName: 'German' },
+  { value: 'other', label: 'Other', fullName: 'Other' },
 ];
 
-const MIN_SAMPLES = 5;
+const TOOLS_MAP: Record<string, { label: string; sampleTypes: SampleType[] }> = {
+  email: { label: 'Email', sampleTypes: ['email_formal', 'email_casual', 'email_internal', 'email_external'] },
+  slack: { label: 'Slack/Teams', sampleTypes: ['slack_message'] },
+  reports: { label: 'Reports', sampleTypes: ['report'] },
+  presentations: { label: 'Presentations', sampleTypes: ['presentation'] },
+  social: { label: 'Social Media', sampleTypes: ['social_post'] },
+  blog: { label: 'Blog/Articles', sampleTypes: ['blog_article'] },
+};
+
+const AUDIENCES_MAP: Record<string, string> = {
+  executives: 'Executives',
+  clients: 'Clients',
+  team: 'Team Members',
+  public: 'Public/Social',
+  other: 'Other',
+};
+
+const MIN_SAMPLES_PER_SECTION = 5;
 
 // Audio upload constants
 const ACCEPTED_AUDIO_FORMATS = '.mp3,.wav,.m4a,.webm';
 const ACCEPTED_AUDIO_MIMES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/m4a', 'audio/x-m4a', 'audio/webm'];
 const MAX_FILE_SIZE_MB = 25;
-const PRICE_PER_MINUTE = 0.009; // $0.009 per minute
-const MINIMUM_CHARGE = 0.01; // $0.01 minimum
+const PRICE_PER_MINUTE = 0.009;
+const MINIMUM_CHARGE = 0.01;
 
 const INITIAL_FORM_DATA: SampleFormData = {
   title: '',
@@ -96,6 +131,11 @@ function getTypeIcon(type: SampleType) {
 
 function getLanguageLabel(code: string): string {
   return LANGUAGES.find((l) => l.value === code)?.label || code;
+}
+
+function getLanguageCode(fullName: string): string {
+  const lang = LANGUAGES.find((l) => l.fullName === fullName || l.label === fullName);
+  return lang?.value || 'en';
 }
 
 function formatDate(dateString: string): string {
@@ -123,6 +163,20 @@ function calculateAudioPrice(durationSeconds: number): { price: number; minutes:
   return { price, minutes };
 }
 
+function getToolForSampleType(sampleType: SampleType): string | null {
+  for (const [tool, config] of Object.entries(TOOLS_MAP)) {
+    if (config.sampleTypes.includes(sampleType)) {
+      return tool;
+    }
+  }
+  return null;
+}
+
+function getSampleTypeForTool(tool: string): SampleType {
+  const config = TOOLS_MAP[tool];
+  return config?.sampleTypes[0] || 'other';
+}
+
 // Components
 function SampleCard({
   sample,
@@ -143,14 +197,12 @@ function SampleCard({
 
   return (
     <div className="group relative bg-white rounded-xl border border-slate-200 p-5 hover:border-brand-300 hover:shadow-md transition-all duration-200">
-      {/* Type Icon Badge */}
       <div className="absolute -top-3 left-4">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-100 text-brand-600 shadow-sm">
           <Icon className="w-4 h-4" />
         </div>
       </div>
 
-      {/* Delete Button */}
       <button
         onClick={handleDelete}
         disabled={isDeleting}
@@ -160,12 +212,10 @@ function SampleCard({
         <Trash2 className="w-4 h-4" />
       </button>
 
-      {/* Content */}
       <div className="mt-3">
         <h3 className="font-semibold text-slate-900 truncate pr-8">{sample.title}</h3>
         <p className="text-sm text-slate-500 mt-1">{getTypeLabel(sample.sample_type)}</p>
 
-        {/* Meta Info */}
         <div className="flex flex-wrap items-center gap-3 mt-4 text-xs text-slate-500">
           <span className="flex items-center gap-1">
             <Globe className="w-3.5 h-3.5" />
@@ -181,7 +231,6 @@ function SampleCard({
           </span>
         </div>
 
-        {/* Transcript Badge */}
         {sample.is_transcript && (
           <div className="mt-3">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-accent-100 text-accent-700">
@@ -191,6 +240,110 @@ function SampleCard({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionCard({
+  progress,
+  onAddSample,
+  samples,
+  onDeleteSample,
+}: {
+  progress: SectionProgress;
+  onAddSample: (section: MatrixSection) => void;
+  samples: Sample[];
+  onDeleteSample: (id: string) => void;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const progressPercent = Math.min((progress.count / MIN_SAMPLES_PER_SECTION) * 100, 100);
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div
+        className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${progress.isComplete ? 'bg-green-500' : 'bg-amber-500'}`} />
+            <h3 className="font-semibold text-slate-900">{progress.section.label}</h3>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`text-sm font-medium ${progress.isComplete ? 'text-green-600' : 'text-amber-600'}`}>
+              {progress.count}/{MIN_SAMPLES_PER_SECTION}
+            </span>
+            <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+          </div>
+        </div>
+
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              progress.isComplete
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500'
+            }`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+          <span className="flex items-center gap-1">
+            <Globe className="w-3 h-3" />
+            {LANGUAGES.find((l) => l.value === progress.section.language)?.label || progress.section.language}
+          </span>
+          <span className="flex items-center gap-1">
+            <Wrench className="w-3 h-3" />
+            {TOOLS_MAP[progress.section.tool]?.label || progress.section.tool}
+          </span>
+          <span className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {AUDIENCES_MAP[progress.section.target] || progress.section.target}
+          </span>
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="border-t border-slate-200 p-4 bg-slate-50">
+          {samples.length > 0 ? (
+            <div className="grid gap-3">
+              {samples.map((sample) => (
+                <div
+                  key={sample.id}
+                  className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200"
+                >
+                  <div>
+                    <p className="font-medium text-slate-900 text-sm">{sample.title}</p>
+                    <p className="text-xs text-slate-500">{sample.word_count} words</p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteSample(sample.id);
+                    }}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 text-center py-2">No samples yet</p>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddSample(progress.section);
+            }}
+            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add Sample to Section
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -229,39 +382,47 @@ function EmptyState({ onAdd, onUploadAudio }: { onAdd: () => void; onUploadAudio
   );
 }
 
-function GuidancePanel({ sampleCount }: { sampleCount: number }) {
-  const progress = Math.min((sampleCount / MIN_SAMPLES) * 100, 100);
-  const isComplete = sampleCount >= MIN_SAMPLES;
+function GuidancePanel({
+  sectionProgress,
+  totalSamples,
+}: {
+  sectionProgress: SectionProgress[];
+  totalSamples: number;
+}) {
+  const completeSections = sectionProgress.filter((p) => p.isComplete).length;
+  const totalSections = sectionProgress.length;
+  const overallProgress = totalSections > 0 ? (completeSections / totalSections) * 100 : 0;
 
   return (
     <div className="bg-gradient-to-br from-brand-50 to-accent-50 rounded-2xl border border-brand-100 p-6">
-      {/* Progress Section */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-700">Collection Progress</span>
-          <span className={`text-sm font-semibold ${isComplete ? 'text-green-600' : 'text-brand-600'}`}>
-            {sampleCount} of {MIN_SAMPLES} minimum
+          <span className="text-sm font-medium text-slate-700">Section Coverage</span>
+          <span className={`text-sm font-semibold ${completeSections === totalSections && totalSections > 0 ? 'text-green-600' : 'text-brand-600'}`}>
+            {totalSections > 0 ? `${completeSections} of ${totalSections} sections complete` : `${totalSamples} of ${MIN_SAMPLES_PER_SECTION} minimum`}
           </span>
         </div>
         <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              isComplete
+              (completeSections === totalSections && totalSections > 0) || (totalSections === 0 && totalSamples >= MIN_SAMPLES_PER_SECTION)
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500'
                 : 'bg-gradient-to-r from-brand-500 to-accent-500'
             }`}
-            style={{ width: `${progress}%` }}
+            style={{ width: `${totalSections > 0 ? overallProgress : Math.min((totalSamples / MIN_SAMPLES_PER_SECTION) * 100, 100)}%` }}
           />
         </div>
-        {isComplete && (
+        {completeSections === totalSections && totalSections > 0 && (
           <div className="flex items-center gap-2 mt-2 text-green-600">
             <Check className="w-4 h-4" />
-            <span className="text-sm font-medium">Minimum samples collected!</span>
+            <span className="text-sm font-medium">All sections complete!</span>
           </div>
         )}
+        <p className="text-xs text-slate-500 mt-2">
+          Total samples: {totalSamples} | Min {MIN_SAMPLES_PER_SECTION} per section
+        </p>
       </div>
 
-      {/* Tips Section */}
       <div className="space-y-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
@@ -273,7 +434,7 @@ function GuidancePanel({ sampleCount }: { sampleCount: number }) {
               <li className="flex items-start gap-2">
                 <span className="text-brand-500 mt-0.5">&#8226;</span>
                 <span>
-                  <strong>Include variety</strong> - Mix formal and casual examples
+                  <strong>Cover each section</strong> - Samples for each language + tool + audience combo
                 </span>
               </li>
               <li className="flex items-start gap-2">
@@ -285,30 +446,99 @@ function GuidancePanel({ sampleCount }: { sampleCount: number }) {
               <li className="flex items-start gap-2">
                 <span className="text-brand-500 mt-0.5">&#8226;</span>
                 <span>
-                  <strong>Different contexts</strong> - Emails, Slack messages, reports, presentations
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-brand-500 mt-0.5">&#8226;</span>
-                <span>
-                  <strong>Multiple languages</strong> - If you&apos;re multilingual, include samples in each
+                  <strong>Quality over quantity</strong> - Real examples are better than filler
                 </span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Recommendation */}
         <div className="flex items-start gap-3 pt-4 border-t border-brand-200/50">
           <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center">
             <AlertCircle className="w-4 h-4 text-brand-600" />
           </div>
           <div>
-            <h4 className="font-semibold text-slate-900 text-sm">Recommended</h4>
+            <h4 className="font-semibold text-slate-900 text-sm">Why Sections Matter</h4>
             <p className="mt-1 text-sm text-slate-600">
-              While 5 samples is the minimum, <strong>10-15 samples</strong> across different contexts will
-              give you a more accurate Voice Twin.
+              Each section represents a unique communication context. The more coverage you provide,
+              the better your Voice Twin will adapt to different situations.
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BypassWarningModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  incompleteSections,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  incompleteSections: SectionProgress[];
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative min-h-screen flex items-center justify-center p-4">
+        <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl">
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-200 bg-amber-50 rounded-t-2xl">
+            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Incomplete Coverage</h2>
+              <p className="text-sm text-slate-600">Some sections don&apos;t have enough samples</p>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <p className="text-slate-700 mb-4">
+              The following sections will <strong>not be representative</strong> in your Voice Twin
+              because they have fewer than {MIN_SAMPLES_PER_SECTION} samples:
+            </p>
+
+            <div className="max-h-60 overflow-y-auto space-y-2 mb-6">
+              {incompleteSections.map((progress) => (
+                <div
+                  key={progress.section.id}
+                  className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200"
+                >
+                  <span className="text-sm font-medium text-slate-900">{progress.section.label}</span>
+                  <span className="text-sm text-amber-700">
+                    {progress.count}/{MIN_SAMPLES_PER_SECTION} samples
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-lg mb-6">
+              <p className="text-sm text-slate-600">
+                <strong>What this means:</strong> Your Voice Twin may not accurately capture your style
+                for these specific communication contexts. You can always come back and add more samples later.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-xl text-slate-700 font-medium hover:bg-slate-100 transition-colors"
+              >
+                Go Back & Add More
+              </button>
+              <button
+                onClick={onConfirm}
+                className="px-5 py-2.5 rounded-xl bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
+              >
+                I Understand, Continue
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -321,16 +551,48 @@ function AddSampleModal({
   onClose,
   onSubmit,
   isLoading,
+  matrixSections,
+  preselectedSection,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: SampleFormData) => Promise<void>;
   isLoading: boolean;
+  matrixSections: MatrixSection[];
+  preselectedSection: MatrixSection | null;
 }) {
   const [formData, setFormData] = useState<SampleFormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<Partial<Record<keyof SampleFormData, string>>>({});
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
 
   const wordCount = countWords(formData.content);
+
+  useEffect(() => {
+    if (preselectedSection) {
+      setSelectedSectionId(preselectedSection.id);
+      setFormData((prev) => ({
+        ...prev,
+        language: preselectedSection.language,
+        sample_type: getSampleTypeForTool(preselectedSection.tool),
+        audience: AUDIENCES_MAP[preselectedSection.target] || preselectedSection.target,
+      }));
+    } else {
+      setSelectedSectionId(null);
+    }
+  }, [preselectedSection]);
+
+  const handleSectionChange = (sectionId: string) => {
+    setSelectedSectionId(sectionId);
+    const section = matrixSections.find((s) => s.id === sectionId);
+    if (section) {
+      setFormData((prev) => ({
+        ...prev,
+        language: section.language,
+        sample_type: getSampleTypeForTool(section.tool),
+        audience: AUDIENCES_MAP[section.target] || section.target,
+      }));
+    }
+  };
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof SampleFormData, string>> = {};
@@ -354,11 +616,13 @@ function AddSampleModal({
 
     await onSubmit(formData);
     setFormData(INITIAL_FORM_DATA);
+    setSelectedSectionId(null);
     setErrors({});
   };
 
   const handleClose = () => {
     setFormData(INITIAL_FORM_DATA);
+    setSelectedSectionId(null);
     setErrors({});
     onClose();
   };
@@ -367,13 +631,10 @@ function AddSampleModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
       <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={handleClose} />
 
-      {/* Modal */}
       <div className="relative min-h-screen flex items-center justify-center p-4">
         <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl">
-          {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
             <h2 className="text-xl font-semibold text-slate-900">Add Writing Sample</h2>
             <button
@@ -384,9 +645,31 @@ function AddSampleModal({
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            {/* Title */}
+            {matrixSections.length > 0 && (
+              <div>
+                <label htmlFor="section" className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Section (from your matrix)
+                </label>
+                <select
+                  id="section"
+                  value={selectedSectionId || ''}
+                  onChange={(e) => handleSectionChange(e.target.value)}
+                  className="input-field"
+                >
+                  <option value="">Choose a section or customize below...</option>
+                  {matrixSections.map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-slate-500">
+                  Selecting a section will pre-fill language, type, and audience
+                </p>
+              </div>
+            )}
+
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1.5">
                 Title <span className="text-red-500">*</span>
@@ -402,9 +685,7 @@ function AddSampleModal({
               {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
             </div>
 
-            {/* Type and Language Row */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Type */}
               <div>
                 <label htmlFor="sample_type" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Type
@@ -423,7 +704,6 @@ function AddSampleModal({
                 </select>
               </div>
 
-              {/* Language */}
               <div>
                 <label htmlFor="language" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Language
@@ -443,7 +723,6 @@ function AddSampleModal({
               </div>
             </div>
 
-            {/* Context */}
             <div>
               <label htmlFor="context" className="block text-sm font-medium text-slate-700 mb-1.5">
                 Context
@@ -461,7 +740,6 @@ function AddSampleModal({
               </p>
             </div>
 
-            {/* Audience */}
             <div>
               <label htmlFor="audience" className="block text-sm font-medium text-slate-700 mb-1.5">
                 Audience
@@ -476,7 +754,6 @@ function AddSampleModal({
               />
             </div>
 
-            {/* Content */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="content" className="block text-sm font-medium text-slate-700">
@@ -499,7 +776,6 @@ function AddSampleModal({
               {errors.content && <p className="mt-1 text-sm text-red-500">{errors.content}</p>}
             </div>
 
-            {/* Is Transcript Toggle */}
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-accent-100 flex items-center justify-center">
@@ -525,7 +801,6 @@ function AddSampleModal({
               </button>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
               <button
                 type="button"
@@ -603,13 +878,11 @@ function AudioUploadModal({
 
     setError(null);
 
-    // Validate file type
     if (!ACCEPTED_AUDIO_MIMES.includes(selectedFile.type)) {
       setError('Please select a valid audio file (MP3, WAV, M4A, or WebM)');
       return;
     }
 
-    // Validate file size
     if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
       setError(`File too large. Maximum size is ${MAX_FILE_SIZE_MB}MB.`);
       return;
@@ -617,7 +890,6 @@ function AudioUploadModal({
 
     setFile(selectedFile);
 
-    // Get audio duration using Web Audio API
     try {
       const audioContext = new AudioContext();
       const arrayBuffer = await selectedFile.arrayBuffer();
@@ -627,7 +899,6 @@ function AudioUploadModal({
       await audioContext.close();
     } catch (err) {
       console.error('Error getting audio duration:', err);
-      // If we can't get duration, we'll let the server calculate it
       setDuration(null);
       setStep('confirm');
     }
@@ -657,14 +928,12 @@ function AudioUploadModal({
         throw new Error(data.error || 'Failed to transcribe audio');
       }
 
-      // If payment is required, redirect to Stripe
       if (data.requiresPayment && data.checkoutUrl) {
         setProcessingStatus('Redirecting to payment...');
         window.location.href = data.checkoutUrl;
         return;
       }
 
-      // If transcription is complete (free or already paid)
       if (data.transcription) {
         setStep('complete');
         onSuccess({
@@ -684,13 +953,10 @@ function AudioUploadModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
       <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={handleClose} />
 
-      {/* Modal */}
       <div className="relative min-h-screen flex items-center justify-center p-4">
         <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl">
-          {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-accent-100 flex items-center justify-center">
@@ -709,9 +975,7 @@ function AudioUploadModal({
             </button>
           </div>
 
-          {/* Content */}
           <div className="p-6">
-            {/* Pricing Info Banner */}
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-brand-50 to-accent-50 border border-brand-100">
               <div className="flex items-center gap-3">
                 <DollarSign className="w-5 h-5 text-brand-600" />
@@ -722,7 +986,6 @@ function AudioUploadModal({
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center gap-2 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -730,7 +993,6 @@ function AudioUploadModal({
               </div>
             )}
 
-            {/* Step: Select File */}
             {step === 'select' && (
               <div className="space-y-4">
                 <label className="block">
@@ -753,10 +1015,8 @@ function AudioUploadModal({
               </div>
             )}
 
-            {/* Step: Confirm */}
             {step === 'confirm' && file && (
               <div className="space-y-4">
-                {/* File Info */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
@@ -790,7 +1050,6 @@ function AudioUploadModal({
                   </div>
                 </div>
 
-                {/* Cost Estimate */}
                 {pricing && (
                   <div className="p-4 rounded-xl bg-brand-50 border border-brand-200">
                     <div className="flex items-center justify-between">
@@ -805,7 +1064,6 @@ function AudioUploadModal({
                   </div>
                 )}
 
-                {/* Cost Acknowledgment */}
                 <label className="flex items-start gap-3 p-4 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors cursor-pointer">
                   <input
                     type="checkbox"
@@ -823,7 +1081,6 @@ function AudioUploadModal({
                   </div>
                 </label>
 
-                {/* Actions */}
                 <div className="flex items-center gap-3 pt-2">
                   <button
                     onClick={() => {
@@ -848,7 +1105,6 @@ function AudioUploadModal({
               </div>
             )}
 
-            {/* Step: Processing */}
             {step === 'processing' && (
               <div className="py-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-100 flex items-center justify-center">
@@ -859,7 +1115,6 @@ function AudioUploadModal({
               </div>
             )}
 
-            {/* Step: Complete */}
             {step === 'complete' && (
               <div className="py-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
@@ -879,22 +1134,135 @@ function AudioUploadModal({
 // Main Page Component
 export default function WritingSamplesPage() {
   const [samples, setSamples] = useState<Sample[]>([]);
+  const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [isBypassModalOpen, setIsBypassModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [preselectedSection, setPreselectedSection] = useState<MatrixSection | null>(null);
 
   const supabase = useMemo(() => createClient(), []);
 
-  // Fetch user and samples
+  // Build matrix sections from questionnaire data
+  const matrixSections = useMemo<MatrixSection[]>(() => {
+    if (!questionnaireData) return [];
+
+    const sections: MatrixSection[] = [];
+
+    const languages: string[] = [];
+    if (questionnaireData.primary_language) {
+      languages.push(getLanguageCode(questionnaireData.primary_language));
+    }
+    if (questionnaireData.additional_languages) {
+      questionnaireData.additional_languages.forEach((lang) => {
+        const code = getLanguageCode(lang);
+        if (!languages.includes(code)) {
+          languages.push(code);
+        }
+      });
+    }
+    if (languages.length === 0) languages.push('en');
+
+    const tools = questionnaireData.communication_contexts || [];
+    if (tools.length === 0) tools.push('email');
+
+    const targets = questionnaireData.typical_audiences || [];
+    if (targets.length === 0) targets.push('team');
+
+    for (const language of languages) {
+      for (const tool of tools) {
+        for (const target of targets) {
+          const langLabel = LANGUAGES.find((l) => l.value === language)?.label || language;
+          const toolLabel = TOOLS_MAP[tool]?.label || tool;
+          const targetLabel = AUDIENCES_MAP[target] || target;
+
+          sections.push({
+            id: `${language}-${tool}-${target}`,
+            language,
+            tool,
+            target,
+            label: `${langLabel} / ${toolLabel} / ${targetLabel}`,
+          });
+        }
+      }
+    }
+
+    return sections;
+  }, [questionnaireData]);
+
+  // Calculate progress for each section
+  const sectionProgress = useMemo<SectionProgress[]>(() => {
+    return matrixSections.map((section) => {
+      const matchingSamples = samples.filter((sample) => {
+        if (sample.language !== section.language) return false;
+
+        const sampleTool = getToolForSampleType(sample.sample_type);
+        if (sampleTool !== section.tool) return false;
+
+        const targetLabel = AUDIENCES_MAP[section.target]?.toLowerCase() || section.target.toLowerCase();
+        const sampleAudience = (sample.audience || '').toLowerCase();
+
+        if (sampleAudience && !sampleAudience.includes(targetLabel) && !targetLabel.includes(sampleAudience)) {
+          const audienceMatches: Record<string, string[]> = {
+            executives: ['executive', 'ceo', 'cfo', 'leadership', 'management', 'director', 'vp'],
+            clients: ['client', 'customer', 'external', 'vendor', 'partner'],
+            team: ['team', 'colleague', 'internal', 'coworker', 'direct report', 'peer'],
+            public: ['public', 'social', 'community', 'follower', 'audience'],
+            other: [],
+          };
+
+          const matchTerms = audienceMatches[section.target] || [];
+          const hasMatch = matchTerms.some((term) => sampleAudience.includes(term));
+          if (!hasMatch && sampleAudience !== '') return false;
+        }
+
+        return true;
+      });
+
+      return {
+        section,
+        samples: matchingSamples,
+        count: matchingSamples.length,
+        isComplete: matchingSamples.length >= MIN_SAMPLES_PER_SECTION,
+      };
+    });
+  }, [matrixSections, samples]);
+
+  // Calculate CTA state
+  const ctaState = useMemo(() => {
+    if (matrixSections.length === 0) {
+      return {
+        canProceed: samples.length >= MIN_SAMPLES_PER_SECTION,
+        needsWarning: false,
+        allComplete: samples.length >= MIN_SAMPLES_PER_SECTION,
+        incompleteSections: [] as SectionProgress[],
+        completeSections: samples.length >= MIN_SAMPLES_PER_SECTION ? 1 : 0,
+        totalSections: 1,
+      };
+    }
+
+    const completeSections = sectionProgress.filter((p) => p.isComplete);
+    const incompleteSections = sectionProgress.filter((p) => !p.isComplete);
+
+    return {
+      canProceed: completeSections.length > 0,
+      needsWarning: incompleteSections.length > 0 && completeSections.length > 0,
+      allComplete: incompleteSections.length === 0,
+      incompleteSections,
+      completeSections: completeSections.length,
+      totalSections: sectionProgress.length,
+    };
+  }, [sectionProgress, matrixSections.length, samples.length]);
+
+  // Fetch user, questionnaire data, and samples
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // Get current user
       const {
         data: { user },
         error: userError,
@@ -908,20 +1276,32 @@ export default function WritingSamplesPage() {
 
       setUserId(user.id);
 
-      // Fetch samples
-      const { data, error: samplesError } = await supabase
-        .from('samples')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const [questionnaireResult, samplesResult] = await Promise.all([
+        supabase
+          .from('questionnaire_responses')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        supabase
+          .from('samples')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+      ]);
 
-      if (samplesError) {
-        throw samplesError;
+      if (questionnaireResult.error) {
+        console.error('Error fetching questionnaire:', questionnaireResult.error);
+      } else {
+        setQuestionnaireData(questionnaireResult.data as QuestionnaireResponse | null);
       }
 
-      setSamples((data as Sample[]) || []);
+      if (samplesResult.error) {
+        throw samplesResult.error;
+      }
+
+      setSamples((samplesResult.data as Sample[]) || []);
     } catch (err) {
-      console.error('Error fetching samples:', err);
+      console.error('Error fetching data:', err);
       setError('Failed to load samples. Please try again.');
     } finally {
       setIsLoading(false);
@@ -932,7 +1312,6 @@ export default function WritingSamplesPage() {
     fetchData();
   }, [fetchData]);
 
-  // Add sample
   const handleAddSample = async (formData: SampleFormData) => {
     if (!userId) return;
 
@@ -959,6 +1338,7 @@ export default function WritingSamplesPage() {
       }
 
       setIsModalOpen(false);
+      setPreselectedSection(null);
       await fetchData();
     } catch (err) {
       console.error('Error adding sample:', err);
@@ -968,7 +1348,6 @@ export default function WritingSamplesPage() {
     }
   };
 
-  // Delete sample
   const handleDeleteSample = async (id: string) => {
     if (!confirm('Are you sure you want to delete this sample?')) return;
 
@@ -986,19 +1365,17 @@ export default function WritingSamplesPage() {
     }
   };
 
-  // Handle successful audio transcription
   const handleAudioUploadSuccess = async (result: AudioUploadResult) => {
     if (!userId) return;
 
     try {
       setIsSaving(true);
 
-      // Create a new sample from the transcription
       const insertData = {
         user_id: userId,
         title: `Audio Transcript (${result.durationMinutes} min)`,
         sample_type: 'voice_memo' as SampleType,
-        language: 'en', // Default to English, could detect from transcription
+        language: 'en',
         context: 'Transcribed from audio upload',
         audience: null,
         content: result.transcription,
@@ -1023,11 +1400,19 @@ export default function WritingSamplesPage() {
     }
   };
 
-  const canContinue = samples.length >= MIN_SAMPLES;
+  const handleAddToSection = (section: MatrixSection) => {
+    setPreselectedSection(section);
+    setIsModalOpen(true);
+  };
+
+  const handleContinueClick = () => {
+    if (ctaState.needsWarning) {
+      setIsBypassModalOpen(true);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Breadcrumb */}
       <div className="mb-6">
         <Link
           href="/dashboard"
@@ -1038,16 +1423,14 @@ export default function WritingSamplesPage() {
         </Link>
       </div>
 
-      {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Collect Your Writing Samples</h1>
         <p className="mt-2 text-lg text-slate-600">
-          Add examples of your authentic writing to train your Voice Twin. The more variety, the better
-          your twin will capture your unique style.
+          Add examples of your authentic writing to train your Voice Twin. Cover each section from your
+          communication matrix for the best results.
         </p>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -1062,9 +1445,7 @@ export default function WritingSamplesPage() {
       )}
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Samples Section */}
         <div className="lg:col-span-2">
-          {/* Add Sample Buttons */}
           {samples.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <p className="text-slate-600">
@@ -1080,7 +1461,10 @@ export default function WritingSamplesPage() {
                   Upload Audio
                 </button>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    setPreselectedSection(null);
+                    setIsModalOpen(true);
+                  }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 shadow-sm hover:shadow transition-all duration-200"
                 >
                   <Plus className="w-4 h-4" />
@@ -1090,7 +1474,6 @@ export default function WritingSamplesPage() {
             </div>
           )}
 
-          {/* Loading State */}
           {isLoading ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-12 shadow-sm">
               <div className="flex flex-col items-center justify-center">
@@ -1098,13 +1481,24 @@ export default function WritingSamplesPage() {
                 <p className="text-slate-500">Loading samples...</p>
               </div>
             </div>
-          ) : samples.length === 0 ? (
-            /* Empty State */
+          ) : samples.length === 0 && matrixSections.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
               <EmptyState onAdd={() => setIsModalOpen(true)} onUploadAudio={() => setIsAudioModalOpen(true)} />
             </div>
+          ) : matrixSections.length > 0 ? (
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Your Communication Matrix</h2>
+              {sectionProgress.map((progress) => (
+                <SectionCard
+                  key={progress.section.id}
+                  progress={progress}
+                  onAddSample={handleAddToSection}
+                  samples={progress.samples}
+                  onDeleteSample={handleDeleteSample}
+                />
+              ))}
+            </div>
           ) : (
-            /* Samples Grid */
             <div className="grid sm:grid-cols-2 gap-5">
               {samples.map((sample) => (
                 <SampleCard key={sample.id} sample={sample} onDelete={handleDeleteSample} />
@@ -1113,55 +1507,82 @@ export default function WritingSamplesPage() {
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Guidance Panel */}
-          <GuidancePanel sampleCount={samples.length} />
+          <GuidancePanel sectionProgress={sectionProgress} totalSamples={samples.length} />
 
-          {/* Continue Button */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <h3 className="font-semibold text-slate-900 mb-2">Ready to continue?</h3>
             <p className="text-sm text-slate-600 mb-4">
-              {canContinue
-                ? 'You have enough samples to generate your Voice Twin!'
-                : `Add at least ${MIN_SAMPLES - samples.length} more ${
-                    MIN_SAMPLES - samples.length === 1 ? 'sample' : 'samples'
-                  } to continue.`}
+              {ctaState.allComplete
+                ? 'All sections have enough samples. Great job!'
+                : ctaState.canProceed
+                ? `${ctaState.completeSections} of ${ctaState.totalSections} sections complete. You can continue with partial coverage.`
+                : matrixSections.length > 0
+                ? 'Complete at least one section with 5+ samples to continue.'
+                : `Add at least ${MIN_SAMPLES_PER_SECTION} samples to continue.`}
             </p>
-            <Link
-              href={canContinue ? '/dashboard/generate' : '#'}
-              onClick={(e) => !canContinue && e.preventDefault()}
-              className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
-                canContinue
-                  ? 'bg-gradient-to-r from-brand-600 to-accent-600 text-white shadow-brand hover:shadow-brand-lg hover:scale-[1.02]'
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              Continue to Generate
-              <ChevronRight className="w-5 h-5" />
-            </Link>
-            {!canContinue && (
+
+            {ctaState.needsWarning ? (
+              <button
+                onClick={handleContinueClick}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold transition-all duration-200 bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-brand hover:shadow-brand-lg hover:scale-[1.02]"
+              >
+                <AlertTriangle className="w-5 h-5" />
+                Continue with Warning
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            ) : (
+              <Link
+                href={ctaState.canProceed ? '/dashboard/generate' : '#'}
+                onClick={(e) => !ctaState.canProceed && e.preventDefault()}
+                className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
+                  ctaState.canProceed
+                    ? 'bg-gradient-to-r from-brand-600 to-accent-600 text-white shadow-brand hover:shadow-brand-lg hover:scale-[1.02]'
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                }`}
+              >
+                Continue to Generate
+                <ChevronRight className="w-5 h-5" />
+              </Link>
+            )}
+
+            {!ctaState.canProceed && (
               <p className="text-xs text-center text-slate-500 mt-3">
-                Minimum {MIN_SAMPLES} samples required
+                {matrixSections.length > 0
+                  ? 'At least one section needs 5+ samples'
+                  : `Minimum ${MIN_SAMPLES_PER_SECTION} samples required`}
               </p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Add Sample Modal */}
       <AddSampleModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPreselectedSection(null);
+        }}
         onSubmit={handleAddSample}
         isLoading={isSaving}
+        matrixSections={matrixSections}
+        preselectedSection={preselectedSection}
       />
 
-      {/* Audio Upload Modal */}
       <AudioUploadModal
         isOpen={isAudioModalOpen}
         onClose={() => setIsAudioModalOpen(false)}
         onSuccess={handleAudioUploadSuccess}
+      />
+
+      <BypassWarningModal
+        isOpen={isBypassModalOpen}
+        onClose={() => setIsBypassModalOpen(false)}
+        onConfirm={() => {
+          setIsBypassModalOpen(false);
+          window.location.href = '/dashboard/generate';
+        }}
+        incompleteSections={ctaState.incompleteSections}
       />
     </div>
   );

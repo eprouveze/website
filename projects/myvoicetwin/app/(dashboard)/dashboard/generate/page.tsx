@@ -1260,6 +1260,28 @@ export default function GeneratePage() {
 
   const supabase = useMemo(() => createClient(), []);
 
+  // Fetch corpus analysis
+  const fetchCorpusAnalysis = useCallback(async () => {
+    try {
+      const response = await fetch('/api/analyze-corpus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze corpus');
+      }
+
+      const result = await response.json();
+      setData((prev) => ({ ...prev, corpusAnalysis: result.analysis }));
+      setPageState('ready_with_analysis');
+    } catch (error) {
+      console.error('Error analyzing corpus:', error);
+      // Fallback to showing payment without analysis
+      setPageState('ready_not_paid');
+    }
+  }, []);
+
   // Fetch data
   const fetchData = useCallback(async () => {
     try {
@@ -1306,7 +1328,8 @@ export default function GeneratePage() {
       } else if (!newData.questionnaireCompleted || newData.samplesCount < MIN_SAMPLES) {
         setPageState('not_ready');
       } else if (!newData.hasPaid) {
-        setPageState('ready_not_paid');
+        // Ready but hasn't paid - start corpus analysis
+        setPageState('analyzing');
       } else {
         // Has paid but no profile - trigger generation
         setPageState('generating');
@@ -1421,6 +1444,13 @@ export default function GeneratePage() {
     fetchData();
   }, [fetchData]);
 
+  // Start corpus analysis when state changes to 'analyzing'
+  useEffect(() => {
+    if (pageState === 'analyzing') {
+      fetchCorpusAnalysis();
+    }
+  }, [pageState, fetchCorpusAnalysis]);
+
   // Start generation when state changes to 'generating'
   useEffect(() => {
     if (pageState === 'generating') {
@@ -1453,7 +1483,7 @@ export default function GeneratePage() {
       </div>
 
       {/* Page Header */}
-      {pageState !== 'generating' && (
+      {pageState !== 'generating' && pageState !== 'analyzing' && (
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">
             {pageState === 'generated' ? 'Test Your Voice Twin' : 'Generate Your Voice Twin'}
@@ -1471,6 +1501,18 @@ export default function GeneratePage() {
         <RequirementsChecklist
           questionnaireCompleted={data.questionnaireCompleted}
           samplesCount={data.samplesCount}
+        />
+      )}
+
+      {pageState === 'analyzing' && (
+        <AnalyzingState />
+      )}
+
+      {pageState === 'ready_with_analysis' && data.corpusAnalysis && (
+        <CorpusPreviewSection
+          analysis={data.corpusAnalysis}
+          onCheckout={handleCheckout}
+          isLoading={isCheckingOut}
         />
       )}
 
