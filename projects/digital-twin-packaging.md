@@ -239,14 +239,48 @@ VoiceDNA-DoneForYou/
 
 ---
 
-### Architecture
+### Architecture (Vercel + Supabase + Stripe)
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Landing Page   │────▶│ Stripe Checkout │────▶│    Delivery     │
-│  (Carrd/Framer) │     │  (hosted page)  │     │  (see options)  │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                         VERCEL                                    │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐   │
+│  │ Landing Page│───▶│   Stripe    │───▶│   Thank-You Page    │   │
+│  │  (Next.js)  │    │  Checkout   │    │ (verifies purchase) │   │
+│  └─────────────┘    └─────────────┘    └──────────┬──────────┘   │
+│                                                    │              │
+│                     ┌─────────────────────────────▼──────────┐   │
+│                     │  API Route: /api/download              │   │
+│                     │  (validates token, serves file)        │   │
+│                     └─────────────────────────────┬──────────┘   │
+└───────────────────────────────────────────────────┼──────────────┘
+                                                    │
+┌───────────────────────────────────────────────────┼──────────────┐
+│                       SUPABASE                    │              │
+│  ┌─────────────────┐    ┌─────────────────────────▼──────────┐   │
+│  │    purchases    │    │         Storage                    │   │
+│  │ (email, token,  │    │   /voicedna-starter.zip            │   │
+│  │  product, date) │    │   /voicedna-complete.zip           │   │
+│  └────────▲────────┘    │   /voicedna-executive.zip          │   │
+│           │             └────────────────────────────────────┘   │
+│           │                                                      │
+│  ┌────────┴────────┐                                             │
+│  │  Edge Function  │◀──── Stripe Webhook (checkout.completed)   │
+│  │ (record purchase│                                             │
+│  │  generate token)│                                             │
+│  └─────────────────┘                                             │
+└──────────────────────────────────────────────────────────────────┘
 ```
+
+**Flow:**
+1. Customer visits landing page → clicks Buy
+2. Stripe Checkout handles payment
+3. Stripe webhook triggers Supabase Edge Function
+4. Edge Function records purchase + generates secure token
+5. Customer redirected to thank-you page with `?token=xxx`
+6. Thank-you page validates token → shows download button
+7. Download button calls `/api/download?token=xxx`
+8. API validates token → serves file from Supabase Storage
 
 ---
 
@@ -279,106 +313,283 @@ In Stripe Dashboard → Products:
 
 ---
 
-### Step 3: Landing Page Options
+### Step 3: Tech Stack (Vercel + Supabase)
 
-| Option | Cost | Complexity | Best For |
-|--------|------|------------|----------|
-| **Carrd** | $19/year | Very easy | MVP, fast launch |
-| **Framer** | $5-15/mo | Easy | Better design |
-| **Super.so** | $12/mo | Easy | Notion-based |
-| **Own site** | Hosting cost | Medium | Full control |
+| Component | Service | Cost |
+|-----------|---------|------|
+| Landing page + Thank-you | Vercel (Next.js) | Free tier |
+| Database (purchases) | Supabase | Free tier |
+| File storage | Supabase Storage | Free tier (1GB) |
+| Webhook handler | Supabase Edge Functions | Free tier |
+| Payments | Stripe Japan | 3.6-3.9% + ¥40 |
 
-**Carrd recommended for MVP**:
-- Create payment links in Stripe
-- Embed buttons on Carrd page
-- Simple, fast, looks professional
+**Total monthly cost**: ¥0 (until you exceed free tiers)
 
 ---
 
-### Step 4: Delivery Options
+### Step 4: Supabase Setup
 
-Since Stripe doesn't deliver files, you need a delivery mechanism:
+#### 4.1 Create Project
+1. Go to [supabase.com](https://supabase.com)
+2. Create new project
+3. Note your `SUPABASE_URL` and `SUPABASE_ANON_KEY`
 
-#### Option A: Manual Email (Simplest for MVP)
-1. Stripe webhook triggers on successful payment
-2. You receive email notification
-3. You manually send download link
-4. **Pros**: Zero setup, works immediately
-5. **Cons**: Not instant, requires your attention
+#### 4.2 Create Purchases Table
 
-#### Option B: Hosted Files + Thank You Page
-1. Host ZIP files on Cloudflare R2, Vercel, or Google Drive (unlisted)
-2. Stripe Checkout redirects to thank-you page with download links
-3. Links are obfuscated but not fully protected
-4. **Pros**: Instant delivery, simple
-5. **Cons**: Links could be shared
+```sql
+create table purchases (
+  id uuid default gen_random_uuid() primary key,
+  email text not null,
+  product text not null,
+  stripe_session_id text unique not null,
+  download_token text unique not null,
+  download_count int default 0,
+  max_downloads int default 5,
+  created_at timestamp with time zone default now(),
+  expires_at timestamp with time zone default now() + interval '7 days'
+);
 
-#### Option C: SendOwl ($9/mo)
-1. Integrates directly with Stripe
-2. Handles secure file delivery, download limits
-3. Sends automatic delivery emails
-4. **Pros**: Professional, secure, automatic
-5. **Cons**: Monthly cost
-
-#### Option D: Gumroad for Delivery Only
-1. Create $0 products on Gumroad
-2. After Stripe payment, send Gumroad unlock link
-3. **Pros**: Proven delivery system
-4. **Cons**: Extra step, feels hacky
-
-**Recommendation**: Start with Option B (hosted files + thank-you page) for MVP. Upgrade to SendOwl if volume justifies.
-
----
-
-### Step 5: Thank-You Page Setup
-
-Create a simple thank-you page with:
-
-```
-✅ Payment Confirmed!
-
-Thank you for purchasing VoiceDNA [Tier].
-
-📥 Download Your Files:
-[Download VoiceDNA-Complete.zip] (button)
-
-📺 Video Walkthrough:
-[Watch Now] (link to unlisted YouTube/Loom)
-
-📧 Questions?
-Email: [your-email] — I respond within 48 hours.
-
-🎁 What's Next:
-1. Download and unzip the files
-2. Start with 00-START-HERE.pdf
-3. Follow the 4-stage process
-4. Reply to your confirmation email with any questions
+-- Index for token lookups
+create index idx_purchases_token on purchases(download_token);
 ```
 
+#### 4.3 Upload Product Files
+
+In Supabase Dashboard → Storage:
+1. Create bucket: `products` (private)
+2. Upload:
+   - `voicedna-starter.zip`
+   - `voicedna-complete.zip`
+   - `voicedna-executive.zip`
+
+#### 4.4 Create Edge Function (Stripe Webhook)
+
+```typescript
+// supabase/functions/stripe-webhook/index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import Stripe from "https://esm.sh/stripe@14"
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
+  apiVersion: '2023-10-16',
+})
+
+serve(async (req) => {
+  const signature = req.headers.get('stripe-signature')!
+  const body = await req.text()
+
+  const event = stripe.webhooks.constructEvent(
+    body,
+    signature,
+    Deno.env.get('STRIPE_WEBHOOK_SECRET')!
+  )
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+
+    // Generate secure download token
+    const token = crypto.randomUUID()
+
+    // Get product from metadata
+    const product = session.metadata?.product || 'complete'
+
+    await supabase.from('purchases').insert({
+      email: session.customer_email,
+      product: product,
+      stripe_session_id: session.id,
+      download_token: token,
+    })
+  }
+
+  return new Response(JSON.stringify({ received: true }), {
+    headers: { 'Content-Type': 'application/json' },
+  })
+})
+```
+
 ---
 
-### Step 6: Stripe Checkout Links
+### Step 5: Next.js App Structure
 
-Create Payment Links in Stripe Dashboard → Payment Links:
+```
+voicedna-site/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── success/
+│   │   └── page.tsx          # Thank-you page
+│   └── api/
+│       └── download/
+│           └── route.ts      # Secure file download
+├── components/
+│   └── PricingCard.tsx
+└── lib/
+    └── supabase.ts
+```
 
-| Tier | Link Format |
-|------|-------------|
-| Starter | `https://buy.stripe.com/xxx_starter` |
-| Complete | `https://buy.stripe.com/xxx_complete` |
-| Executive | `https://buy.stripe.com/xxx_executive` |
-| Done-For-You | `https://buy.stripe.com/xxx_dfy` |
+#### Landing Page (app/page.tsx)
 
-Embed these as buttons on your Carrd/landing page.
+Uses the sales page copy with Stripe Payment Links as buttons.
+
+#### Thank-You Page (app/success/page.tsx)
+
+```typescript
+// app/success/page.tsx
+import { createClient } from '@/lib/supabase'
+
+export default async function SuccessPage({
+  searchParams,
+}: {
+  searchParams: { session_id?: string }
+}) {
+  const supabase = createClient()
+
+  // Look up purchase by Stripe session
+  const { data: purchase } = await supabase
+    .from('purchases')
+    .select('*')
+    .eq('stripe_session_id', searchParams.session_id)
+    .single()
+
+  if (!purchase) {
+    return <div>Purchase not found. Please contact support.</div>
+  }
+
+  return (
+    <div>
+      <h1>✅ Payment Confirmed!</h1>
+      <p>Thank you for purchasing VoiceDNA {purchase.product}.</p>
+
+      <a href={`/api/download?token=${purchase.download_token}`}>
+        Download Your Files
+      </a>
+
+      <p>Downloads remaining: {purchase.max_downloads - purchase.download_count}</p>
+    </div>
+  )
+}
+```
+
+#### Download API (app/api/download/route.ts)
+
+```typescript
+// app/api/download/route.ts
+import { createClient } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const token = searchParams.get('token')
+
+  if (!token) {
+    return NextResponse.json({ error: 'Missing token' }, { status: 400 })
+  }
+
+  const supabase = createClient()
+
+  // Validate token
+  const { data: purchase } = await supabase
+    .from('purchases')
+    .select('*')
+    .eq('download_token', token)
+    .gte('expires_at', new Date().toISOString())
+    .lt('download_count', supabase.raw('max_downloads'))
+    .single()
+
+  if (!purchase) {
+    return NextResponse.json(
+      { error: 'Invalid or expired token' },
+      { status: 403 }
+    )
+  }
+
+  // Increment download count
+  await supabase
+    .from('purchases')
+    .update({ download_count: purchase.download_count + 1 })
+    .eq('id', purchase.id)
+
+  // Get file from storage
+  const fileName = `voicedna-${purchase.product}.zip`
+  const { data: file } = await supabase.storage
+    .from('products')
+    .download(fileName)
+
+  // Return file
+  return new NextResponse(file, {
+    headers: {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    },
+  })
+}
+```
 
 ---
 
-### Checkout Settings
+### Step 6: Stripe Configuration
 
-- **Success URL**: Your thank-you page with download links
-- **Cancel URL**: Back to landing page
-- **Collect email**: Yes (required for delivery)
-- **Collect billing address**: Optional (helps with tax records)
-- **Allow promotion codes**: Yes (for launch discounts)
+#### Checkout Session (with metadata)
+
+When creating Stripe Payment Links or Checkout Sessions, include product metadata:
+
+```
+Metadata:
+  product: "starter" | "complete" | "executive"
+```
+
+#### Success URL
+
+```
+https://yourdomain.com/success?session_id={CHECKOUT_SESSION_ID}
+```
+
+#### Webhook Endpoint
+
+In Stripe Dashboard → Developers → Webhooks:
+1. Add endpoint: `https://your-project.supabase.co/functions/v1/stripe-webhook`
+2. Select event: `checkout.session.completed`
+3. Note the webhook signing secret
+
+---
+
+### Step 7: Environment Variables
+
+#### Vercel (.env.local)
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
+SUPABASE_SERVICE_ROLE_KEY=xxx
+STRIPE_SECRET_KEY=sk_live_xxx
+NEXT_PUBLIC_STRIPE_PRICE_STARTER=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_COMPLETE=price_xxx
+NEXT_PUBLIC_STRIPE_PRICE_EXECUTIVE=price_xxx
+```
+
+#### Supabase Edge Functions
+```
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=xxx
+```
+
+---
+
+### Step 8: Checkout Settings
+
+In Stripe Dashboard → Payment Links (or Checkout Sessions):
+
+- **Success URL**: `https://yourdomain.com/success?session_id={CHECKOUT_SESSION_ID}`
+- **Cancel URL**: `https://yourdomain.com`
+- **Collect email**: Yes (required)
+- **Collect billing address**: Optional
+- **Allow promotion codes**: Yes
+- **Metadata**: `product: starter|complete|executive`
 
 ---
 
@@ -471,16 +682,38 @@ Since Stripe doesn't have built-in email automation, handle manually or use simp
 - [ ] README in every folder
 - [ ] Total size reasonable (<10MB per tier)
 
-### Platform (Stripe Japan)
-- [ ] Stripe account created and verified
+### Platform (Vercel + Supabase + Stripe Japan)
+
+**Stripe:**
+- [ ] Stripe Japan account created and verified
 - [ ] Japanese bank account connected
 - [ ] Products created with correct pricing (JPY + USD)
-- [ ] Payment Links generated
-- [ ] Checkout success/cancel URLs configured
-- [ ] Thank-you page with download links ready
-- [ ] Files hosted (Cloudflare R2, Vercel, or Drive)
-- [ ] Test purchase completed
-- [ ] Landing page live (Carrd/Framer)
+- [ ] Payment Links generated with metadata
+- [ ] Webhook endpoint configured
+- [ ] Test mode purchases working
+
+**Supabase:**
+- [ ] Project created
+- [ ] `purchases` table created
+- [ ] Storage bucket created (private)
+- [ ] Product ZIP files uploaded
+- [ ] Edge Function deployed
+- [ ] Edge Function environment variables set
+
+**Vercel:**
+- [ ] Next.js app deployed
+- [ ] Environment variables configured
+- [ ] Custom domain connected (optional)
+- [ ] Success page working
+- [ ] Download API working
+
+**End-to-End Test:**
+- [ ] Test purchase in Stripe test mode
+- [ ] Webhook fires correctly
+- [ ] Purchase recorded in Supabase
+- [ ] Thank-you page shows download
+- [ ] Download works (token validated)
+- [ ] Download count increments
 
 ### Legal
 - [ ] Terms of use included
