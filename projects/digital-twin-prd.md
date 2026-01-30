@@ -1,694 +1,513 @@
-# Digital Twin Creator: PRD, Business Plan & Strategy
+# My Voice Twin: PRD & Business Plan (v2.0)
 
-**Project Codename**: VoiceDNA
-**Version**: 1.0
-**Created**: January 2026
-**Status**: Planning → Weekend Build
+**Product**: My Voice Twin
+**Domain**: myvoicetwin.io
+**Version**: 2.0 (SaaS Model)
+**Updated**: January 2026
 
 ---
 
 ## Executive Summary
 
-**What**: A productized methodology that enables anyone to create an AI "Digital Twin" that writes in their authentic voice across languages, contexts, and platforms.
+**What**: A full-service web application that creates your AI "Digital Twin" — we gather your data, analyze your voice patterns, and generate a complete instruction prompt you can deploy to ChatGPT, Claude, or Gemini.
 
-**Why**: Generic AI sounds robotic. Professionals want AI that sounds like *them*—not like ChatGPT pretending to be them. Current solutions require expensive prompt engineering or don't work across languages/contexts.
+**Key Differentiator**: We BUILD it for you. Not a DIY prompt pack — a complete service where you provide the raw material and we deliver a production-ready voice profile.
 
-**How**: A 3-stage system (Corpus Collection → Forensic Extraction → Twin Generation) that outputs both human-readable documentation and LLM-executable instruction blocks.
-
-**Differentiation**:
-- Multi-language support (works for bilingual/trilingual professionals)
-- Multi-context (email, chat, spoken, formal, casual)
-- Two-tier output (understanding + execution)
-- Platform-agnostic (Gemini Gems, Claude Projects, Custom GPTs, API)
+**Business Model**: Freemium + One-time purchase + Subscription upsell
 
 ---
 
-# PART 1: PRODUCT REQUIREMENTS DOCUMENT
+# PART 1: PRODUCT FLOW
 
-## 1.1 Problem Statement
-
-### The Pain
-Professionals spend 2-4 hours daily on written communication. AI can draft faster, but:
-
-1. **Generic voice**: AI output requires heavy editing to sound like the user
-2. **Context blindness**: Same tone for emails and Slack doesn't work
-3. **Language gaps**: Bilingual users can't maintain consistent voice across languages
-4. **Platform lock-in**: Solutions built for ChatGPT don't transfer to Claude or Gemini
-
-### The Current Alternatives
-
-| Solution | Problem |
-|----------|---------|
-| Generic AI (ChatGPT, Claude) | Sounds like AI, not you |
-| Custom GPTs | Limited instructions, no multi-language |
-| Prompt engineering | Requires expertise, trial-and-error |
-| Fine-tuning | Expensive, technical, overkill |
-| Writing coaches | Don't scale, can't execute |
-
-### The Opportunity
-A systematic methodology that anyone can follow to create a Digital Twin that:
-- Sounds authentically like them
-- Works across all their communication contexts
-- Transfers between AI platforms
-- Improves over time
-
----
-
-## 1.2 Product Definition
-
-### Core Product: VoiceDNA Kit
-
-A complete DIY system delivered as digital download:
-
-**Stage 1: Golden Corpus Generator**
-- Guided questionnaire to identify communication contexts
-- Sample collection templates (what to gather, how many, from where)
-- Organization framework (tagging, categorizing)
-- Quality checklist (what makes a good sample)
-
-**Stage 2: Master Extraction Prompt**
-- Forensic Linguist prompt that analyzes the corpus
-- Extracts "Voice DNA" markers:
-  - Sentence rhythm and variance
-  - Punctuation fingerprint
-  - Logical architecture (inductive/deductive)
-  - Signature transitions
-  - Cultural filters (per language)
-  - Channel filters (per medium)
-  - Spoken patterns (if applicable)
-
-**Stage 3: Universal Meta-Prompt**
-- Generates two outputs from extracted DNA:
-  1. **Master Voice Guide** (~15-20K words): Human-readable documentation
-  2. **Runtime Execution Block** (~5K tokens): LLM-optimized instructions with auto-detect
-
-**Stage 4: Deployment Guides**
-- Platform-specific setup instructions:
-  - Google Gemini Gems
-  - Claude Projects
-  - OpenAI Custom GPTs
-  - API implementation
-- Testing and iteration workflow
-- Maintenance guidelines
-
-### Product Tiers
-
-| Tier | Contents | Price | Target |
-|------|----------|-------|--------|
-| **Starter** | Stage 1-3 prompts + basic instructions | $49 | DIY experimenters |
-| **Complete** | Above + video walkthrough + example corpus + templates | $99 | Serious professionals |
-| **Executive** | Above + 1:1 async review of their Voice DNA | $249 | Time-constrained execs |
-| **Done-For-You** | Full service: interview + corpus curation + delivery | $499 | Premium hands-off |
-
----
-
-## 1.3 User Personas
-
-### Persona 1: The Multilingual Executive
-- **Profile**: Senior professional working across 2-3 languages daily
-- **Pain**: Maintaining consistent "executive presence" across languages is exhausting
-- **Need**: AI that adapts tone per language while maintaining core identity
-- **Willingness to pay**: High ($99-499)
-- **Technical comfort**: Medium
-
-### Persona 2: The Content Creator
-- **Profile**: Writes newsletters, social posts, articles regularly
-- **Pain**: AI drafts require 50%+ rewriting to match their voice
-- **Need**: First drafts that sound like them, not generic AI
-- **Willingness to pay**: Medium ($49-99)
-- **Technical comfort**: High
-
-### Persona 3: The Busy Professional
-- **Profile**: Manager/consultant with heavy email load
-- **Pain**: Spending too much time on routine communications
-- **Need**: Quick drafts for emails, Slack, documents that don't need heavy editing
-- **Willingness to pay**: Medium-High ($99-249)
-- **Technical comfort**: Low-Medium
-
-### Persona 4: The AI Enthusiast
-- **Profile**: Early adopter, experiments with AI tools
-- **Pain**: Wants to push AI capabilities further, tired of generic prompts
-- **Need**: Sophisticated methodology they can customize and extend
-- **Willingness to pay**: Medium ($49-99)
-- **Technical comfort**: Very High
-
----
-
-## 1.4 Feature Requirements
-
-### MVP (Weekend Build)
-
-**Must Have:**
-- [ ] Golden Corpus Generator questionnaire/template
-- [ ] Master Extraction Prompt (v4.0 - already exists)
-- [ ] Universal Meta-Prompt (v1.0 - already exists)
-- [ ] Basic deployment guide (Gemini Gems focus)
-- [ ] Sales page with clear value proposition
-- [ ] Payment integration (Gumroad or LemonSqueezy)
-- [ ] Delivery mechanism (instant digital download)
-
-**Should Have:**
-- [ ] Video walkthrough (screen recording, 15-30 min)
-- [ ] Example anonymized corpus for reference
-- [ ] FAQ document
-- [ ] Email sequence for onboarding
-
-**Could Have:**
-- [ ] Claude Projects deployment guide
-- [ ] Custom GPT deployment guide
-- [ ] Community access (Discord/Slack)
-
-**Won't Have (v1):**
-- API implementation guide
-- Team/enterprise features
-- White-label options
-- Automated corpus analysis tool
-
-### Post-MVP Roadmap
-
-**v1.1** (Week 2):
-- Add Claude Projects + Custom GPT guides
-- Customer feedback integration
-- Refine based on first users
-
-**v1.2** (Month 1):
-- Video course expansion
-- Template library (industry-specific examples)
-- Affiliate program launch
-
-**v2.0** (Quarter 1):
-- Web-based corpus analyzer (no-code)
-- Team collaboration features
-- API for developers
-
----
-
-## 1.5 Technical Architecture
-
-### Product Delivery Stack
+## 1.1 Complete User Journey
 
 ```
-Customer Journey:
-Landing Page (own site or Carrd)
-        ↓
-Payment (LemonSqueezy)
-        ↓
-Instant Delivery (LemonSqueezy digital download)
-        ↓
-Product Access:
-  - PDF Guide (main documentation)
-  - Prompt files (.txt or .md)
-  - Video links (Loom or unlisted YouTube)
-  - Bonus templates (Notion or Google Docs)
-```
-
-### File Structure
-
-```
-VoiceDNA-Kit/
-├── 00-START-HERE.pdf
-├── 01-Golden-Corpus-Generator/
-│   ├── Context-Discovery-Questionnaire.pdf
-│   ├── Sample-Collection-Guide.pdf
-│   ├── Corpus-Organization-Template.md
-│   └── Quality-Checklist.pdf
-├── 02-Master-Extraction-Prompt/
-│   ├── Forensic-Extraction-Prompt.txt
-│   └── Usage-Instructions.pdf
-├── 03-Universal-Meta-Prompt/
-│   ├── Meta-Prompt-v1.txt
-│   └── Output-Guide.pdf
-├── 04-Deployment-Guides/
-│   ├── Gemini-Gems-Setup.pdf
-│   ├── Claude-Projects-Setup.pdf
-│   └── Custom-GPT-Setup.pdf
-├── 05-Examples/
-│   ├── Sample-Golden-Corpus-Anonymized.md
-│   ├── Sample-Voice-DNA-Output.md
-│   └── Sample-Runtime-Block.txt
-├── 06-Bonus/
-│   ├── Iteration-Workflow.pdf
-│   └── Troubleshooting-Guide.pdf
-└── VIDEO-WALKTHROUGH-LINK.txt
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              FREE TIER (Lead Capture)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  STAGE 1: CAPTURE YOUR VOICE                                                │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │ Sign Up (Email)  │───▶│  Questionnaire   │───▶│  Writing Samples │       │
+│  │                  │    │  (needs, context,│    │  (paste text,    │       │
+│  │                  │    │   style prefs)   │    │   upload docs)   │       │
+│  └──────────────────┘    └──────────────────┘    └────────┬─────────┘       │
+│                                                           │                  │
+│                              ┌─────────────────────────────┘                  │
+│                              ▼                                                │
+│                    ┌──────────────────┐                                      │
+│                    │  Audio Upload    │  ◀── PAID ADD-ON ($19-49)           │
+│                    │  (transcription) │      Based on audio length           │
+│                    └──────────────────┘                                      │
+│                                                                              │
+│  💾 DATA SAVED: We have email + questionnaire + samples for follow-up       │
+│                                                                              │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                              ─────────┴─────────
+                              │    PAYWALL     │
+                              │     $99        │
+                              ─────────────────
+                                       │
+┌──────────────────────────────────────┴──────────────────────────────────────┐
+│                              PAID TIER ($99 one-time)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  STAGE 2: WE BUILD YOUR VOICE PROFILE                                       │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │ Generate Golden  │───▶│  AI Extraction   │───▶│ Generate Master  │       │
+│  │ Corpus (formatted│    │  (analyze voice  │    │ Prompt (ultra-   │       │
+│  │ from your data)  │    │   patterns)      │    │ detailed instrs) │       │
+│  └──────────────────┘    └──────────────────┘    └────────┬─────────┘       │
+│                                                           │                  │
+│  STAGE 3: TEST & REFINE                                   │                  │
+│  ┌────────────────────────────────────────────────────────┘                  │
+│  │                                                                           │
+│  ▼                                                                           │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │   Test in UI     │───▶│   Validate or    │───▶│    Regenerate    │       │
+│  │ (sample message) │    │  Add More Data   │    │   (if needed)    │       │
+│  └──────────────────┘    └──────────────────┘    └────────┬─────────┘       │
+│                                                           │                  │
+│  STAGE 4: DEPLOY                                          │                  │
+│  ┌────────────────────────────────────────────────────────┘                  │
+│  │                                                                           │
+│  ▼                                                                           │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │  Copy Prompt     │    │  Platform Guide  │    │  Support Docs    │       │
+│  │  (one-click)     │    │  (GPT/Claude/Gem)│    │  (troubleshoot)  │       │
+│  └──────────────────┘    └──────────────────┘    └──────────────────┘       │
+│                                                                              │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                              ─────────┴─────────
+                              │  SUBSCRIPTION  │
+                              │   $29/year     │
+                              ─────────────────
+                                       │
+┌──────────────────────────────────────┴──────────────────────────────────────┐
+│                              ANNUAL SUBSCRIPTION ($29/year)                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ONGOING ACCESS:                                                             │
+│  • Edit and update your voice profile anytime                                │
+│  • Add new samples and contexts                                              │
+│  • Regenerate with new data                                                  │
+│  • Access to new features and improvements                                   │
+│  • Priority support                                                          │
+│                                                                              │
+│  WITHOUT SUBSCRIPTION:                                                       │
+│  • Voice profile remains usable (exported prompt)                            │
+│  • No edits or updates possible                                              │
+│  • No regeneration                                                           │
+│  • Basic email support only                                                  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 1.6 Success Metrics
+## 1.2 What We Actually Deliver
 
-### Launch Metrics (Weekend)
+### The Customer Provides:
+- Answers to questionnaire (needs, context, style preferences)
+- Writing samples (5+ recommended, paste or upload)
+- Optional: Audio files for transcription (paid add-on)
 
-| Metric | Target |
-|--------|--------|
-| Product live | Yes |
-| Sales page conversion | >3% |
-| First sale | Within 48 hours |
-| Day 1 revenue | >$100 |
+### We Build For Them:
+1. **Formatted Golden Corpus** — Their samples organized and tagged
+2. **Voice DNA Analysis** — AI-extracted patterns, rhythm, tone markers
+3. **Master Prompt** — Ultra-detailed instruction prompt (~5,000 tokens) ready to paste into any AI platform
+4. **Tested & Validated** — They test it in our UI before deploying
 
-### Week 1 Metrics
-
-| Metric | Target |
-|--------|--------|
-| Total sales | 10+ |
-| Revenue | $500+ |
-| Refund rate | <10% |
-| Support tickets | <5 |
-
-### Month 1 Metrics
-
-| Metric | Target |
-|--------|--------|
-| Total sales | 50+ |
-| Revenue | $3,000+ |
-| Email list growth | 200+ |
-| Testimonials collected | 5+ |
+### Key Message for Sales Page:
+> "You bring your words. We build your twin."
+>
+> Not another prompt pack. Not a DIY course. We analyze your actual writing and generate a production-ready AI voice profile — complete with testing and refinement.
 
 ---
 
-# PART 2: BUSINESS PLAN
+## 1.3 Feature Details
 
-## 2.1 Revenue Model
+### Stage 1: Capture Your Voice (FREE)
 
-### Primary Revenue: Product Sales
+| Feature | Description | Purpose |
+|---------|-------------|---------|
+| Questionnaire | Multi-step form collecting context, style, goals | Understand their needs |
+| Sample Collection | Paste text or upload documents | Raw material for analysis |
+| Sample Guidance | Tips on what makes good samples | Ensure quality input |
+| Progress Tracking | Visual progress indicator | Encourage completion |
+| Data Persistence | All data saved to account | Lead capture + continue later |
 
-| Tier | Price | Projected Mix | Revenue/100 sales |
-|------|-------|---------------|-------------------|
-| Starter | $49 | 40% | $1,960 |
-| Complete | $99 | 45% | $4,455 |
-| Executive | $249 | 10% | $2,490 |
-| Done-For-You | $499 | 5% | $2,495 |
-| **Total** | | 100% | **$11,400** |
+### Stage 2: Build Your Profile (PAID)
 
-**Average Order Value**: $114
+| Feature | Description | Technical Notes |
+|---------|-------------|-----------------|
+| Corpus Generation | Format samples into Golden Corpus | Server-side processing |
+| Voice Extraction | AI analyzes patterns, tone, rhythm | Claude/GPT API call |
+| Prompt Generation | Create master instruction prompt | AI generation + templates |
+| Multiple Languages | Handle multilingual samples | Auto-detect language |
 
-### Secondary Revenue: Affiliates
+### Stage 3: Test & Refine (PAID)
 
-- Offer 30% commission to affiliates
-- Target: AI newsletters, productivity YouTubers, course creators
-- Platform: LemonSqueezy built-in affiliate system
+| Feature | Description | Purpose |
+|---------|-------------|---------|
+| Test UI | Enter sample message, see AI response | Validate before deploy |
+| Side-by-side | Compare "with twin" vs "without twin" | Show the difference |
+| Add More Samples | Continue adding data to improve | Iterative refinement |
+| Regenerate | Re-run analysis with new data | Improvement cycle |
 
-### Future Revenue Streams
+### Stage 4: Deploy (PAID)
 
-1. **Course/Workshop**: Deep-dive video course ($199-299)
-2. **Team Licenses**: Enterprise pricing for companies
-3. **Certification**: "Certified VoiceDNA Creator" program
-4. **Templates**: Industry-specific corpus templates ($19-29 each)
-5. **Consulting**: High-touch enterprise engagements ($2,000+)
+| Feature | Description | Purpose |
+|---------|-------------|---------|
+| One-Click Copy | Copy prompt to clipboard | Easy deployment |
+| Platform Guides | Step-by-step for GPT/Claude/Gemini | Ensure success |
+| Export Options | Download as .txt, .md | Backup and flexibility |
+
+### Audio Transcription (PAID ADD-ON)
+
+| Audio Length | Price | Rationale |
+|--------------|-------|-----------|
+| Up to 15 min | $19 | ~$0.10/min API cost + margin |
+| 15-60 min | $29 | Volume discount |
+| 1-3 hours | $49 | Podcast/long meeting length |
+
+Why paid add-on:
+- Whisper API costs ~$0.006/min (cheap but adds up)
+- Users who provide audio are higher-intent
+- Captures spoken voice patterns (different from written)
+
+### Annual Subscription ($29/year)
+
+| Included | Not Included |
+|----------|--------------|
+| Unlimited edits to profile | (n/a) |
+| Add new samples anytime | |
+| Regenerate with new data | |
+| New contexts and languages | |
+| Priority support | |
+| Access to new features | |
+
+**Without subscription**: Profile is locked (read-only). They can still use the exported prompt, but can't update it.
 
 ---
 
-## 2.2 Cost Structure
+# PART 2: BUSINESS MODEL
+
+## 2.1 Revenue Streams
+
+### Primary: One-Time Purchase ($99)
+
+| Item | Price |
+|------|-------|
+| Full voice profile generation | $99 |
+| Includes: Stages 2-4 | |
+| Includes: 3 regenerations | |
+| Includes: 30-day support | |
+
+### Secondary: Audio Transcription Add-On
+
+| Length | Price | Est. Mix | Revenue/100 users |
+|--------|-------|----------|-------------------|
+| None | $0 | 60% | $0 |
+| Up to 15 min | $19 | 25% | $475 |
+| 15-60 min | $29 | 10% | $290 |
+| 1-3 hours | $49 | 5% | $245 |
+| **Total** | | | **$1,010** |
+
+**Average add-on per paying user**: ~$10
+
+### Tertiary: Annual Subscription ($29/year)
+
+| Scenario | Conversion | Revenue/100 initial users |
+|----------|------------|---------------------------|
+| Year 1 | 30% convert | $870 |
+| Year 2 | 70% retention | $609 |
+| Year 3 | 70% retention | $426 |
+
+**LTV impact**: Adds ~$19 average per user over 3 years
+
+### Revenue Summary (per 100 paying users)
+
+| Stream | Revenue |
+|--------|---------|
+| One-time purchase | $9,900 |
+| Audio add-ons | $1,010 |
+| Year 1 subscriptions | $870 |
+| **Total Year 1** | **$11,780** |
+
+**Average Revenue Per User (ARPU)**: ~$118
+
+---
+
+## 2.2 Free Tier Value (Lead Capture)
+
+### What We Get From Free Users:
+1. **Email address** — For marketing and follow-up
+2. **Questionnaire data** — Understand their needs
+3. **Writing samples** — Proof they're engaged
+4. **Usage patterns** — When they drop off
+
+### Lead Nurture Strategy:
+
+| Trigger | Email | Goal |
+|---------|-------|------|
+| Sign up | Welcome + explain process | Set expectations |
+| Questionnaire done | Congrats + samples CTA | Keep momentum |
+| 3+ samples added | "You're ready!" + pricing | Convert to paid |
+| Abandoned (3 days) | "Finish your twin" | Re-engage |
+| Abandoned (7 days) | Limited-time offer (-20%) | Urgency |
+| Abandoned (30 days) | "Still want your twin?" | Last chance |
+
+### Projected Conversion Funnel:
+
+| Stage | Rate | Per 1,000 signups |
+|-------|------|-------------------|
+| Sign up (free) | 100% | 1,000 |
+| Complete questionnaire | 60% | 600 |
+| Add 5+ samples | 40% | 400 |
+| Convert to paid | 25% | 100 |
+
+**Paid conversion rate**: 10% of signups → buyers
+**Lead capture rate**: 60% of signups → marketable leads
+
+---
+
+## 2.3 Cost Structure
 
 ### Fixed Costs (Monthly)
 
 | Item | Cost |
 |------|------|
-| Domain | ~$1 (annual $12) |
-| Hosting (Vercel/Carrd) | $0-12 |
-| LemonSqueezy | $0 (transaction-based) |
-| Email (Resend/Buttondown) | $0-9 |
-| **Total Fixed** | **$0-22/month** |
+| Vercel Pro (if needed) | $0-20 |
+| Supabase (free tier) | $0 |
+| Domain | ~$3 (annual $34) |
+| Email (Resend/Loops) | $0-29 |
+| **Total Fixed** | **$0-52/month** |
 
-### Variable Costs (Per Sale)
+### Variable Costs (Per Paid User)
 
-| Item | Cost |
-|------|------|
-| LemonSqueezy fee | 5% + $0.50 |
-| Stripe processing | ~2.9% + $0.30 |
-| **Total per $99 sale** | **~$8.50 (8.6%)** |
+| Item | Cost | Notes |
+|------|------|-------|
+| AI API (extraction) | ~$0.50-1.00 | Claude/GPT for analysis |
+| AI API (generation) | ~$0.20-0.50 | Prompt generation |
+| AI API (testing) | ~$0.10/test | Test UI responses |
+| Stripe fees | ~$3.70 | 3.4% + $0.30 on $99 |
+| **Total per user** | **~$5-6** | |
 
-### Gross Margin Analysis
+### Gross Margin
 
-| Price Point | Revenue | Fees | Gross Profit | Margin |
-|-------------|---------|------|--------------|--------|
-| $49 | $49 | $4.72 | $44.28 | 90.4% |
-| $99 | $99 | $8.50 | $90.50 | 91.4% |
-| $249 | $249 | $20.05 | $228.95 | 91.9% |
-| $499 | $499 | $38.95 | $460.05 | 92.2% |
+| Revenue | Costs | Gross Profit | Margin |
+|---------|-------|--------------|--------|
+| $99 | $6 | $93 | 94% |
+| $99 + $29 audio | $7 | $121 | 94% |
+| $99 + $29 sub | $6 | $122 | 95% |
 
-**Excellent margins** due to zero marginal cost (digital product).
-
----
-
-## 2.3 Break-Even Analysis
-
-### Minimum Viable Business
-
-| Scenario | Sales Needed | Revenue |
-|----------|--------------|---------|
-| Cover domains/hosting ($20/mo) | 1 sale at $49 | $49 |
-| Weekend "success" ($500) | 6 sales at $99 | $594 |
-| Part-time income ($2K/mo) | 22 sales at $99 | $2,178 |
-| Full-time income ($8K/mo) | 88 sales at $99 | $8,712 |
-
-Break-even is effectively immediate (first sale covers all fixed costs).
+**Excellent margins** — AI API costs are minimal per user.
 
 ---
 
-## 2.4 Competitive Analysis
+## 2.4 Pricing Psychology
 
-### Direct Competitors
+### Why $99 One-Time Works:
 
-| Competitor | Offering | Price | Gap |
-|------------|----------|-------|-----|
-| Generic prompt packs | "Write like X" prompts | $19-39 | No methodology, single-context |
-| AI writing courses | How to use AI for writing | $99-499 | Generic, not personalized |
-| Custom GPT builders | Build custom chatbots | $0-99 | Platform-locked, no voice cloning |
+1. **Value anchor**: "We BUILD it for you" = service, not product
+2. **Comparison**: Custom prompt engineering = $500-2,000
+3. **Psychology**: Sub-$100 = impulse purchase territory
+4. **ROI**: Save 2 hours/week × $50/hr = $5,200/year value
 
-### Indirect Competitors
+### Why $29/year Subscription Works:
 
-| Competitor | Offering | Price | Gap |
-|------------|----------|-------|-----|
-| Jasper/Copy.ai | AI writing tools | $49-99/mo | Subscription, generic voice |
-| Writing coaches | 1:1 coaching | $200-500/hr | Doesn't scale, no AI |
-| Fine-tuning services | Custom model training | $1,000+ | Overkill, technical, expensive |
+1. **Low commitment**: Less than $3/month
+2. **Value clear**: Keep your twin up-to-date
+3. **Default opt-in**: Suggest at checkout
+4. **Churn-resistant**: Low price = low churn
 
-### Competitive Advantages
+### Future Pricing Tiers (Post-MVP):
 
-1. **Methodology, not just prompts**: Complete 3-stage system
-2. **Multi-language**: Works for bilingual/multilingual users
-3. **Multi-context**: Same system handles email, chat, spoken
-4. **Platform-agnostic**: Works across Gemini, Claude, GPT
-5. **Two-tier output**: Both understanding (Guide) and execution (Block)
-6. **Proven**: Built from real-world professional use
+| Tier | Price | Includes |
+|------|-------|----------|
+| **Starter** | $49 | 1 language, 3 contexts, no subscription |
+| **Complete** | $99 | Multi-language, all contexts, 1 year sub |
+| **Team** | $299 | 5 users, shared voice library, analytics |
 
 ---
 
-## 2.5 Risk Analysis
+# PART 3: TECHNICAL REQUIREMENTS
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Low initial sales | Medium | Medium | Strong launch marketing, iterate fast |
-| Refund requests | Low | Low | Clear expectations, quality product |
-| Competitor copies | Medium | Low | First-mover advantage, brand building |
-| Platform changes | Low | Medium | Platform-agnostic design |
-| Negative reviews | Low | High | Quality focus, responsive support |
-| Time to support | Medium | Medium | Good documentation, FAQ, video |
+## 3.1 Database Schema (Updated)
 
----
+```sql
+-- Core tables (already created)
+profiles              -- User accounts
+questionnaire_responses  -- Needs and context
+samples               -- Writing samples (corpus)
+voice_profiles        -- Generated profiles
+purchases             -- Payment records
 
-# PART 3: PROJECT STRATEGY & EXECUTION
+-- New tables needed
+audio_uploads (
+  id uuid primary key,
+  user_id uuid references profiles,
+  file_url text,
+  duration_seconds int,
+  transcription text,
+  status text, -- 'pending', 'processing', 'completed', 'failed'
+  cost_cents int,
+  created_at timestamp
+)
 
-## 3.1 Weekend Execution Plan
+subscriptions (
+  id uuid primary key,
+  user_id uuid references profiles,
+  stripe_subscription_id text,
+  status text, -- 'active', 'canceled', 'past_due'
+  current_period_start timestamp,
+  current_period_end timestamp,
+  created_at timestamp
+)
 
-### Friday Evening (2-3 hours): Setup
-- [ ] Choose product name / brand (VoiceDNA or alternative)
-- [ ] Set up LemonSqueezy account
-- [ ] Purchase domain (if needed)
-- [ ] Create basic landing page structure
-
-### Saturday Morning (4 hours): Core Product
-- [ ] Write Golden Corpus Generator (questionnaire + templates)
-- [ ] Review and finalize Master Extraction Prompt
-- [ ] Review and finalize Universal Meta-Prompt
-- [ ] Create START-HERE document
-
-### Saturday Afternoon (4 hours): Packaging
-- [ ] Write deployment guide (Gemini Gems focus)
-- [ ] Create example outputs (anonymized from your actual use)
-- [ ] Package all files into delivery structure
-- [ ] Record video walkthrough (Loom, 15-30 min)
-
-### Sunday Morning (4 hours): Sales & Marketing
-- [ ] Write sales page copy
-- [ ] Create pricing tiers in LemonSqueezy
-- [ ] Set up digital delivery
-- [ ] Test purchase flow end-to-end
-
-### Sunday Afternoon (4 hours): Launch
-- [ ] Write launch thread (Twitter/X)
-- [ ] Write LinkedIn post
-- [ ] Prepare email to network
-- [ ] Go live
-- [ ] Post launch content
-- [ ] Monitor and respond
-
----
-
-## 3.2 Go-To-Market Strategy
-
-### Launch Channels (Ranked by Priority)
-
-**1. Twitter/X Thread**
-- Target: AI enthusiasts, indie hackers, productivity nerds
-- Format: Story thread about building your own Digital Twin
-- Hook: "ChatGPT writes like ChatGPT. I wanted it to write like me."
-- CTA: Link to product
-
-**2. LinkedIn Post**
-- Target: Professionals, executives, multilingual workers
-- Format: Problem→Solution→Result narrative
-- Hook: "I spend 3 hours daily on emails. Here's how I got that back."
-- CTA: Link to product
-
-**3. Indie Hackers / Hacker News**
-- Target: Builders, early adopters
-- Format: "Show HN" or building in public post
-- Hook: Technical methodology angle
-
-**4. Product Hunt** (Week 2)
-- Target: Early adopters, tech enthusiasts
-- Format: Full launch with assets
-- Timing: After initial sales validate demand
-
-**5. AI Newsletters** (Outreach)
-- Target: Readers of AI-focused newsletters
-- Format: Affiliate partnership or sponsored mention
-- Examples: Ben's Bites, The Neuron, Superhuman AI
-
-### Content Marketing (Ongoing)
-
-**Blog Post**: "How I Built My Digital Twin: The Complete Guide"
-- Publish on personal site
-- Tease methodology, link to product for full system
-- SEO target: "AI writing voice", "digital twin AI"
-
-**Twitter/X Content**:
-- Weekly tips on voice cloning
-- Before/after examples (generic AI vs Digital Twin)
-- Behind-the-scenes of methodology
-
-**LinkedIn Content**:
-- Professional use cases
-- ROI framing (time saved, quality improved)
-- Multilingual angle for international professionals
-
----
-
-## 3.3 Pricing Strategy
-
-### Anchor Pricing
-
-Display value stack on sales page:
-```
-What you get:
-- Golden Corpus Generator ($49 value)
-- Master Extraction Prompt ($79 value)
-- Universal Meta-Prompt ($79 value)
-- Deployment Guides ($49 value)
-- Video Walkthrough ($99 value)
-- Example Templates ($49 value)
-
-Total Value: $404
-Your Price: $99
+voice_tests (
+  id uuid primary key,
+  user_id uuid references profiles,
+  voice_profile_id uuid references voice_profiles,
+  input_message text,
+  output_response text,
+  model_used text,
+  created_at timestamp
+)
 ```
 
-### Launch Discount
+## 3.2 API Routes Needed
 
-- First 48 hours: 20% off ($79 instead of $99)
-- Creates urgency
-- Rewards early adopters
-- Captures testimonials faster
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/generate-profile` | POST | Run AI extraction + generation |
+| `/api/test-voice` | POST | Test voice with sample message |
+| `/api/transcribe` | POST | Transcribe audio (paid) |
+| `/api/checkout` | POST | Create Stripe checkout |
+| `/api/subscription` | POST | Create/manage subscription |
+| `/api/webhook/stripe` | POST | Handle Stripe events |
 
-### Tier Psychology
+## 3.3 AI Integration
+
+### Extraction Prompt (runs on user's samples)
+- Input: Questionnaire responses + all samples
+- Output: Structured voice DNA (JSON)
+- Model: Claude 3.5 Sonnet (best quality/cost ratio)
+- Est. tokens: ~10K input, ~5K output
+- Est. cost: ~$0.50
+
+### Generation Prompt (creates master prompt)
+- Input: Voice DNA + platform target
+- Output: Ultra-detailed instruction prompt
+- Model: Claude 3.5 Sonnet
+- Est. tokens: ~5K input, ~5K output
+- Est. cost: ~$0.25
+
+### Test UI (live testing)
+- Input: User message + master prompt
+- Output: AI response in their voice
+- Model: GPT-4o-mini (fast + cheap for testing)
+- Est. tokens: ~2K per test
+- Est. cost: ~$0.01/test
+
+---
+
+# PART 4: LAUNCH PLAN
+
+## 4.1 MVP Feature Set
+
+### Must Have (Weekend):
+- [x] Landing page with clear value prop
+- [x] User auth (magic link)
+- [x] Questionnaire flow
+- [x] Sample collection UI
+- [ ] AI extraction + generation
+- [ ] Voice testing UI
+- [ ] One-click copy/export
+- [ ] Stripe checkout ($99)
+- [ ] Basic email sequence
+
+### Should Have (Week 1):
+- [ ] Audio upload + transcription
+- [ ] Subscription upsell
+- [ ] Regeneration (with new samples)
+- [ ] Platform deployment guides
+
+### Could Have (Week 2+):
+- [ ] Side-by-side comparison in test UI
+- [ ] Multiple voice profiles per user
+- [ ] Team/shared voices
+- [ ] Usage analytics
+
+## 4.2 Sales Page Messaging Update
+
+### Old (Product/Download Focus):
+> "Get the VoiceDNA Kit — prompts and guides to build your digital twin"
+
+### New (Service/Build Focus):
+> "We Build Your AI Voice Twin"
+>
+> You share your writing. We analyze your unique voice patterns. You get a production-ready AI prompt that sounds exactly like you.
+>
+> Not a DIY kit. Not another prompt pack. A complete service.
+
+### Pricing Section Copy:
 
 ```
-Starter ($49)  ← "I just want the prompts"
-Complete ($99) ← "Best value" (ANCHOR HERE)
-Executive ($249) ← Makes $99 look cheap
-Done-For-You ($499) ← Premium anchor
+WHAT YOU GET FOR $99:
+
+✓ Complete voice analysis of your writing samples
+✓ AI-powered pattern extraction (tone, rhythm, style)
+✓ Production-ready master prompt (5,000+ tokens)
+✓ Test your twin before deploying
+✓ One-click export to ChatGPT, Claude, or Gemini
+✓ Platform-specific setup guides
+✓ 3 regenerations included
+✓ 30-day email support
+
+Optional Add-Ons:
++ Audio transcription: from $19 (capture your spoken voice)
++ Annual updates: $29/year (edit, add samples, regenerate anytime)
 ```
 
 ---
 
-## 3.4 Sales Page Structure
+## 4.3 Success Metrics
 
-### Above the Fold
-- **Headline**: "Create an AI That Writes Exactly Like You"
-- **Subhead**: "Not generic AI. Not ChatGPT pretending. Your actual voice—across languages, contexts, and platforms."
-- **CTA**: "Get VoiceDNA Kit →"
-- **Social proof**: Testimonial or credibility marker
+### Launch Metrics (Weekend)
 
-### Problem Section
-- "AI writes like AI. You still have to rewrite everything."
-- Pain points: time wasted, generic output, context blindness
-- Agitate: "Every email you rewrite is time you'll never get back"
+| Metric | Target |
+|--------|--------|
+| Site live | Yes |
+| Auth working | Yes |
+| Payment working | Yes |
+| First signup | Within 24 hours |
+| First paid user | Within 48 hours |
 
-### Solution Section
-- Introduce the 3-stage methodology
-- Show the transformation: Generic AI → Your Digital Twin
-- Before/after examples
+### Week 1 Metrics
 
-### How It Works
-- Stage 1: Collect your writing DNA
-- Stage 2: Extract your unique voice patterns
-- Stage 3: Generate your executable Digital Twin
-- Visual diagram of the process
+| Metric | Target |
+|--------|--------|
+| Free signups | 100+ |
+| Questionnaire completions | 50+ |
+| Paid conversions | 10+ |
+| Revenue | $1,000+ |
 
-### What You Get
-- Full product breakdown with visuals
-- Emphasize: methodology, not just prompts
+### Month 1 Metrics
 
-### Pricing Section
-- Tier comparison table
-- Anchor pricing display
-- Clear CTAs for each tier
-
-### FAQ
-- "Do I need technical skills?" → No
-- "Which AI platforms does this work with?" → All major ones
-- "How long does it take?" → 2-4 hours for DIY
-- "What if it doesn't work for me?" → Refund policy
-
-### Final CTA
-- Urgency element (launch pricing)
-- Guarantee (satisfaction or refund)
-- Clear button
+| Metric | Target |
+|--------|--------|
+| Free signups | 500+ |
+| Paid conversions | 50+ |
+| Revenue | $5,000+ |
+| Subscription upsells | 15+ |
+| Lead nurture conversions | 10+ |
 
 ---
 
-## 3.5 Post-Launch Plan
-
-### Week 1: Validate & Iterate
-- Monitor sales and conversion rate
-- Collect feedback from first customers
-- Fix any delivery/product issues
-- Gather testimonials
-
-### Week 2: Expand Distribution
-- Product Hunt launch
-- Reach out to newsletter affiliates
-- Create additional content pieces
-- Add Claude/GPT deployment guides if not done
-
-### Week 3-4: Optimize & Scale
-- A/B test sales page elements
-- Launch affiliate program
-- Create case study from customer success
-- Plan v1.1 improvements
-
-### Month 2+: Growth Mode
-- Video course development
-- SEO content strategy
-- Partnership outreach
-- Consider team templates / vertical expansion
-
----
-
-## 3.6 Key Success Factors
-
-### Must Get Right
-
-1. **Clear value proposition**: "AI that sounds like you" must resonate instantly
-2. **Quality methodology**: The system must actually work and produce results
-3. **Smooth delivery**: Instant access, well-organized files, clear starting point
-4. **Launch momentum**: Strong first 48 hours drives algorithm visibility
-
-### Watch Out For
-
-1. **Over-engineering**: Ship MVP, iterate based on feedback
-2. **Scope creep**: Stick to weekend timeline, defer nice-to-haves
-3. **Perfectionism**: Done > Perfect for v1
-4. **Support burden**: Good documentation prevents support tickets
-
----
-
-## 3.7 Decision Log
-
-### Decisions Made
-
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Primary platform | LemonSqueezy | Built-in affiliates, good UX, reasonable fees |
-| Pricing anchor | $99 Complete tier | Sweet spot for digital products, good margins |
-| Launch channel | Twitter/X first | Highest reach for AI/productivity audience |
-| MVP scope | 3-stage system + Gemini guide | Core value, minimal viable |
-| Video format | Loom screen recording | Fast to create, sufficient quality |
-
-### Decisions Pending
-
-| Decision | Options | Decide By |
-|----------|---------|-----------|
-| Product name | VoiceDNA vs alternatives | Friday evening |
-| Domain | New vs subdomain | Friday evening |
-| Launch discount | 20% vs 30% | Saturday |
-| Guarantee | 14-day vs 30-day | Sunday |
-
----
-
-## Appendix A: Sales Copy Draft
-
-### Headline Options
-
-1. "Create an AI That Writes Exactly Like You"
-2. "Your Voice. Your AI. Every Platform."
-3. "Stop Rewriting AI Drafts. Clone Your Voice Instead."
-4. "The Digital Twin System: AI That Sounds Like You"
-
-### Hook Options (for social)
-
-1. "ChatGPT writes like ChatGPT. I wanted it to write like me. Here's the system I built."
-2. "I speak 3 languages. Now my AI does too—in my exact voice."
-3. "Generic AI cost me 2 hours/day in rewrites. Then I built my Digital Twin."
-
-### Tagline Options
-
-1. "Your voice, amplified by AI"
-2. "Finally, AI that sounds like you"
-3. "Clone your voice. Keep your time."
-
----
-
-## Appendix B: Competitive Positioning Statement
-
-**For** professionals who write across multiple contexts and languages,
-**Who** are frustrated that AI drafts don't sound like them,
-**VoiceDNA** is a Digital Twin creation system
-**That** captures your authentic voice and deploys it across any AI platform.
-**Unlike** generic prompts or single-context solutions,
-**We** provide a complete methodology that works for multilingual, multi-context professionals.
-
----
-
-## Appendix C: Launch Checklist
-
-### Pre-Launch (Friday)
-- [ ] Product name finalized
-- [ ] Domain secured (if new)
-- [ ] LemonSqueezy account ready
-- [ ] Landing page structure created
-
-### Product Ready (Saturday)
-- [ ] All 3 stages documented
-- [ ] Files organized and packaged
-- [ ] Video recorded and uploaded
-- [ ] Delivery tested
-
-### Launch Ready (Sunday AM)
-- [ ] Sales page complete
-- [ ] Pricing configured
-- [ ] Payment flow tested
-- [ ] Launch content written
-
-### Launch (Sunday PM)
-- [ ] Product live
-- [ ] Twitter thread posted
-- [ ] LinkedIn post published
-- [ ] Network emails sent
-- [ ] Monitoring active
-
----
-
-*Document version: 1.0*
+*Document version: 2.0*
 *Last updated: January 2026*
-*Status: Ready for execution*
+*Status: Building*
