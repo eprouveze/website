@@ -153,6 +153,8 @@
 | Feature | Description | Purpose |
 |---------|-------------|---------|
 | Test UI | Enter sample message, see AI response | Validate before deploy |
+| Target Platform Selector | Dropdown to select ChatGPT/Claude/Gemini/Other | Optimize response for target platform |
+| Test History | All voice tests saved to voice_tests table | Track iterations and improvements |
 | Side-by-side | Compare "with twin" vs "without twin" | Show the difference |
 | Add More Samples | Continue adding data to improve | Iterative refinement |
 | Regenerate | Re-run analysis with new data | Improvement cycle |
@@ -164,6 +166,7 @@
 | One-Click Copy | Copy prompt to clipboard | Easy deployment |
 | Platform Guides | Step-by-step for GPT/Claude/Gemini | Ensure success |
 | Export Options | Download as .txt, .md | Backup and flexibility |
+| Download Token System | Token-based file access with expiration and download limits | Secure file delivery |
 
 ### Audio Transcription (PAID ADD-ON)
 
@@ -324,13 +327,14 @@ Why paid add-on:
 3. **Default opt-in**: Suggest at checkout
 4. **Churn-resistant**: Low price = low churn
 
-### Future Pricing Tiers (Post-MVP):
+### Pricing Tiers (Implemented):
 
 | Tier | Price | Includes |
 |------|-------|----------|
-| **Starter** | $49 | 1 language, 3 contexts, no subscription |
-| **Complete** | $99 | Multi-language, all contexts, 1 year sub |
-| **Team** | $299 | 5 users, shared voice library, analytics |
+| **Starter** | $49 | 1 language, 3 contexts, basic support |
+| **Complete** | $99 | Multi-language, all contexts, 1 year subscription |
+| **Executive** | $249 | Everything in Complete + priority support, advanced analytics, 5 regenerations |
+| **Done-For-You** | $499 | Full white-glove service: we collect samples, build profile, and deliver ready-to-use |
 
 ---
 
@@ -412,6 +416,54 @@ voice_tests (
 - Model: GPT-4o-mini (fast + cheap for testing)
 - Est. tokens: ~2K per test
 - Est. cost: ~$0.01/test
+- **Target Platform Selector**: User selects ChatGPT/Claude/Gemini/Other to optimize output format
+- **Test History**: All tests logged to voice_tests table for tracking and analysis
+
+## 3.4 Download Token System
+
+Secure file delivery using token-based access:
+
+| Feature | Description |
+|---------|-------------|
+| Token Generation | Unique token created for each download request |
+| Expiration | Tokens expire after configurable time period |
+| Download Limits | Maximum number of downloads per token |
+| Access Logging | All downloads tracked for security auditing |
+
+```sql
+download_tokens (
+  id uuid primary key,
+  user_id uuid references profiles,
+  file_path text,
+  token text unique,
+  expires_at timestamp,
+  download_limit int default 5,
+  download_count int default 0,
+  created_at timestamp
+)
+```
+
+## 3.5 Analytics & Monitoring
+
+### Vercel Analytics Integration
+- **Speed Insights**: Real-time performance monitoring for Core Web Vitals
+- **Web Analytics**: Privacy-friendly visitor analytics (no cookies)
+- **Implementation**: Integrated via `@vercel/analytics` and `@vercel/speed-insights` packages
+
+## 3.6 Testing Infrastructure
+
+### Comprehensive Test Suite
+| Tool | Purpose | Coverage |
+|------|---------|----------|
+| **Vitest** | Unit testing | Components, utilities, API routes |
+| **Playwright** | E2E testing | User flows, checkout, authentication |
+
+Test commands:
+```bash
+npm run test        # Run Vitest unit tests
+npm run test:e2e    # Run Playwright E2E tests
+npm run test:all    # Run all tests
+```
 
 ---
 
@@ -424,10 +476,13 @@ voice_tests (
 - [x] User auth (magic link)
 - [x] Questionnaire flow
 - [x] Sample collection UI
-- [ ] AI extraction + generation
-- [ ] Voice testing UI
-- [ ] One-click copy/export
-- [ ] Stripe checkout ($99)
+- [x] AI extraction + generation
+- [x] Voice testing UI
+- [x] Target platform selector (ChatGPT/Claude/Gemini/Other)
+- [x] Test history saving (voice_tests table)
+- [x] One-click copy/export
+- [x] Download token system (secure file delivery)
+- [x] Stripe checkout (4 pricing tiers)
 - [ ] Basic email sequence
 
 ### Should Have (Week 1):
@@ -440,7 +495,12 @@ voice_tests (
 - [ ] Side-by-side comparison in test UI
 - [ ] Multiple voice profiles per user
 - [ ] Team/shared voices
-- [ ] Usage analytics
+- [x] Usage analytics (Vercel Analytics + Speed Insights)
+
+### Infrastructure (Implemented):
+- [x] Vercel Analytics integration
+- [x] Vercel Speed Insights integration
+- [x] Comprehensive test suite (Vitest + Playwright)
 
 ## 4.2 Sales Page Messaging Update
 

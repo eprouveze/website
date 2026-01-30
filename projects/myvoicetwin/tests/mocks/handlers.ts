@@ -79,7 +79,7 @@ export const handlers = [
   }),
 
   http.post('https://test.supabase.co/rest/v1/voice_profiles', async ({ request }) => {
-    const body = await request.json()
+    const body = await request.json() as Record<string, unknown>
     return HttpResponse.json({ ...mockVoiceProfile, ...body }, { status: 201 })
   }),
 
@@ -89,7 +89,7 @@ export const handlers = [
   }),
 
   http.post('https://test.supabase.co/rest/v1/questionnaire_responses', async ({ request }) => {
-    const body = await request.json()
+    const body = await request.json() as Record<string, unknown>
     return HttpResponse.json({ ...mockQuestionnaire, ...body }, { status: 201 })
   }),
 
@@ -99,7 +99,7 @@ export const handlers = [
   }),
 
   http.post('https://test.supabase.co/rest/v1/samples', async ({ request }) => {
-    const body = await request.json()
+    const body = await request.json() as Record<string, unknown>
     return HttpResponse.json({ id: 'new-sample-id', ...body }, { status: 201 })
   }),
 
@@ -109,7 +109,7 @@ export const handlers = [
   }),
 
   http.post('https://test.supabase.co/rest/v1/voice_tests', async ({ request }) => {
-    const body = await request.json()
+    const body = await request.json() as Record<string, unknown>
     return HttpResponse.json({ id: 'new-test-id', ...body }, { status: 201 })
   }),
 

@@ -3,17 +3,21 @@
 import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 
+interface FeatureItem {
+  text: string;
+  included: boolean;
+}
+
 interface PricingCardProps {
   tier: string;
-  price: string;
-  originalPrice?: string;
+  price: number;
+  originalPrice?: number;
   description: string;
-  features: string[];
-  notIncluded?: string[];
+  features: FeatureItem[];
   bestFor: string;
-  ctaText: string;
-  priceId: string;
-  popular?: boolean;
+  priceId?: string;
+  highlighted?: boolean;
+  badge?: string;
 }
 
 export default function PricingCard({
@@ -22,15 +26,19 @@ export default function PricingCard({
   originalPrice,
   description,
   features,
-  notIncluded = [],
   bestFor,
-  ctaText,
   priceId,
-  popular = false,
+  highlighted = false,
+  badge,
 }: PricingCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
+    if (!priceId) {
+      console.error('No price ID configured');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -66,17 +74,17 @@ export default function PricingCard({
       className={`
         relative flex flex-col rounded-2xl border-2 bg-white p-6 shadow-lg transition-all duration-300
         hover:shadow-xl
-        ${popular
+        ${highlighted
           ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2 scale-105 z-10'
           : 'border-gray-200 hover:border-gray-300'
         }
       `}
     >
-      {/* Popular Badge */}
-      {popular && (
+      {/* Badge */}
+      {badge && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
           <span className="inline-flex items-center rounded-full bg-blue-500 px-4 py-1.5 text-sm font-semibold text-white shadow-md">
-            Most Popular
+            {badge}
           </span>
         </div>
       )}
@@ -92,14 +100,14 @@ export default function PricingCard({
         <div className="flex items-baseline justify-center gap-2">
           {originalPrice && (
             <span className="text-lg text-gray-400 line-through">
-              {originalPrice}
+              ${originalPrice}
             </span>
           )}
-          <span className="text-4xl font-bold text-gray-900">{price}</span>
+          <span className="text-4xl font-bold text-gray-900">${price}</span>
         </div>
         {originalPrice && (
           <p className="mt-1 text-sm font-medium text-green-600">
-            Launch Price - Save {calculateSavings(originalPrice, price)}
+            Launch Price - Save ${originalPrice - price}
           </p>
         )}
       </div>
@@ -117,17 +125,15 @@ export default function PricingCard({
           {features.map((feature, index) => (
             <li key={index} className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
-                <Check className="h-5 w-5 text-green-500" />
+                {feature.included ? (
+                  <Check className="h-5 w-5 text-green-500" />
+                ) : (
+                  <X className="h-5 w-5 text-gray-400" />
+                )}
               </div>
-              <span className="text-sm text-gray-700">{feature}</span>
-            </li>
-          ))}
-          {notIncluded.map((feature, index) => (
-            <li key={`not-${index}`} className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <X className="h-5 w-5 text-gray-400" />
-              </div>
-              <span className="text-sm text-gray-400">{feature}</span>
+              <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-400'}`}>
+                {feature.text}
+              </span>
             </li>
           ))}
         </ul>
@@ -136,12 +142,12 @@ export default function PricingCard({
       {/* CTA Button */}
       <button
         onClick={handleCheckout}
-        disabled={isLoading}
+        disabled={isLoading || !priceId}
         className={`
           w-full rounded-lg px-6 py-3 text-base font-semibold transition-all duration-200
           focus:outline-none focus:ring-2 focus:ring-offset-2
           disabled:cursor-not-allowed disabled:opacity-70
-          ${popular
+          ${highlighted
             ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
             : 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-500'
           }
@@ -172,24 +178,10 @@ export default function PricingCard({
             Processing...
           </span>
         ) : (
-          ctaText
+          `Get ${tier}`
         )}
       </button>
     </div>
   );
 }
 
-// Helper function to calculate savings
-function calculateSavings(original: string, current: string): string {
-  const originalNum = parseFloat(original.replace(/[^0-9.]/g, ''));
-  const currentNum = parseFloat(current.replace(/[^0-9.]/g, ''));
-  const savings = originalNum - currentNum;
-
-  if (original.includes('$')) {
-    return `$${savings}`;
-  }
-  if (original.includes('¥')) {
-    return `¥${savings.toLocaleString()}`;
-  }
-  return savings.toString();
-}

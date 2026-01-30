@@ -2,36 +2,77 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-06-20',
 })
+
+// Multi-tier pricing configuration
+const PRICING_TIERS = {
+  starter: {
+    price: 4900, // $49
+    name: 'My Voice Twin - Starter',
+    description: '1 language, 3 contexts, no subscription',
+    regeneration_limit: 1,
+  },
+  complete: {
+    price: 9900, // $99
+    name: 'My Voice Twin - Complete',
+    description: 'Multi-language, all contexts, 1 year subscription included',
+    regeneration_limit: 3,
+  },
+  executive: {
+    price: 24900, // $249
+    name: 'My Voice Twin - Executive',
+    description: 'Everything + priority support',
+    regeneration_limit: 5,
+  },
+  'done-for-you': {
+    price: 49900, // $499
+    name: 'My Voice Twin - Done For You',
+    description: 'We do everything for you',
+    regeneration_limit: 10, // unlimited represented as 10
+  },
+} as const
+
+type ProductTier = keyof typeof PRICING_TIERS
 
 export async function POST(request: NextRequest) {
   try {
-    const { priceId, product } = await request.json()
+    const { product } = await request.json()
 
-    if (!priceId) {
+    // Validate product tier
+    if (!product || !PRICING_TIERS[product as ProductTier]) {
       return NextResponse.json(
-        { error: 'Price ID is required' },
+        { error: 'Valid product tier is required (starter, complete, executive, done-for-you)' },
         { status: 400 }
       )
     }
 
+    const tier = PRICING_TIERS[product as ProductTier]
+
     // Get the origin for redirect URLs
     const origin = request.headers.get('origin') || 'http://localhost:3000'
 
-    // Create Stripe Checkout session
+    // Create Stripe Checkout session with dynamic pricing
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: 'usd',
+            unit_amount: tier.price,
+            product_data: {
+              name: tier.name,
+              description: tier.description,
+            },
+          },
           quantity: 1,
         },
       ],
-      // Store product info in metadata for the webhook
+      // Store product info and regeneration limit in metadata for the webhook
       metadata: {
-        product: product || 'complete',
+        product: product,
+        regeneration_limit: String(tier.regeneration_limit),
       },
       // Collect customer email
       customer_creation: 'always',

@@ -75,7 +75,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
         error = 'database_error'
       }
     } else {
-      purchase = data
+      purchase = data as Purchase
     }
   } catch (e) {
     console.error('Error fetching purchase:', e)
@@ -187,7 +187,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
   // Calculate remaining downloads and expiry
   const remainingDownloads = purchase.max_downloads - purchase.download_count
-  const expiresAt = new Date(purchase.expires_at)
+  const expiresAt = purchase.expires_at ? new Date(purchase.expires_at) : new Date()
   const isExpired = expiresAt < new Date()
   const daysUntilExpiry = Math.ceil(
     (expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)

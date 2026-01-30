@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createServerComponentClient, createServiceClient } from '@/lib/supabase'
+import { createServerComponentClient, createServiceClient, type VoiceProfile } from '@/lib/supabase'
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -118,8 +118,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Type assertion for voiceProfile
+    const typedVoiceProfile = voiceProfile as VoiceProfile
+
     // 3. Check if master_prompt exists
-    if (!voiceProfile.master_prompt) {
+    if (!typedVoiceProfile.master_prompt) {
       return NextResponse.json(
         {
           error: 'Voice profile is incomplete. The master prompt is missing.',
@@ -165,7 +168,7 @@ export async function POST(request: NextRequest) {
       const withTwinCompletion = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: voiceProfile.master_prompt,
+        system: typedVoiceProfile.master_prompt,
         messages: [
           {
             role: 'user',
@@ -216,13 +219,13 @@ export async function POST(request: NextRequest) {
     // 6. Save to voice_tests table
     const { error: insertError } = await serviceClient.from('voice_tests').insert({
       user_id: user.id,
-      voice_profile_id: voiceProfile.id,
+      voice_profile_id: typedVoiceProfile.id,
       input_message: body.message,
       output_with_twin: withTwinResponse,
       output_without_twin: withoutTwinResponse || null,
       model_used: 'claude-3-5-haiku-20241022',
       tokens_used: totalTokensUsed,
-    })
+    } as never)
 
     if (insertError) {
       console.error('Error saving voice test:', insertError)

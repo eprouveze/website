@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase';
+import { createClient, QuestionnaireResponse } from '@/lib/supabase';
 
 // Types
 interface QuestionnaireData {
@@ -140,7 +140,7 @@ export default function QuestionnairePage() {
         setUserId(user.id);
 
         // Check for existing questionnaire response
-        const { data: existing, error: fetchError } = await supabase
+        const { data: existingData, error: fetchError } = await supabase
           .from('questionnaire_responses')
           .select('*')
           .eq('user_id', user.id)
@@ -149,6 +149,8 @@ export default function QuestionnairePage() {
         if (fetchError) {
           console.error('Error fetching questionnaire:', fetchError);
         }
+
+        const existing = existingData as QuestionnaireResponse | null;
 
         if (existing) {
           setResponseId(existing.id);
@@ -211,7 +213,7 @@ export default function QuestionnairePage() {
         // Update existing
         const { error: updateError } = await supabase
           .from('questionnaire_responses')
-          .update(payload)
+          .update(payload as never)
           .eq('id', responseId);
 
         if (updateError) throw updateError;
@@ -219,12 +221,12 @@ export default function QuestionnairePage() {
         // Insert new
         const { data: newResponse, error: insertError } = await supabase
           .from('questionnaire_responses')
-          .insert(payload)
+          .insert(payload as never)
           .select('id')
           .single();
 
         if (insertError) throw insertError;
-        if (newResponse) setResponseId(newResponse.id);
+        if (newResponse) setResponseId((newResponse as { id: string }).id);
       }
     } catch (err) {
       console.error('Error saving questionnaire:', err);
@@ -272,7 +274,7 @@ export default function QuestionnairePage() {
         .update({
           completed_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        })
+        } as never)
         .eq('id', responseId);
 
       if (completeError) throw completeError;

@@ -6,11 +6,17 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import Stripe from "https://esm.sh/stripe@14?target=deno"
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-06-20',
   httpClient: Stripe.createFetchHttpClient(),
 })
 
 const cryptoProvider = Stripe.createSubtleCryptoProvider()
+
+// Helper function to convert Unix timestamp to ISO string
+function unixToISO(timestamp: number | null): string | null {
+  if (!timestamp) return null
+  return new Date(timestamp * 1000).toISOString()
+}
 
 serve(async (req: Request) => {
   // Only allow POST
@@ -35,15 +41,15 @@ serve(async (req: Request) => {
       cryptoProvider
     )
 
+    // Create Supabase client with service role key
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+
     // Handle checkout.session.completed
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
-
-      // Create Supabase client with service role key
-      const supabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-      )
 
       // Generate unique download token
       const token = crypto.randomUUID()
@@ -106,6 +112,163 @@ serve(async (req: Request) => {
     // Handle other events if needed
     if (event.type === 'checkout.session.expired') {
       console.log('Checkout session expired:', event.data.object.id)
+    }
+
+    // Handle customer.subscription.created - Insert new subscription record
+    if (event.type === 'customer.subscription.created') {
+      const subscription = event.data.object as Stripe.Subscription
+      const userId = subscription.metadata?.user_id
+
+      if (!userId) {
+        console.error('No user_id in subscription metadata:', subscription.id)
+        return new Response('Missing user_id in metadata', { status: 400 })
+      }
+
+      const { error } = await supabase.from('subscriptions').insert({
+        user_id: userId,
+        stripe_subscription_id: subscription.id,
+        stripe_customer_id: subscription.customer as string,
+        status: subscription.status,
+        current_period_start: unixToISO(subscription.current_period_start),
+        current_period_end: unixToISO(subscription.current_period_end),
+        cancel_at_period_end: subscription.cancel_at_period_end,
+      })
+
+      if (error) {
+        console.error('Failed to insert subscription:', error)
+        return new Response(JSON.stringify({ error: 'Database error' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
+      console.log('Subscription created:', {
+        user_id: userId,
+        subscription_id: subscription.id,
+        status: subscription.status,
+      })
+    }
+
+    // Handle customer.subscription.updated - Update subscription status
+    if (event.type === 'customer.subscription.updated') {
+      const subscription = event.data.object as Stripe.Subscription
+
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({
+          status: subscription.status,
+          current_period_start: unixToISO(subscription.current_period_start),
+          current_period_end: unixToISO(subscription.current_period_end),
+          cancel_at_period_end: subscription.cancel_at_period_end,
+        })
+        .eq('stripe_subscription_id', subscription.id)
+
+      if (error) {
+        console.error('Failed to update subscription:', error)
+        return new Response(JSON.stringify({ error: 'Database error' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
+      console.log('Subscription updated:', {
+        subscription_id: subscription.id,
+        status: subscription.status,
+      })
+    }
+
+    // Handle customer.subscription.deleted - Mark subscription as canceled
+    if (event.type === 'customer.subscription.deleted') {
+      const subscription = event.data.object as Stripe.Subscription
+
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({
+          status: 'canceled',
+          cancel_at_period_end: false,
+        })
+        .eq('stripe_subscription_id', subscription.id)
+
+      if (error) {
+        console.error('Failed to mark subscription as canceled:', error)
+        return new Response(JSON.stringify({ error: 'Database error' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
+      console.log('Subscription canceled:', {
+        subscription_id: subscription.id,
+      })
+    }
+
+    // Handle invoice.payment_succeeded - Update subscription period dates
+    if (event.type === 'invoice.payment_succeeded') {
+      const invoice = event.data.object as Stripe.Invoice
+
+      // Only process subscription invoices
+      if (invoice.subscription) {
+        const subscriptionId = typeof invoice.subscription === 'string'
+          ? invoice.subscription
+          : invoice.subscription.id
+
+        // Fetch the latest subscription data from Stripe
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+
+        const { error } = await supabase
+          .from('subscriptions')
+          .update({
+            status: subscription.status,
+            current_period_start: unixToISO(subscription.current_period_start),
+            current_period_end: unixToISO(subscription.current_period_end),
+          })
+          .eq('stripe_subscription_id', subscriptionId)
+
+        if (error) {
+          console.error('Failed to update subscription after payment:', error)
+          return new Response(JSON.stringify({ error: 'Database error' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        }
+
+        console.log('Subscription payment succeeded:', {
+          subscription_id: subscriptionId,
+          invoice_id: invoice.id,
+        })
+      }
+    }
+
+    // Handle invoice.payment_failed - Mark subscription as past_due
+    if (event.type === 'invoice.payment_failed') {
+      const invoice = event.data.object as Stripe.Invoice
+
+      // Only process subscription invoices
+      if (invoice.subscription) {
+        const subscriptionId = typeof invoice.subscription === 'string'
+          ? invoice.subscription
+          : invoice.subscription.id
+
+        const { error } = await supabase
+          .from('subscriptions')
+          .update({
+            status: 'past_due',
+          })
+          .eq('stripe_subscription_id', subscriptionId)
+
+        if (error) {
+          console.error('Failed to mark subscription as past_due:', error)
+          return new Response(JSON.stringify({ error: 'Database error' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        }
+
+        console.log('Subscription payment failed:', {
+          subscription_id: subscriptionId,
+          invoice_id: invoice.id,
+        })
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {

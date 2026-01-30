@@ -24,7 +24,7 @@ export type SampleType =
   | 'voice_memo'
   | 'other'
 
-export type ProductType = 'complete' | 'executive' | 'done-for-you'
+export type ProductType = 'starter' | 'complete' | 'executive' | 'done-for-you'
 
 export type PurchaseStatus = 'pending' | 'completed' | 'refunded'
 
@@ -107,7 +107,48 @@ export interface Purchase {
   stripe_session_id: string
   stripe_payment_intent: string | null
   status: PurchaseStatus
+  download_token: string | null
+  download_count: number
+  max_downloads: number
+  expires_at: string | null
+  regeneration_count: number
+  regeneration_limit: number
   created_at: string
+}
+
+// Audio uploads
+export type AudioUploadStatus = 'pending' | 'processing' | 'completed' | 'failed'
+
+export interface AudioUpload {
+  id: string
+  user_id: string
+  file_name: string
+  file_url: string
+  file_size_bytes: number | null
+  duration_seconds: number | null
+  transcription: string | null
+  status: AudioUploadStatus
+  error_message: string | null
+  cost_cents: number | null
+  stripe_payment_id: string | null
+  created_at: string
+  processed_at: string | null
+}
+
+// Subscriptions
+export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'unpaid' | 'trialing'
+
+export interface Subscription {
+  id: string
+  user_id: string
+  stripe_subscription_id: string
+  stripe_customer_id: string | null
+  status: SubscriptionStatus
+  current_period_start: string | null
+  current_period_end: string | null
+  cancel_at_period_end: boolean
+  created_at: string
+  updated_at: string
 }
 
 // Voice test context types
@@ -172,9 +213,11 @@ export interface Database {
       }
       purchases: {
         Row: Purchase
-        Insert: Omit<Purchase, 'id' | 'created_at'> & {
+        Insert: Omit<Purchase, 'id' | 'created_at' | 'download_count' | 'regeneration_count'> & {
           id?: string
           created_at?: string
+          download_count?: number
+          regeneration_count?: number
         }
         Update: Partial<Omit<Purchase, 'id'>>
       }
@@ -185,6 +228,23 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Omit<VoiceTest, 'id'>>
+      }
+      audio_uploads: {
+        Row: AudioUpload
+        Insert: Omit<AudioUpload, 'id' | 'created_at'> & {
+          id?: string
+          created_at?: string
+        }
+        Update: Partial<Omit<AudioUpload, 'id'>>
+      }
+      subscriptions: {
+        Row: Subscription
+        Insert: Omit<Subscription, 'id' | 'created_at' | 'updated_at'> & {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Omit<Subscription, 'id'>>
       }
     }
   }

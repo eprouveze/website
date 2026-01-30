@@ -1,10 +1,10 @@
-import { createServiceClient } from '@/lib/supabase'
+import { createServiceClient, type Purchase } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Valid product types for type safety
-type ProductType = 'starter' | 'complete' | 'executive'
+type ProductType = 'starter' | 'complete' | 'executive' | 'done-for-you'
 
-const VALID_PRODUCTS: ProductType[] = ['starter', 'complete', 'executive']
+const VALID_PRODUCTS: ProductType[] = ['starter', 'complete', 'executive', 'done-for-you']
 
 // Storage bucket name
 const STORAGE_BUCKET = 'products'
@@ -50,33 +50,36 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Type assertion for purchase
+    const typedPurchase = purchase as Purchase
+
     // Check if token has expired
-    const expiresAt = new Date(purchase.expires_at)
+    const expiresAt = new Date(typedPurchase.expires_at!)
     if (expiresAt < new Date()) {
       return NextResponse.json(
         {
           error: 'Download link has expired',
-          expired_at: purchase.expires_at,
+          expired_at: typedPurchase.expires_at,
         },
         { status: 403 }
       )
     }
 
     // Check download count limit
-    if (purchase.download_count >= purchase.max_downloads) {
+    if (typedPurchase.download_count >= typedPurchase.max_downloads) {
       return NextResponse.json(
         {
           error: 'Download limit reached',
-          downloads_used: purchase.download_count,
-          max_downloads: purchase.max_downloads,
+          downloads_used: typedPurchase.download_count,
+          max_downloads: typedPurchase.max_downloads,
         },
         { status: 403 }
       )
     }
 
     // Validate product type
-    if (!VALID_PRODUCTS.includes(purchase.product as ProductType)) {
-      console.error('Invalid product type:', purchase.product)
+    if (!VALID_PRODUCTS.includes(typedPurchase.product as ProductType)) {
+      console.error('Invalid product type:', typedPurchase.product)
       return NextResponse.json(
         { error: 'Invalid product configuration' },
         { status: 500 }
@@ -84,15 +87,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Construct file name
-    const fileName = `myvoicetwin-${purchase.product}.zip`
+    const fileName = `myvoicetwin-${typedPurchase.product}.zip`
 
     // Increment download count BEFORE serving file
     // This prevents race conditions where multiple downloads could be initiated
     const { error: updateError } = await supabase
       .from('purchases')
-      .update({ download_count: purchase.download_count + 1 })
-      .eq('id', purchase.id)
-      .eq('download_count', purchase.download_count) // Optimistic locking
+      .update({ download_count: typedPurchase.download_count + 1 } as never)
+      .eq('id', typedPurchase.id)
+      .eq('download_count', typedPurchase.download_count) // Optimistic locking
 
     if (updateError) {
       console.error('Failed to update download count:', updateError)

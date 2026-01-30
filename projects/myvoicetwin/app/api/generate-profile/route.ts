@@ -290,7 +290,7 @@ export async function POST(request: NextRequest) {
     // Check if user has paid (check purchases table)
     const { data: purchase, error: purchaseError } = await serviceClient
       .from('purchases')
-      .select('id, product, status')
+      .select('id, product, status, regeneration_count, regeneration_limit')
       .eq('user_id', user.id)
       .eq('status', 'completed')
       .single()
@@ -300,6 +300,38 @@ export async function POST(request: NextRequest) {
         { error: 'Payment required to generate voice profile' },
         { status: 403 }
       )
+    }
+
+    // Type the purchase data
+    const typedPurchase = purchase as {
+      id: string
+      product: string
+      status: string
+      regeneration_count: number
+      regeneration_limit: number
+    }
+
+    // Check for active subscription (allows unlimited regenerations)
+    const { data: activeSubscription } = await serviceClient
+      .from('subscriptions')
+      .select('id, status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .single()
+
+    const hasActiveSubscription = !!activeSubscription
+
+    // Enforce regeneration limits if no active subscription
+    if (!hasActiveSubscription) {
+      const regenerationCount = typedPurchase.regeneration_count || 0
+      const regenerationLimit = typedPurchase.regeneration_limit || 0
+
+      if (regenerationCount >= regenerationLimit) {
+        return NextResponse.json(
+          { error: 'Regeneration limit reached' },
+          { status: 403 }
+        )
+      }
     }
 
     // Fetch questionnaire responses
@@ -488,6 +520,23 @@ export async function POST(request: NextRequest) {
     // Type the response
     const typedProfile = newProfile as { id: string; version: number; generated_at: string }
 
+    // Increment regeneration_count in purchases table
+    const newRegenerationCount = (typedPurchase.regeneration_count || 0) + 1
+    const { error: updateError } = await serviceClient
+      .from('purchases')
+      .update({ regeneration_count: newRegenerationCount } as never)
+      .eq('id', typedPurchase.id)
+
+    if (updateError) {
+      console.error('Failed to update regeneration count:', updateError)
+      // Continue anyway - profile was saved successfully
+    }
+
+    // Calculate regenerations remaining
+    const regenerationsRemaining = hasActiveSubscription
+      ? null  // Unlimited for subscribers
+      : Math.max(0, (typedPurchase.regeneration_limit || 0) - newRegenerationCount)
+
     // Return success response
     return NextResponse.json({
       success: true,
@@ -496,6 +545,7 @@ export async function POST(request: NextRequest) {
       generated_at: typedProfile.generated_at,
       samples_analyzed: samples.length,
       tokens_used: extractionTokens + promptTokens,
+      regenerations_remaining: regenerationsRemaining,
     })
 
   } catch (error) {
