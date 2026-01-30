@@ -10,16 +10,19 @@
 **Current State**: Sales-focused page with hero, problem/solution copy, pricing cards (4 tiers)
 
 **Feedback/Improvements**:
-- *(awaiting feedback)*
+- [ ] Missing copy for multilingual target users
 
 ---
 
 ## Step 2: Checkout Flow
 
-**Current State**: *(to be reviewed)*
+**Current State**: User clicks pricing card on landing page → Stripe checkout → Success page (purchase-first flow)
 
 **Feedback/Improvements**:
-- *(awaiting feedback)*
+- [ ] **MAJOR**: Flow order is wrong. User should NOT see checkout first.
+  - Correct flow: User builds their voice first (questionnaire + samples = Phase 1)
+  - Only after Phase 1 is complete, show checkout
+  - This ensures user is committed before paying (invested time/effort)
 
 ---
 
