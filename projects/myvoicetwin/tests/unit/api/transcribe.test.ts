@@ -150,9 +150,10 @@ describe('Transcribe API', () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data).toHaveProperty('tiers')
-      expect(Array.isArray(data.tiers)).toBe(true)
-      expect(data.tiers.length).toBeGreaterThan(0)
+      expect(data).toHaveProperty('pricePerMinuteCents')
+      expect(data).toHaveProperty('pricePerMinuteFormatted')
+      expect(data).toHaveProperty('minimumChargeCents')
+      expect(data.pricePerMinuteCents).toBe(0.9) // $0.009 per minute
     })
   })
 

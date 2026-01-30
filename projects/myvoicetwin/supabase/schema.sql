@@ -30,30 +30,30 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 -- ============================================
--- QUESTIONNAIRE RESPONSES
+-- QUESTIONNAIRE RESPONSES (Corpus Matrix Builder)
 -- ============================================
 create table if not exists questionnaire_responses (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references profiles(id) on delete cascade not null,
 
-  -- Identity & Context
+  -- Corpus Matrix dimensions
+  languages text[] default '{}', -- ['english', 'french', 'spanish', 'german', 'japanese', 'chinese', 'other']
+  communication_tools text[] default '{}', -- ['email', 'slack_teams', 'documents_reports', 'presentations', 'social_media', 'blog_articles']
+  communication_targets text[] default '{}', -- ['customers_clients', 'internal_team', 'executives_leadership', 'public_social', 'partners_vendors']
+  communication_format text default 'text_only' check (communication_format in ('text_only', 'text_voice')),
+
+  -- Legacy fields (kept for backward compatibility, nullable)
   profession text,
   industry text,
   years_experience int,
   primary_language text default 'en',
-  additional_languages text[], -- ['ja', 'fr']
-
-  -- Communication Style
+  additional_languages text[],
   formality_level text check (formality_level in ('very_formal', 'formal', 'neutral', 'casual', 'very_casual')),
-  typical_audiences text[], -- ['executives', 'clients', 'team', 'public']
-  communication_contexts text[], -- ['email', 'slack', 'reports', 'presentations', 'social']
-
-  -- Voice Characteristics
-  described_tone text[], -- ['direct', 'warm', 'analytical', 'humorous']
-  pet_phrases text, -- Free text for phrases they commonly use
-  things_to_avoid text, -- What they never say/do
-
-  -- Goals
+  typical_audiences text[],
+  communication_contexts text[],
+  described_tone text[],
+  pet_phrases text,
+  things_to_avoid text,
   primary_use_case text,
   biggest_challenge text,
 
@@ -137,6 +137,9 @@ create table purchases (
 -- ============================================
 create index if not exists idx_profiles_email on profiles(email);
 create index if not exists idx_questionnaire_user on questionnaire_responses(user_id);
+create index if not exists idx_questionnaire_languages on questionnaire_responses using gin (languages);
+create index if not exists idx_questionnaire_tools on questionnaire_responses using gin (communication_tools);
+create index if not exists idx_questionnaire_targets on questionnaire_responses using gin (communication_targets);
 create index if not exists idx_samples_user on samples(user_id);
 create index if not exists idx_samples_type on samples(sample_type);
 create index if not exists idx_voice_profiles_user on voice_profiles(user_id);
@@ -254,7 +257,7 @@ create policy "Users can manage own voice tests" on voice_tests
 -- COMMENTS
 -- ============================================
 comment on table profiles is 'User profiles extending Supabase Auth';
-comment on table questionnaire_responses is 'Voice discovery questionnaire answers';
+comment on table questionnaire_responses is 'Corpus Matrix builder - defines communication dimensions (languages, tools, targets, format)';
 comment on table samples is 'Writing samples (Golden Corpus) uploaded by users';
 comment on table voice_profiles is 'AI-generated voice profiles with master prompts';
 comment on table purchases is 'Stripe payment records';

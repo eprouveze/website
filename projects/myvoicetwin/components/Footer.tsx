@@ -57,7 +57,7 @@ export default function Footer({
           {/* Brand */}
           <div className="flex items-center gap-2">
             <Dna className="h-6 w-6 text-blue-400" />
-            <span className="text-lg font-bold">VoiceDNA</span>
+            <span className="text-lg font-bold">My Voice Twin</span>
           </div>
 
           {/* Contact */}
@@ -82,7 +82,7 @@ export default function Footer({
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             {/* Copyright */}
             <p className="text-sm text-gray-500">
-              &copy; {currentYear} VoiceDNA. All rights reserved.
+              &copy; {currentYear} My Voice Twin. All rights reserved.
             </p>
 
             {/* Links */}

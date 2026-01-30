@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import PricingCard from '@/components/PricingCard';
 
 export default function LandingPage() {
@@ -17,18 +18,18 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300 sm:text-xl">
-              Here&apos;s the exact system I built to clone my voice across 3 languages and 6 contexts.
+              The system I built to clone my voice across 3 languages and 6 contexts.
               A proven methodology that captures your authentic voice and deploys it on ChatGPT, Claude, Gemini—or any AI platform.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <a
-                href="#pricing"
+              <Link
+                href="/signup"
                 className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:shadow-xl hover:scale-105"
               >
-                Get My Voice Twin — $99
-              </a>
+                Start Building Your Voice Twin — Free
+              </Link>
               <p className="text-sm text-gray-400">
-                <span className="line-through">$149</span> Launch Price
+                No credit card required
               </p>
             </div>
             {/* Social Proof */}
@@ -460,80 +461,64 @@ export default function LandingPage() {
               Choose Your Path
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              Select the tier that matches your needs
+              Build your voice first, pay when you&apos;re ready
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-4 md:grid-cols-2">
+          <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 max-w-5xl mx-auto">
             {/* Starter Tier */}
             <PricingCard
               tier="Starter"
               price={49}
-              description="For DIY experimenters"
+              description="Get started with the essentials"
               features={[
-                { text: 'All 4 stages (prompts + guides)', included: true },
+                { text: '1 language', included: true },
+                { text: '3 voice matrix sections', included: true },
+                { text: '1 regeneration included', included: true },
+                { text: 'All deployment guides', included: true },
                 { text: 'Basic documentation', included: true },
-                { text: 'Video walkthrough', included: false },
-                { text: 'Example corpus', included: false },
-                { text: 'Email support', included: false },
               ]}
-              bestFor="Technical users comfortable with prompts"
-              priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER}
+              bestFor="Single-language users getting started"
+              ctaLink="/signup"
+              ctaText="Start Building Free"
               highlighted={false}
             />
 
-            {/* Complete Tier */}
+            {/* Pro Tier */}
             <PricingCard
-              tier="Complete"
+              tier="Pro"
               price={99}
-              originalPrice={149}
-              description="Most Popular - Best Value"
+              description="Best Value - Full Power"
               features={[
-                { text: 'All 4 stages (prompts + guides)', included: true },
-                { text: 'Comprehensive documentation', included: true },
-                { text: '30-minute video walkthrough', included: true },
-                { text: 'Anonymized example corpus', included: true },
-                { text: 'Sample Voice DNA output', included: true },
-                { text: 'Email support (48hr response)', included: true },
+                { text: 'Unlimited languages', included: true },
+                { text: 'Unlimited voice matrix sections', included: true },
+                { text: '1 regeneration included', included: true },
+                { text: 'All deployment guides + video walkthrough', included: true },
+                { text: 'Example corpus + sample outputs', included: true },
+                { text: 'Edit subscription: $10 first year (then $29/yr)', included: true },
               ]}
-              bestFor="Professionals who want the full system"
-              priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_COMPLETE}
+              bestFor="Multilingual professionals"
+              ctaLink="/signup"
+              ctaText="Start Building Free"
               highlighted={true}
-              badge="Most Popular"
+              badge="Recommended"
             />
 
             {/* Executive Tier */}
             <PricingCard
               tier="Executive"
               price={249}
-              description="For time-constrained leaders"
+              description="Premium experience with extras"
               features={[
-                { text: 'Everything in Complete', included: true },
-                { text: 'Async review of your Voice DNA output', included: true },
-                { text: 'Personalized recommendations', included: true },
+                { text: 'Everything in Pro', included: true },
+                { text: '1 year edit subscription included', included: true },
+                { text: 'Audio credits for voice notes', included: true },
                 { text: 'Priority email support', included: true },
-                { text: '1 round of refinement feedback', included: true },
+                { text: 'Personalized recommendations', included: true },
               ]}
-              bestFor="Executives who want expert review"
-              priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_EXECUTIVE}
-              highlighted={false}
-            />
-
-            {/* Done-For-You Tier */}
-            <PricingCard
-              tier="Done-For-You"
-              price={499}
-              description="Hands-off white-glove service"
-              features={[
-                { text: '30-min voice interview (async or live)', included: true },
-                { text: 'We curate your Golden Corpus', included: true },
-                { text: 'We run the full extraction', included: true },
-                { text: 'Delivered: Complete Voice DNA system', included: true },
-                { text: 'Deployed to your platform of choice', included: true },
-                { text: '2 rounds of refinement', included: true },
-              ]}
-              bestFor="Those who want results without the work"
-              priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_DONE_FOR_YOU}
+              bestFor="Leaders who want the complete package"
+              ctaLink="/signup"
+              ctaText="Start Building Free"
               highlighted={false}
             />
           </div>
@@ -640,6 +625,59 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Q&A Section */}
+      <section className="bg-gray-50 py-20 sm:py-28">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center mb-12">
+            Quick Answers
+          </h2>
+
+          <div className="space-y-8">
+            <div className="border-b border-gray-200 pb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                How does the output work with ChatGPT/Claude/Gemini?
+              </h3>
+              <p className="text-gray-600">
+                You get a master prompt file that you paste into any AI tool&apos;s system instructions.
+                It works with ChatGPT Custom GPTs, Claude Projects, Gemini Gems, or any LLM that supports
+                system prompts. One file, works everywhere.
+              </p>
+            </div>
+
+            <div className="border-b border-gray-200 pb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Do I need to re-run this every time?
+              </h3>
+              <p className="text-gray-600">
+                No, your voice profile works indefinitely. Once generated, you can use it for months or years.
+                Only regenerate when your writing style significantly evolves or you want to add new contexts.
+              </p>
+            </div>
+
+            <div className="border-b border-gray-200 pb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                What if my writing style evolves?
+              </h3>
+              <p className="text-gray-600">
+                Subscribe to the edit plan ($29/year, or $10 first year for Pro users) to update your
+                corpus and regenerate anytime. Add new writing samples, refine your voice matrix,
+                and get fresh outputs as your style grows.
+              </p>
+            </div>
+
+            <div className="border-b border-gray-200 pb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Can I use this with multiple AI tools?
+              </h3>
+              <p className="text-gray-600">
+                Yes! The output works with ChatGPT, Claude, Gemini, and any other LLM. You can deploy
+                your voice profile across all your AI tools simultaneously—same authentic voice everywhere.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA Section */}
       <section className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20 sm:py-28">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
@@ -651,13 +689,13 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-10 rounded-2xl bg-white/10 p-8 backdrop-blur-sm max-w-md mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-4">Complete Package — $99</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Pro Package — $99</h3>
             <ul className="space-y-3 text-left text-gray-200 mb-8">
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                Full 4-stage methodology
+                Unlimited languages and sections
               </li>
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -669,13 +707,13 @@ export default function LandingPage() {
                 <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                Video walkthrough
+                Video walkthrough + examples
               </li>
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                Example templates
+                Edit subscription: $10 first year
               </li>
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -684,12 +722,15 @@ export default function LandingPage() {
                 14-day guarantee
               </li>
             </ul>
-            <a
-              href="#pricing"
-              className="block w-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:shadow-xl hover:scale-105"
+            <Link
+              href="/signup"
+              className="block w-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:shadow-xl hover:scale-105 text-center"
             >
-              Get My Voice Twin Now
-            </a>
+              Start Building Your Voice — Free
+            </Link>
+            <p className="text-sm text-gray-400 mt-4">
+              No credit card required. Pay when you&apos;re ready.
+            </p>
           </div>
         </div>
       </section>

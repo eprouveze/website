@@ -26,6 +26,8 @@ import {
   Users,
   ChevronDown,
   Rocket,
+  Brain,
+  Eye,
 } from 'lucide-react';
 
 // Types
@@ -35,6 +37,7 @@ interface PageData {
   hasPaid: boolean;
   voiceProfile: VoiceProfile | null;
   languagesDetected: string[];
+  corpusAnalysis: CorpusAnalysis | null;
 }
 
 interface TestFormData {
@@ -49,7 +52,24 @@ interface TestResult {
   genericResponse: string | null;
 }
 
-type PageState = 'not_ready' | 'ready_not_paid' | 'generating' | 'generated';
+interface CorpusAnalysis {
+  coverage: {
+    totalSamples: number;
+    languages: string[];
+    languageNames: string[];
+    contexts: string[];
+    sampleTypes: string[];
+  };
+  overallStyle: string;
+  contextNotes: {
+    context: string;
+    note: string;
+  }[];
+  quirks: string[];
+  corpusQuality: 'excellent' | 'good' | 'adequate';
+}
+
+type PageState = 'not_ready' | 'analyzing' | 'ready_with_analysis' | 'ready_not_paid' | 'generating' | 'generated';
 
 // Constants
 const MIN_SAMPLES = 5;
@@ -195,95 +215,237 @@ function RequirementsChecklist({
   );
 }
 
-function UnlockSection({
+function AnalyzingState() {
+  return (
+    <div className="max-w-xl mx-auto text-center">
+      {/* Animated Icon */}
+      <div className="relative inline-flex items-center justify-center w-24 h-24 mb-8">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 animate-pulse opacity-30" />
+        <div className="absolute inset-2 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 animate-pulse opacity-50" />
+        <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 flex items-center justify-center">
+          <Brain className="w-8 h-8 text-white animate-pulse" />
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">
+        Analyzing Your Corpus...
+      </h2>
+      <p className="text-slate-600 mb-8">
+        We&apos;re taking a quick look at your writing samples to show you what we found.
+      </p>
+
+      {/* Loading Steps */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 text-left">
+        <ul className="space-y-3">
+          <li className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-brand-500 flex-shrink-0 animate-spin" />
+            <span className="text-sm text-slate-900">Reading your writing samples...</span>
+          </li>
+          <li className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-slate-200 flex-shrink-0" />
+            <span className="text-sm text-slate-400">Identifying patterns and style...</span>
+          </li>
+          <li className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-slate-200 flex-shrink-0" />
+            <span className="text-sm text-slate-400">Generating preview...</span>
+          </li>
+        </ul>
+      </div>
+
+      <p className="mt-6 text-xs text-slate-400">
+        This usually takes just a few seconds
+      </p>
+    </div>
+  );
+}
+
+function CorpusPreviewSection({
+  analysis,
   onCheckout,
   isLoading,
 }: {
-  onCheckout: (includeTranscription: boolean) => void;
+  analysis: CorpusAnalysis;
+  onCheckout: (tier: PricingTier) => void;
   isLoading: boolean;
 }) {
-  const [includeTranscription, setIncludeTranscription] = useState(false);
-  const basePrice = 99;
-  const transcriptionPrice = 29;
-  const totalPrice = includeTranscription ? basePrice + transcriptionPrice : basePrice;
+  const qualityMessages = {
+    excellent: 'Excellent corpus!',
+    good: 'Great corpus!',
+    adequate: 'Good start!',
+  };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 mb-4">
-          <Sparkles className="w-8 h-8 text-white" />
+    <div className="max-w-4xl mx-auto space-y-8">
+      {/* Analysis Preview Card */}
+      <div className="bg-gradient-to-br from-brand-50 to-accent-50 rounded-2xl border border-brand-200 shadow-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-brand-200 bg-white/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900">
+                {qualityMessages[analysis.corpusQuality]} Here&apos;s what I see:
+              </h3>
+              <p className="text-sm text-slate-600">
+                A preview of your Voice Twin based on {analysis.coverage.totalSamples} samples
+              </p>
+            </div>
+          </div>
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Unlock Your Voice Twin
-        </h2>
-        <p className="text-slate-600">
-          Your samples are ready! Generate your personalized Voice Twin now.
-        </p>
+
+        <div className="p-6 space-y-4">
+          {/* Coverage Stats */}
+          <div className="flex items-start gap-3">
+            <div className="w-2 h-2 rounded-full bg-brand-500 mt-2 flex-shrink-0" />
+            <p className="text-slate-700">
+              <span className="font-semibold">{analysis.coverage.totalSamples} samples</span>
+              {analysis.coverage.languageNames.length > 0 && (
+                <> across <span className="font-semibold">{analysis.coverage.languageNames.length} language{analysis.coverage.languageNames.length > 1 ? 's' : ''}</span> ({analysis.coverage.languageNames.join(', ')})</>
+              )}
+            </p>
+          </div>
+
+          {/* Overall Style */}
+          <div className="flex items-start gap-3">
+            <div className="w-2 h-2 rounded-full bg-brand-500 mt-2 flex-shrink-0" />
+            <p className="text-slate-700">
+              Your overall style is <span className="font-semibold text-brand-700">{analysis.overallStyle}</span>
+            </p>
+          </div>
+
+          {/* Context-specific Notes */}
+          {analysis.contextNotes.map((note, index) => (
+            <div key={index} className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-brand-500 mt-2 flex-shrink-0" />
+              <p className="text-slate-700">
+                <span className="capitalize">{note.context}</span> is <span className="font-semibold">{note.note}</span>
+              </p>
+            </div>
+          ))}
+
+          {/* Quirks */}
+          {analysis.quirks.map((quirk, index) => (
+            <div key={index} className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-accent-500 mt-2 flex-shrink-0" />
+              <p className="text-slate-700 italic">{quirk}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="px-6 py-4 bg-white/50 border-t border-brand-200">
+          <p className="text-center text-slate-700 font-medium">
+            Ready to generate your full Voice Twin?
+          </p>
+        </div>
+      </div>
+
+      {/* Pricing Section Below */}
+      <UnlockSectionWithoutHeader onCheckout={onCheckout} isLoading={isLoading} />
+    </div>
+  );
+}
+
+function UnlockSectionWithoutHeader({
+  onCheckout,
+  isLoading,
+}: {
+  onCheckout: (tier: PricingTier) => void;
+  isLoading: boolean;
+}) {
+  const [selectedTier, setSelectedTier] = useState<PricingTier>('pro');
+  const tier = PRICING_TIERS_UI[selectedTier];
+
+  return (
+    <>
+      {/* Tier Selection Cards */}
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
+        {(Object.keys(PRICING_TIERS_UI) as PricingTier[]).map((tierKey) => {
+          const tierData = PRICING_TIERS_UI[tierKey];
+          const isSelected = selectedTier === tierKey;
+          const isPopular = 'popular' in tierData && tierData.popular;
+
+          return (
+            <button
+              key={tierKey}
+              onClick={() => setSelectedTier(tierKey)}
+              className={`relative p-5 rounded-xl border-2 text-left transition-all ${
+                isSelected
+                  ? 'border-brand-500 bg-brand-50 shadow-lg'
+                  : 'border-slate-200 bg-white hover:border-slate-300'
+              }`}
+            >
+              {isPopular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-500 to-accent-500 text-white rounded-full">
+                  Most Popular
+                </span>
+              )}
+              <div className="flex items-center justify-between mb-2">
+                <span className={`font-semibold ${isSelected ? 'text-brand-700' : 'text-slate-900'}`}>
+                  {tierData.name}
+                </span>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  isSelected ? 'border-brand-500 bg-brand-500' : 'border-slate-300'
+                }`}>
+                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className={`text-2xl font-bold ${isSelected ? 'text-brand-700' : 'text-slate-900'}`}>
+                  ${tierData.price}
+                </span>
+                <span className="text-sm text-slate-500">one-time</span>
+              </div>
+              <p className="text-sm text-slate-500">{tierData.description}</p>
+            </button>
+          );
+        })}
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
-        {/* What you get */}
+        {/* What you get - Dynamic based on selected tier */}
         <div className="p-6 sm:p-8">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">
-            What You&apos;ll Get
+            What You&apos;ll Get with {tier.name}
           </h3>
           <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-700">
-                <strong>Personalized Voice Profile</strong> - AI-generated prompt capturing your unique style
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-700">
-                <strong>Multi-language Support</strong> - Works across all your languages
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-700">
-                <strong>Context-Aware Output</strong> - Adapts to emails, Slack, reports, and more
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-700">
-                <strong>Deploy Anywhere</strong> - Works with ChatGPT, Claude, Gemini, or any LLM
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-              <span className="text-slate-700">
-                <strong>Unlimited Testing</strong> - Test your Voice Twin directly in the dashboard
-              </span>
-            </li>
+            {tier.features.map((feature, index) => (
+              <li key={index} className="flex items-start gap-3">
+                {feature.included ? (
+                  <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                    'highlight' in feature && feature.highlight ? 'text-brand-500' : 'text-emerald-500'
+                  }`} />
+                ) : (
+                  <XCircle className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
+                )}
+                <span className={feature.included ? 'text-slate-700' : 'text-slate-400'}>
+                  {feature.text}
+                  {'highlight' in feature && feature.highlight && (
+                    <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-brand-100 text-brand-700 rounded-full">
+                      Included
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
           </ul>
 
-          {/* Optional Add-on */}
-          <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <label className="flex items-start gap-4 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={includeTranscription}
-                onChange={(e) => setIncludeTranscription(e.target.checked)}
-                className="mt-1 w-5 h-5 text-brand-600 border-slate-300 rounded focus:ring-brand-500"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-900">
-                    Audio Transcription Add-on
-                  </span>
-                  <span className="px-2 py-0.5 text-xs font-medium bg-accent-100 text-accent-700 rounded-full">
-                    +${transcriptionPrice}
-                  </span>
+          {/* Subscription discount notice for Pro tier */}
+          {selectedTier === 'pro' && (
+            <div className="mt-6 p-4 bg-brand-50 rounded-xl border border-brand-200">
+              <div className="flex items-start gap-3">
+                <Zap className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-brand-800">
+                    First Year Subscription Discount
+                  </p>
+                  <p className="text-sm text-brand-700 mt-1">
+                    Pro tier members are eligible for a $10 first year subscription to keep your Voice Twin updated with new features.
+                  </p>
                 </div>
-                <p className="text-sm text-slate-600 mt-1">
-                  Upload voice memos and recordings - we&apos;ll transcribe them and add to your corpus
-                </p>
               </div>
-            </label>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Price & CTA */}
@@ -291,7 +453,7 @@ function UnlockSection({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-slate-900">${totalPrice}</span>
+                <span className="text-3xl font-bold text-slate-900">${tier.price}</span>
                 <span className="text-sm text-slate-500">one-time</span>
               </div>
               <p className="text-sm text-slate-600 mt-1">
@@ -299,7 +461,7 @@ function UnlockSection({
               </p>
             </div>
             <button
-              onClick={() => onCheckout(includeTranscription)}
+              onClick={() => onCheckout(selectedTier)}
               disabled={isLoading}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold shadow-brand hover:shadow-brand-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
@@ -311,7 +473,224 @@ function UnlockSection({
               ) : (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Unlock Now
+                  Unlock {tier.name}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Badges */}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          Secure payment via Stripe
+        </div>
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          Instant access after payment
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Pricing tiers configuration for UI
+const PRICING_TIERS_UI = {
+  starter: {
+    name: 'Starter',
+    price: 49,
+    description: 'Perfect for getting started',
+    features: [
+      { text: 'Personalized Voice Profile', included: true },
+      { text: '1 language support', included: true },
+      { text: '3 matrix sections', included: true },
+      { text: '1 regeneration', included: true },
+      { text: 'Deploy to any LLM', included: true },
+      { text: 'Unlimited languages', included: false },
+      { text: 'Subscription discount', included: false },
+      { text: '1 year subscription', included: false },
+      { text: 'Audio credits', included: false },
+      { text: 'Priority support', included: false },
+    ],
+  },
+  pro: {
+    name: 'Pro',
+    price: 99,
+    description: 'Most popular for professionals',
+    popular: true,
+    features: [
+      { text: 'Personalized Voice Profile', included: true },
+      { text: 'Unlimited languages', included: true },
+      { text: 'Unlimited matrix sections', included: true },
+      { text: '1 regeneration', included: true },
+      { text: 'Deploy to any LLM', included: true },
+      { text: '$10 first year subscription', included: true, highlight: true },
+      { text: '1 year subscription', included: false },
+      { text: 'Audio credits', included: false },
+      { text: 'Priority support', included: false },
+    ],
+  },
+  executive: {
+    name: 'Executive',
+    price: 249,
+    description: 'Everything you need',
+    features: [
+      { text: 'Personalized Voice Profile', included: true },
+      { text: 'Unlimited languages', included: true },
+      { text: 'Unlimited matrix sections', included: true },
+      { text: '1 regeneration', included: true },
+      { text: 'Deploy to any LLM', included: true },
+      { text: '1 year subscription included', included: true, highlight: true },
+      { text: 'Audio credits included', included: true, highlight: true },
+      { text: 'Priority support', included: true, highlight: true },
+    ],
+  },
+} as const;
+
+type PricingTier = keyof typeof PRICING_TIERS_UI;
+
+function UnlockSection({
+  onCheckout,
+  isLoading,
+}: {
+  onCheckout: (tier: PricingTier) => void;
+  isLoading: boolean;
+}) {
+  const [selectedTier, setSelectedTier] = useState<PricingTier>('pro');
+  const tier = PRICING_TIERS_UI[selectedTier];
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 mb-4">
+          <Sparkles className="w-8 h-8 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          Unlock Your Voice Twin
+        </h2>
+        <p className="text-slate-600">
+          Your samples are ready! Choose a plan to generate your personalized Voice Twin.
+        </p>
+      </div>
+
+      {/* Tier Selection Cards */}
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
+        {(Object.keys(PRICING_TIERS_UI) as PricingTier[]).map((tierKey) => {
+          const tierData = PRICING_TIERS_UI[tierKey];
+          const isSelected = selectedTier === tierKey;
+          const isPopular = 'popular' in tierData && tierData.popular;
+
+          return (
+            <button
+              key={tierKey}
+              onClick={() => setSelectedTier(tierKey)}
+              className={`relative p-5 rounded-xl border-2 text-left transition-all ${
+                isSelected
+                  ? 'border-brand-500 bg-brand-50 shadow-lg'
+                  : 'border-slate-200 bg-white hover:border-slate-300'
+              }`}
+            >
+              {isPopular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-500 to-accent-500 text-white rounded-full">
+                  Most Popular
+                </span>
+              )}
+              <div className="flex items-center justify-between mb-2">
+                <span className={`font-semibold ${isSelected ? 'text-brand-700' : 'text-slate-900'}`}>
+                  {tierData.name}
+                </span>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  isSelected ? 'border-brand-500 bg-brand-500' : 'border-slate-300'
+                }`}>
+                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                </div>
+              </div>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className={`text-2xl font-bold ${isSelected ? 'text-brand-700' : 'text-slate-900'}`}>
+                  ${tierData.price}
+                </span>
+                <span className="text-sm text-slate-500">one-time</span>
+              </div>
+              <p className="text-sm text-slate-500">{tierData.description}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+        {/* What you get - Dynamic based on selected tier */}
+        <div className="p-6 sm:p-8">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            What You&apos;ll Get with {tier.name}
+          </h3>
+          <ul className="space-y-3">
+            {tier.features.map((feature, index) => (
+              <li key={index} className="flex items-start gap-3">
+                {feature.included ? (
+                  <CheckCircle2 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                    'highlight' in feature && feature.highlight ? 'text-brand-500' : 'text-emerald-500'
+                  }`} />
+                ) : (
+                  <XCircle className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" />
+                )}
+                <span className={feature.included ? 'text-slate-700' : 'text-slate-400'}>
+                  {feature.text}
+                  {'highlight' in feature && feature.highlight && (
+                    <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-brand-100 text-brand-700 rounded-full">
+                      Included
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Subscription discount notice for Pro tier */}
+          {selectedTier === 'pro' && (
+            <div className="mt-6 p-4 bg-brand-50 rounded-xl border border-brand-200">
+              <div className="flex items-start gap-3">
+                <Zap className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-brand-800">
+                    First Year Subscription Discount
+                  </p>
+                  <p className="text-sm text-brand-700 mt-1">
+                    Pro tier members are eligible for a $10 first year subscription to keep your Voice Twin updated with new features.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Price & CTA */}
+        <div className="px-6 sm:px-8 py-6 bg-gradient-to-r from-slate-50 to-brand-50 border-t border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-slate-900">${tier.price}</span>
+                <span className="text-sm text-slate-500">one-time</span>
+              </div>
+              <p className="text-sm text-slate-600 mt-1">
+                14-day satisfaction guarantee
+              </p>
+            </div>
+            <button
+              onClick={() => onCheckout(selectedTier)}
+              disabled={isLoading}
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold shadow-brand hover:shadow-brand-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-5 h-5" />
+                  Unlock {tier.name}
                 </>
               )}
             </button>
@@ -871,6 +1250,7 @@ export default function GeneratePage() {
     hasPaid: false,
     voiceProfile: null,
     languagesDetected: [],
+    corpusAnalysis: null,
   });
   const [loading, setLoading] = useState(true);
   const [pageState, setPageState] = useState<PageState>('not_ready');
@@ -915,6 +1295,7 @@ export default function GeneratePage() {
         hasPaid: !!(purchasesData && purchasesData.length > 0),
         voiceProfile: voiceProfileData,
         languagesDetected: Array.from(languages),
+        corpusAnalysis: null,
       };
 
       setData(newData);
@@ -1011,7 +1392,7 @@ export default function GeneratePage() {
   }, [supabase]);
 
   // Handle checkout
-  const handleCheckout = async (includeTranscription: boolean) => {
+  const handleCheckout = async (tier: PricingTier) => {
     setIsCheckingOut(true);
 
     try {
@@ -1019,9 +1400,7 @@ export default function GeneratePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_COMPLETE,
-          product: 'complete',
-          includeTranscription,
+          product: tier,
         }),
       });
 

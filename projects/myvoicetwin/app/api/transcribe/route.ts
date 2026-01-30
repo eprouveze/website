@@ -13,12 +13,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 })
 
-// Pricing tiers based on audio length (in seconds)
-const PRICING_TIERS = [
-  { maxSeconds: 15 * 60, priceCents: 1900, label: 'Up to 15 minutes' },
-  { maxSeconds: 60 * 60, priceCents: 2900, label: '15-60 minutes' },
-  { maxSeconds: 3 * 60 * 60, priceCents: 4900, label: '1-3 hours' },
-] as const
+// Usage-based pricing: $0.009 per minute (Whisper API ~$0.006/min + 50% margin)
+const PRICE_PER_MINUTE_CENTS = 0.9 // $0.009 per minute
+const MINIMUM_CHARGE_CENTS = 1 // $0.01 minimum
+const MAX_DURATION_MINUTES = 180 // 3 hours max
 
 // Maximum file size (25MB - OpenAI limit)
 const MAX_FILE_SIZE = 25 * 1024 * 1024
@@ -35,13 +33,24 @@ const SUPPORTED_FORMATS = [
   'audio/m4a',
 ]
 
-function getPricingTier(durationSeconds: number) {
-  for (const tier of PRICING_TIERS) {
-    if (durationSeconds <= tier.maxSeconds) {
-      return tier
-    }
+/**
+ * Calculate price based on duration (usage-based pricing)
+ * - $0.009 per minute of audio
+ * - Round up to nearest minute for billing
+ * - Minimum charge: $0.01
+ */
+function calculatePrice(durationSeconds: number): { priceCents: number; minutes: number } | null {
+  const minutes = Math.ceil(durationSeconds / 60)
+
+  if (minutes > MAX_DURATION_MINUTES) {
+    return null // Too long
   }
-  return null // Too long
+
+  // Calculate price: $0.009 per minute, rounded to nearest cent
+  const rawPriceCents = minutes * PRICE_PER_MINUTE_CENTS
+  const priceCents = Math.max(MINIMUM_CHARGE_CENTS, Math.round(rawPriceCents))
+
+  return { priceCents, minutes }
 }
 
 /**
@@ -98,17 +107,15 @@ export async function POST(request: NextRequest) {
 
     const serviceClient = createServiceClient()
 
-    // 5. For estimate action, just return pricing
+    // 5. For estimate action, return usage-based pricing info
     if (action === 'estimate') {
-      // We can't know duration without processing, so return all tiers
       return NextResponse.json({
-        tiers: PRICING_TIERS.map((t) => ({
-          maxMinutes: Math.floor(t.maxSeconds / 60),
-          priceCents: t.priceCents,
-          priceFormatted: `$${(t.priceCents / 100).toFixed(0)}`,
-          label: t.label,
-        })),
-        note: 'Price determined after upload based on audio duration',
+        pricePerMinuteCents: PRICE_PER_MINUTE_CENTS,
+        pricePerMinuteFormatted: '$0.009',
+        minimumChargeCents: MINIMUM_CHARGE_CENTS,
+        minimumChargeFormatted: '$0.01',
+        maxDurationMinutes: MAX_DURATION_MINUTES,
+        note: 'Upload audio to get exact cost based on duration',
       })
     }
 
@@ -172,21 +179,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 9. Determine pricing
-    const pricingTier = getPricingTier(durationSeconds)
+    // 9. Determine pricing (usage-based)
+    const pricing = calculatePrice(durationSeconds)
 
-    if (!pricingTier) {
+    if (!pricing) {
       await serviceClient
         .from('audio_uploads')
         .update({
           status: 'failed',
-          error_message: 'Audio too long (max 3 hours)',
+          error_message: `Audio too long (max ${MAX_DURATION_MINUTES} minutes)`,
           duration_seconds: durationSeconds,
         } as never)
         .eq('id', typedUpload.id)
 
       return NextResponse.json(
-        { error: 'Audio too long. Maximum duration is 3 hours.' },
+        { error: `Audio too long. Maximum duration is ${MAX_DURATION_MINUTES} minutes.` },
         { status: 400 }
       )
     }
@@ -200,7 +207,7 @@ export async function POST(request: NextRequest) {
           status: 'pending',
           duration_seconds: durationSeconds,
           transcription: transcription, // Store temporarily
-          cost_cents: pricingTier.priceCents,
+          cost_cents: pricing.priceCents,
         } as never)
         .eq('id', typedUpload.id)
 
@@ -213,10 +220,10 @@ export async function POST(request: NextRequest) {
             price_data: {
               currency: 'usd',
               product_data: {
-                name: `Audio Transcription (${pricingTier.label})`,
-                description: `Transcription of ${file.name} (${Math.ceil(durationSeconds / 60)} minutes)`,
+                name: 'Audio Transcription',
+                description: `Transcription of ${file.name} (${pricing.minutes} ${pricing.minutes === 1 ? 'minute' : 'minutes'})`,
               },
-              unit_amount: pricingTier.priceCents,
+              unit_amount: pricing.priceCents,
             },
             quantity: 1,
           },
@@ -233,9 +240,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         requiresPayment: true,
         uploadId: typedUpload.id,
-        durationMinutes: Math.ceil(durationSeconds / 60),
-        priceCents: pricingTier.priceCents,
-        priceFormatted: `$${(pricingTier.priceCents / 100).toFixed(0)}`,
+        durationMinutes: pricing.minutes,
+        priceCents: pricing.priceCents,
+        priceFormatted: `$${(pricing.priceCents / 100).toFixed(2)}`,
         checkoutUrl: session.url,
       })
     }

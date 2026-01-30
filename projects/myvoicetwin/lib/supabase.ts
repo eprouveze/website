@@ -24,7 +24,7 @@ export type SampleType =
   | 'voice_memo'
   | 'other'
 
-export type ProductType = 'starter' | 'complete' | 'executive' | 'done-for-you'
+export type ProductType = 'starter' | 'pro' | 'executive'
 
 export type PurchaseStatus = 'pending' | 'completed' | 'refunded'
 
@@ -39,25 +39,33 @@ export interface Profile {
   updated_at: string
 }
 
-// Questionnaire responses
+// Corpus Matrix types
+export type CorpusLanguage = 'english' | 'french' | 'spanish' | 'german' | 'japanese' | 'chinese' | 'other'
+export type CommunicationTool = 'email' | 'slack_teams' | 'documents_reports' | 'presentations' | 'social_media' | 'blog_articles'
+export type CommunicationTarget = 'customers_clients' | 'internal_team' | 'executives_leadership' | 'public_social' | 'partners_vendors'
+export type CommunicationFormat = 'text_only' | 'text_voice'
+
+// Questionnaire responses (Corpus Matrix Builder)
 export interface QuestionnaireResponse {
   id: string
   user_id: string
-  // Identity & Context
+  // Corpus Matrix dimensions
+  languages: CorpusLanguage[]
+  communication_tools: CommunicationTool[]
+  communication_targets: CommunicationTarget[]
+  communication_format: CommunicationFormat
+  // Legacy fields (kept for backward compatibility, nullable)
   profession: string | null
   industry: string | null
   years_experience: number | null
   primary_language: string
   additional_languages: string[] | null
-  // Communication Style
   formality_level: FormalityLevel | null
   typical_audiences: string[] | null
   communication_contexts: string[] | null
-  // Voice Characteristics
   described_tone: string[] | null
   pet_phrases: string | null
   things_to_avoid: string | null
-  // Goals
   primary_use_case: string | null
   biggest_challenge: string | null
   completed_at: string | null

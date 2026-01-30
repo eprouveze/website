@@ -24,6 +24,10 @@ import {
   Calendar,
   Type,
   ArrowLeft,
+  Upload,
+  DollarSign,
+  Clock,
+  Loader2,
 } from 'lucide-react';
 
 // Types
@@ -64,6 +68,13 @@ const LANGUAGES = [
 
 const MIN_SAMPLES = 5;
 
+// Audio upload constants
+const ACCEPTED_AUDIO_FORMATS = '.mp3,.wav,.m4a,.webm';
+const ACCEPTED_AUDIO_MIMES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/m4a', 'audio/x-m4a', 'audio/webm'];
+const MAX_FILE_SIZE_MB = 25;
+const PRICE_PER_MINUTE = 0.009; // $0.009 per minute
+const MINIMUM_CHARGE = 0.01; // $0.01 minimum
+
 const INITIAL_FORM_DATA: SampleFormData = {
   title: '',
   sample_type: 'email_formal' as SampleType,
@@ -97,6 +108,19 @@ function formatDate(dateString: string): string {
 
 function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function calculateAudioPrice(durationSeconds: number): { price: number; minutes: number } {
+  const minutes = Math.ceil(durationSeconds / 60);
+  const rawPrice = minutes * PRICE_PER_MINUTE;
+  const price = Math.max(MINIMUM_CHARGE, Math.round(rawPrice * 100) / 100);
+  return { price, minutes };
 }
 
 // Components
@@ -171,7 +195,7 @@ function SampleCard({
   );
 }
 
-function EmptyState({ onAdd }: { onAdd: () => void }) {
+function EmptyState({ onAdd, onUploadAudio }: { onAdd: () => void; onUploadAudio: () => void }) {
   return (
     <div className="text-center py-16 px-4">
       <div className="mx-auto w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center mb-6">
@@ -182,13 +206,25 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         Add your writing samples to help us understand your unique voice. Include emails, messages,
         documents, or any text that represents how you communicate.
       </p>
-      <button
-        onClick={onAdd}
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold shadow-brand hover:shadow-brand-lg hover:scale-[1.02] transition-all duration-200"
-      >
-        <Plus className="w-5 h-5" />
-        Add Your First Sample
-      </button>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button
+          onClick={onUploadAudio}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-accent-300 text-accent-700 font-semibold hover:bg-accent-50 hover:border-accent-400 shadow-sm hover:shadow transition-all duration-200"
+        >
+          <Upload className="w-5 h-5" />
+          Upload Audio
+        </button>
+        <button
+          onClick={onAdd}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold shadow-brand hover:shadow-brand-lg hover:scale-[1.02] transition-all duration-200"
+        >
+          <Plus className="w-5 h-5" />
+          Add Your First Sample
+        </button>
+      </div>
+      <p className="mt-4 text-xs text-slate-500">
+        Audio transcription: $0.009/min (minimum $0.01)
+      </p>
     </div>
   );
 }
@@ -523,11 +559,329 @@ function AddSampleModal({
   );
 }
 
+interface AudioUploadResult {
+  transcription: string;
+  durationMinutes: number;
+  wordCount: number;
+}
+
+function AudioUploadModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: (result: AudioUploadResult) => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<'select' | 'confirm' | 'processing' | 'complete'>('select');
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState('');
+
+  const pricing = duration ? calculateAudioPrice(duration) : null;
+
+  const resetState = () => {
+    setFile(null);
+    setDuration(null);
+    setError(null);
+    setStep('select');
+    setAcknowledged(false);
+    setProcessingStatus('');
+  };
+
+  const handleClose = () => {
+    resetState();
+    onClose();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    setError(null);
+
+    // Validate file type
+    if (!ACCEPTED_AUDIO_MIMES.includes(selectedFile.type)) {
+      setError('Please select a valid audio file (MP3, WAV, M4A, or WebM)');
+      return;
+    }
+
+    // Validate file size
+    if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      setError(`File too large. Maximum size is ${MAX_FILE_SIZE_MB}MB.`);
+      return;
+    }
+
+    setFile(selectedFile);
+
+    // Get audio duration using Web Audio API
+    try {
+      const audioContext = new AudioContext();
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      setDuration(audioBuffer.duration);
+      setStep('confirm');
+      await audioContext.close();
+    } catch (err) {
+      console.error('Error getting audio duration:', err);
+      // If we can't get duration, we'll let the server calculate it
+      setDuration(null);
+      setStep('confirm');
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setStep('processing');
+    setProcessingStatus('Uploading audio...');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('action', 'transcribe');
+
+      setProcessingStatus('Transcribing audio...');
+
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to transcribe audio');
+      }
+
+      // If payment is required, redirect to Stripe
+      if (data.requiresPayment && data.checkoutUrl) {
+        setProcessingStatus('Redirecting to payment...');
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+
+      // If transcription is complete (free or already paid)
+      if (data.transcription) {
+        setStep('complete');
+        onSuccess({
+          transcription: data.transcription,
+          durationMinutes: data.durationMinutes,
+          wordCount: data.wordCount,
+        });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to upload audio');
+      setStep('confirm');
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={handleClose} />
+
+      {/* Modal */}
+      <div className="relative min-h-screen flex items-center justify-center p-4">
+        <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent-100 flex items-center justify-center">
+                <Mic className="w-5 h-5 text-accent-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">Upload Audio</h2>
+                <p className="text-sm text-slate-500">Transcribe audio to create a sample</p>
+              </div>
+            </div>
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6">
+            {/* Pricing Info Banner */}
+            <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-brand-50 to-accent-50 border border-brand-100">
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-5 h-5 text-brand-600" />
+                <div>
+                  <p className="text-sm font-medium text-slate-900">$0.009 per minute of audio</p>
+                  <p className="text-xs text-slate-600">Minimum charge: $0.01 | Billed per minute (rounded up)</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center gap-2 text-sm">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <p>{error}</p>
+              </div>
+            )}
+
+            {/* Step: Select File */}
+            {step === 'select' && (
+              <div className="space-y-4">
+                <label className="block">
+                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-brand-400 hover:bg-brand-50/50 transition-colors cursor-pointer">
+                    <Upload className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-slate-700 mb-1">
+                      Click to select audio file
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      MP3, WAV, M4A, or WebM (max {MAX_FILE_SIZE_MB}MB)
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    accept={ACCEPTED_AUDIO_FORMATS}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            )}
+
+            {/* Step: Confirm */}
+            {step === 'confirm' && file && (
+              <div className="space-y-4">
+                {/* File Info */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-5 h-5 text-slate-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-slate-900 truncate">{file.name}</p>
+                      <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+                        <span>{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                        {duration && (
+                          <>
+                            <span>|</span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5" />
+                              {formatDuration(duration)}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setFile(null);
+                        setDuration(null);
+                        setStep('select');
+                      }}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cost Estimate */}
+                {pricing && (
+                  <div className="p-4 rounded-xl bg-brand-50 border border-brand-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">Estimated Cost</p>
+                        <p className="text-xs text-slate-500">{pricing.minutes} minute{pricing.minutes !== 1 ? 's' : ''} of audio</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-brand-600">${pricing.price.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cost Acknowledgment */}
+                <label className="flex items-start gap-3 p-4 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={acknowledged}
+                    onChange={(e) => setAcknowledged(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium text-slate-900">I acknowledge the cost</p>
+                    <p className="text-slate-500">
+                      {pricing
+                        ? `I agree to pay $${pricing.price.toFixed(2)} for transcribing this audio.`
+                        : 'I agree to pay the calculated cost based on audio duration.'}
+                    </p>
+                  </div>
+                </label>
+
+                {/* Actions */}
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    onClick={() => {
+                      setFile(null);
+                      setDuration(null);
+                      setStep('select');
+                      setAcknowledged(false);
+                    }}
+                    className="flex-1 px-4 py-2.5 rounded-xl text-slate-700 font-medium hover:bg-slate-100 transition-colors"
+                  >
+                    Change File
+                  </button>
+                  <button
+                    onClick={handleUpload}
+                    disabled={!acknowledged}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-accent-600 text-white font-semibold shadow-brand hover:shadow-brand-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload & Transcribe
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step: Processing */}
+            {step === 'processing' && (
+              <div className="py-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-100 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
+                </div>
+                <p className="text-lg font-medium text-slate-900 mb-1">{processingStatus}</p>
+                <p className="text-sm text-slate-500">This may take a few moments...</p>
+              </div>
+            )}
+
+            {/* Step: Complete */}
+            {step === 'complete' && (
+              <div className="py-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                  <Check className="w-8 h-8 text-green-600" />
+                </div>
+                <p className="text-lg font-medium text-slate-900 mb-1">Transcription Complete!</p>
+                <p className="text-sm text-slate-500">Creating your sample now...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Main Page Component
 export default function WritingSamplesPage() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -632,6 +986,43 @@ export default function WritingSamplesPage() {
     }
   };
 
+  // Handle successful audio transcription
+  const handleAudioUploadSuccess = async (result: AudioUploadResult) => {
+    if (!userId) return;
+
+    try {
+      setIsSaving(true);
+
+      // Create a new sample from the transcription
+      const insertData = {
+        user_id: userId,
+        title: `Audio Transcript (${result.durationMinutes} min)`,
+        sample_type: 'voice_memo' as SampleType,
+        language: 'en', // Default to English, could detect from transcription
+        context: 'Transcribed from audio upload',
+        audience: null,
+        content: result.transcription,
+        is_transcript: true,
+        original_audio_url: null,
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: insertError } = await supabase.from('samples').insert(insertData as any);
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      setIsAudioModalOpen(false);
+      await fetchData();
+    } catch (err) {
+      console.error('Error creating sample from transcription:', err);
+      setError('Failed to create sample from transcription. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const canContinue = samples.length >= MIN_SAMPLES;
 
   return (
@@ -673,20 +1064,29 @@ export default function WritingSamplesPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Samples Section */}
         <div className="lg:col-span-2">
-          {/* Add Sample Button */}
+          {/* Add Sample Buttons */}
           {samples.length > 0 && (
             <div className="mb-6 flex items-center justify-between">
               <p className="text-slate-600">
                 <span className="font-semibold text-slate-900">{samples.length}</span>{' '}
                 {samples.length === 1 ? 'sample' : 'samples'} collected
               </p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 shadow-sm hover:shadow transition-all duration-200"
-              >
-                <Plus className="w-4 h-4" />
-                Add Sample
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsAudioModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-accent-300 text-accent-700 font-medium hover:bg-accent-50 hover:border-accent-400 shadow-sm hover:shadow transition-all duration-200"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload Audio
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 shadow-sm hover:shadow transition-all duration-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Sample
+                </button>
+              </div>
             </div>
           )}
 
@@ -701,7 +1101,7 @@ export default function WritingSamplesPage() {
           ) : samples.length === 0 ? (
             /* Empty State */
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
-              <EmptyState onAdd={() => setIsModalOpen(true)} />
+              <EmptyState onAdd={() => setIsModalOpen(true)} onUploadAudio={() => setIsAudioModalOpen(true)} />
             </div>
           ) : (
             /* Samples Grid */
@@ -755,6 +1155,13 @@ export default function WritingSamplesPage() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddSample}
         isLoading={isSaving}
+      />
+
+      {/* Audio Upload Modal */}
+      <AudioUploadModal
+        isOpen={isAudioModalOpen}
+        onClose={() => setIsAudioModalOpen(false)}
+        onSuccess={handleAudioUploadSuccess}
       />
     </div>
   );

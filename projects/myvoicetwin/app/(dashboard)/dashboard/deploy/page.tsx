@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowLeft,
+  ArrowRight,
   Calendar,
   FileText,
   Globe,
@@ -23,6 +24,8 @@ import {
   Code,
   Crown,
   Zap,
+  BookOpen,
+  CheckCircle2,
 } from 'lucide-react';
 
 // Platform icons as simple components
@@ -44,6 +47,52 @@ const GeminiIcon = () => (
   </svg>
 );
 
+// Platform configuration
+type PlatformId = 'chatgpt' | 'claude' | 'gemini' | 'api';
+
+interface PlatformConfig {
+  id: PlatformId;
+  name: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  hint: string;
+  externalUrl?: string;
+}
+
+const PLATFORMS: PlatformConfig[] = [
+  {
+    id: 'chatgpt',
+    name: 'ChatGPT',
+    subtitle: 'Custom GPT',
+    icon: <ChatGPTIcon />,
+    hint: 'Paste this prompt into the "Instructions" field when creating your Custom GPT.',
+    externalUrl: 'https://chat.openai.com/gpts/editor',
+  },
+  {
+    id: 'claude',
+    name: 'Claude',
+    subtitle: 'Projects',
+    icon: <ClaudeIcon />,
+    hint: 'Add this prompt as "Project Instructions" in your Claude Project settings.',
+    externalUrl: 'https://claude.ai',
+  },
+  {
+    id: 'gemini',
+    name: 'Gemini',
+    subtitle: 'Gems',
+    icon: <GeminiIcon />,
+    hint: 'Use this prompt in the "Instructions" field when creating your Gem.',
+    externalUrl: 'https://gemini.google.com',
+  },
+  {
+    id: 'api',
+    name: 'API/Other',
+    subtitle: 'Developer Integration',
+    icon: <Code className="w-5 h-5" />,
+    hint: 'Use this prompt as the system message in your API calls.',
+  },
+];
+
 interface ProfileStats {
   generatedAt: string;
   samplesAnalyzed: number;
@@ -55,6 +104,7 @@ interface ProfileStats {
 interface SubscriptionInfo {
   isSubscribed: boolean;
   regenerationsRemaining: number;
+  userTier: string | null;
 }
 
 // Accordion component for platform guides
@@ -72,13 +122,13 @@ function PlatformAccordion({
   onToggle: () => void;
 }) {
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+          <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600">
             {icon}
           </div>
           <span className="font-semibold text-slate-900">{title}</span>
@@ -170,6 +220,43 @@ function Step({
   );
 }
 
+// Platform selection card
+function PlatformCard({
+  platform,
+  isSelected,
+  onToggle,
+}: {
+  platform: PlatformConfig;
+  isSelected: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 ${
+        isSelected
+          ? 'border-brand-500 bg-brand-50 shadow-md'
+          : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+      }`}
+    >
+      {isSelected && (
+        <div className="absolute top-2 right-2">
+          <CheckCircle2 className="w-5 h-5 text-brand-600" />
+        </div>
+      )}
+      <div
+        className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+          isSelected ? 'bg-brand-100 text-brand-600' : 'bg-slate-100 text-slate-600'
+        }`}
+      >
+        {platform.icon}
+      </div>
+      <span className="font-semibold text-slate-900">{platform.name}</span>
+      <span className="text-xs text-slate-500">{platform.subtitle}</span>
+    </button>
+  );
+}
+
 // Language name helper
 function getLanguageName(code: string): string {
   const languages: Record<string, string> = {
@@ -214,11 +301,17 @@ export default function DeployPage() {
   const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionInfo>({
     isSubscribed: false,
     regenerationsRemaining: 0,
+    userTier: null,
   });
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [openAccordion, setOpenAccordion] = useState<string | null>('chatgpt');
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [languages, setLanguages] = useState<string[]>([]);
+
+  // Platform selection state
+  const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformId[]>([]);
+  const [showPromptSection, setShowPromptSection] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Fetch voice profile and related data
   const fetchData = useCallback(async () => {
@@ -289,7 +382,7 @@ export default function DeployPage() {
         tokenCount,
       });
 
-      // Check subscription status
+      // Check subscription status and user tier
       const purchasesData = (purchasesResult.data || []) as Array<{
         id: string;
         status: string;
@@ -297,9 +390,15 @@ export default function DeployPage() {
       }>;
       const hasSubscription = purchasesData.length > 0;
 
+      // Determine user tier (pro tiers include subscription benefits)
+      const proTiers = ['complete', 'executive', 'done-for-you'];
+      const userPurchase = purchasesData.find(p => proTiers.includes(p.product));
+      const userTier = userPurchase?.product || (purchasesData[0]?.product || null);
+
       setSubscriptionInfo({
         isSubscribed: !!hasSubscription,
-        regenerationsRemaining: hasSubscription ? 3 : 0, // Default regenerations
+        regenerationsRemaining: hasSubscription ? 3 : 0,
+        userTier,
       });
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -312,6 +411,24 @@ export default function DeployPage() {
     fetchData();
   }, [fetchData]);
 
+  // Toggle platform selection
+  const togglePlatform = (platformId: PlatformId) => {
+    setSelectedPlatforms((prev) =>
+      prev.includes(platformId)
+        ? prev.filter((id) => id !== platformId)
+        : [...prev, platformId]
+    );
+  };
+
+  // Handle continue to prompt section
+  const handleContinueToPrompt = () => {
+    if (selectedPlatforms.length > 0) {
+      setShowPromptSection(true);
+      // Auto-open the first selected platform's accordion
+      setOpenAccordion(selectedPlatforms[0]);
+    }
+  };
+
   // Copy to clipboard handler
   const handleCopyPrompt = async () => {
     if (!voiceProfile?.master_prompt) return;
@@ -323,7 +440,29 @@ export default function DeployPage() {
   // Download as .txt
   const handleDownloadTxt = () => {
     if (!voiceProfile?.master_prompt) return;
-    const blob = new Blob([voiceProfile.master_prompt], { type: 'text/plain' });
+
+    const platformNames = selectedPlatforms
+      .map((id) => PLATFORMS.find((p) => p.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+
+    const content = `MY VOICE TWIN - MASTER PROMPT
+Version: ${profileStats?.version || 1}
+Generated: ${profileStats?.generatedAt ? formatDate(profileStats.generatedAt) : 'Unknown'}
+Target Platforms: ${platformNames || 'All Platforms'}
+
+================================================================================
+
+${voiceProfile.master_prompt}
+
+================================================================================
+
+QUICK SETUP TIPS:
+${selectedPlatforms.includes('chatgpt') ? '- ChatGPT: Paste into "Instructions" field in Custom GPT editor\n' : ''}${selectedPlatforms.includes('claude') ? '- Claude: Add as "Project Instructions" in your Project settings\n' : ''}${selectedPlatforms.includes('gemini') ? '- Gemini: Use in "Instructions" field when creating a Gem\n' : ''}${selectedPlatforms.includes('api') ? '- API: Use as system message in your API calls\n' : ''}
+Generated by My Voice Twin - myvoicetwin.com
+`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -337,13 +476,22 @@ export default function DeployPage() {
   // Download as .md
   const handleDownloadMd = () => {
     if (!voiceProfile?.master_prompt) return;
+
+    const platformNames = selectedPlatforms
+      .map((id) => PLATFORMS.find((p) => p.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+
     const mdContent = `# My Voice Twin - Master Prompt
 
 ## Voice Profile v${profileStats?.version || 1}
 
-Generated: ${profileStats?.generatedAt ? formatDate(profileStats.generatedAt) : 'Unknown'}
-Samples Analyzed: ${profileStats?.samplesAnalyzed || 0}
-Languages: ${profileStats?.languages.map(getLanguageName).join(', ') || 'N/A'}
+| Property | Value |
+|----------|-------|
+| Generated | ${profileStats?.generatedAt ? formatDate(profileStats.generatedAt) : 'Unknown'} |
+| Samples Analyzed | ${profileStats?.samplesAnalyzed || 0} |
+| Languages | ${profileStats?.languages.map(getLanguageName).join(', ') || 'N/A'} |
+| Target Platforms | ${platformNames || 'All Platforms'} |
 
 ---
 
@@ -355,7 +503,32 @@ ${voiceProfile.master_prompt}
 
 ---
 
-*Generated by My Voice Twin*
+## Quick Setup Guide
+
+${selectedPlatforms.includes('chatgpt') ? `### ChatGPT (Custom GPT)
+1. Go to [chat.openai.com](https://chat.openai.com)
+2. Navigate to Explore GPTs > Create
+3. Paste this prompt into the "Instructions" field
+4. Save and test your Custom GPT
+
+` : ''}${selectedPlatforms.includes('claude') ? `### Claude (Projects)
+1. Go to [claude.ai](https://claude.ai)
+2. Create a new Project
+3. Add this prompt as "Project Instructions"
+4. Start chatting with your Voice Twin
+
+` : ''}${selectedPlatforms.includes('gemini') ? `### Gemini (Gems)
+1. Go to [gemini.google.com](https://gemini.google.com)
+2. Click on Gems > New Gem
+3. Paste this prompt into the "Instructions" field
+4. Save and test your Gem
+
+` : ''}${selectedPlatforms.includes('api') ? `### API Usage
+Use this prompt as the \`system\` message in your API calls.
+
+` : ''}---
+
+*Generated by [My Voice Twin](https://myvoicetwin.com)*
 `;
     const blob = new Blob([mdContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -372,6 +545,36 @@ ${voiceProfile.master_prompt}
   const toggleAccordion = (id: string) => {
     setOpenAccordion(openAccordion === id ? null : id);
   };
+
+  // Handle subscription checkout
+  const handleSubscriptionCheckout = async () => {
+    setIsCheckingOut(true);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product: 'complete',
+        }),
+      });
+
+      const { url, error } = await response.json();
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      window.location.href = url;
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setIsCheckingOut(false);
+    }
+  };
+
+  // Check if user has a pro tier (for pricing display)
+  const isProUser = subscriptionInfo.userTier &&
+    ['complete', 'executive', 'done-for-you'].includes(subscriptionInfo.userTier);
 
   // API code snippets
   const openaiSnippet = `import OpenAI from 'openai';
@@ -453,7 +656,7 @@ console.log(response.content[0].text);`;
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Deploy Your Voice Twin</h1>
             <p className="text-slate-600">
-              Your voice profile is ready. Use it with your favorite AI platforms.
+              Your voice profile is ready. Choose where you want to use it.
             </p>
           </div>
         </div>
@@ -462,249 +665,387 @@ console.log(response.content[0].text);`;
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Master Prompt Section */}
-          <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-slate-900">Master Prompt</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-500">
-                  ~{profileStats?.tokenCount.toLocaleString()} tokens
-                </span>
-              </div>
-            </div>
-
-            {/* Prompt Display */}
-            <div className="p-4">
-              <div className="bg-slate-900 rounded-xl p-5 max-h-[400px] overflow-y-auto">
-                <pre className="font-mono text-sm text-slate-100 whitespace-pre-wrap break-words leading-relaxed">
-                  {voiceProfile.master_prompt}
-                </pre>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-3">
-              <button
-                onClick={handleCopyPrompt}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  copied
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-brand-600 text-white hover:bg-brand-700'
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    Copy to Clipboard
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={handleDownloadTxt}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download .txt
-              </button>
-
-              <button
-                onClick={handleDownloadMd}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download .md
-              </button>
-            </div>
-          </section>
-
-          {/* Platform Deployment Guides */}
-          <section>
-            <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-brand-600" />
-              Platform Deployment Guides
-            </h2>
-
-            <div className="space-y-3">
-              {/* ChatGPT */}
-              <PlatformAccordion
-                title="ChatGPT (Custom GPT)"
-                icon={<ChatGPTIcon />}
-                isOpen={openAccordion === 'chatgpt'}
-                onToggle={() => toggleAccordion('chatgpt')}
-              >
-                <div className="space-y-4">
-                  <Step
-                    number={1}
-                    title="Go to chat.openai.com"
-                    description="Navigate to Explore GPTs in the sidebar, then click 'Create'"
-                  />
-                  <Step
-                    number={2}
-                    title='Name your GPT (e.g., "My Writing Assistant")'
-                    description="Choose a memorable name that reflects your voice"
-                  />
-                  <Step
-                    number={3}
-                    title='In "Instructions", paste your master prompt'
-                    description="Copy the entire prompt above and paste it in the Instructions field"
-                  />
-                  <Step
-                    number={4}
-                    title="Configure conversation starters"
-                    description='Add helpful prompts like "Help me write an email to..." or "Draft a message for..."'
-                  />
-                  <Step
-                    number={5}
-                    title="Save and test"
-                    description="Click Save, then start a conversation to test your Voice Twin"
-                  />
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <a
-                      href="https://chat.openai.com/gpts/editor"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
-                    >
-                      Open GPT Editor
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+          {/* Step 1: Platform Selection */}
+          {!showPromptSection && (
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-semibold text-sm">
+                    1
                   </div>
-                </div>
-              </PlatformAccordion>
-
-              {/* Claude */}
-              <PlatformAccordion
-                title="Claude (Projects)"
-                icon={<ClaudeIcon />}
-                isOpen={openAccordion === 'claude'}
-                onToggle={() => toggleAccordion('claude')}
-              >
-                <div className="space-y-4">
-                  <Step
-                    number={1}
-                    title="Go to claude.ai"
-                    description="Navigate to Projects in the sidebar, then click 'New Project'"
-                  />
-                  <Step
-                    number={2}
-                    title="Name your project"
-                    description='Give it a descriptive name like "My Voice Twin" or "Writing Assistant"'
-                  />
-                  <Step
-                    number={3}
-                    title='In "Instructions", paste your master prompt'
-                    description="Add the prompt as project instructions so Claude uses your voice in every conversation"
-                  />
-                  <Step
-                    number={4}
-                    title="Optionally upload reference docs"
-                    description="Add writing samples or style guides for even better results"
-                  />
-                  <Step
-                    number={5}
-                    title="Start chatting"
-                    description="Open the project and start a new conversation with your Voice Twin"
-                  />
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <a
-                      href="https://claude.ai"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
-                    >
-                      Open Claude
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </PlatformAccordion>
-
-              {/* Gemini */}
-              <PlatformAccordion
-                title="Gemini (Gems)"
-                icon={<GeminiIcon />}
-                isOpen={openAccordion === 'gemini'}
-                onToggle={() => toggleAccordion('gemini')}
-              >
-                <div className="space-y-4">
-                  <Step
-                    number={1}
-                    title="Go to gemini.google.com"
-                    description="Click on 'Gems' in the sidebar to access custom AI personas"
-                  />
-                  <Step
-                    number={2}
-                    title="Create a new Gem"
-                    description='Click "New Gem" and give it a name'
-                  />
-                  <Step
-                    number={3}
-                    title='In "Instructions", paste your master prompt'
-                    description="Add your voice profile to define how the Gem should communicate"
-                  />
-                  <Step
-                    number={4}
-                    title="Save and test"
-                    description="Save your Gem and start a conversation to experience your Voice Twin"
-                  />
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <a
-                      href="https://gemini.google.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
-                    >
-                      Open Gemini
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </PlatformAccordion>
-
-              {/* API Usage */}
-              <PlatformAccordion
-                title="API Usage"
-                icon={<Code className="w-5 h-5" />}
-                isOpen={openAccordion === 'api'}
-                onToggle={() => toggleAccordion('api')}
-              >
-                <div className="space-y-6">
                   <div>
-                    <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
-                      <ChatGPTIcon />
-                      OpenAI API
-                    </h4>
-                    <CodeBlock code={openaiSnippet} language="javascript" />
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
-                      <ClaudeIcon />
-                      Claude API
-                    </h4>
-                    <CodeBlock code={claudeSnippet} language="javascript" />
-                  </div>
-
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <p className="text-sm text-amber-800">
-                      <strong>Note:</strong> Replace the truncated system prompt with your full
-                      master prompt for best results. Store it in an environment variable for
-                      security.
-                    </p>
+                    <h2 className="text-lg font-semibold text-slate-900">Select Your Platforms</h2>
+                    <p className="text-sm text-slate-500">Choose where you want to deploy your Voice Twin</p>
                   </div>
                 </div>
-              </PlatformAccordion>
-            </div>
-          </section>
+              </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  {PLATFORMS.map((platform) => (
+                    <PlatformCard
+                      key={platform.id}
+                      platform={platform}
+                      isSelected={selectedPlatforms.includes(platform.id)}
+                      onToggle={() => togglePlatform(platform.id)}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <p className="text-sm text-slate-500">
+                    {selectedPlatforms.length === 0
+                      ? 'Select at least one platform to continue'
+                      : `${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''} selected`}
+                  </p>
+                  <button
+                    onClick={handleContinueToPrompt}
+                    disabled={selectedPlatforms.length === 0}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 ${
+                      selectedPlatforms.length > 0
+                        ? 'bg-brand-600 text-white hover:bg-brand-700'
+                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    }`}
+                  >
+                    Continue
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Step 2: Master Prompt & Output Options (shown after platform selection) */}
+          {showPromptSection && (
+            <>
+              {/* Platform Selection Summary */}
+              <div className="bg-brand-50 border border-brand-100 rounded-xl px-5 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-brand-600" />
+                  <span className="text-slate-700">
+                    Deploying to:{' '}
+                    <span className="font-semibold text-slate-900">
+                      {selectedPlatforms
+                        .map((id) => PLATFORMS.find((p) => p.id === id)?.name)
+                        .join(', ')}
+                    </span>
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowPromptSection(false)}
+                  className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+                >
+                  Change
+                </button>
+              </div>
+
+              {/* Platform-specific hint */}
+              {selectedPlatforms.length === 1 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
+                  <p className="text-sm text-amber-800">
+                    <strong>Tip:</strong>{' '}
+                    {PLATFORMS.find((p) => p.id === selectedPlatforms[0])?.hint}
+                  </p>
+                </div>
+              )}
+
+              {/* Master Prompt Section */}
+              <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-brand-600" />
+                    <h2 className="text-lg font-semibold text-slate-900">Your Master Prompt</h2>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-500">
+                      ~{profileStats?.tokenCount.toLocaleString()} tokens
+                    </span>
+                  </div>
+                </div>
+
+                {/* Prompt Display */}
+                <div className="p-4">
+                  <div className="bg-slate-900 rounded-xl p-5 max-h-[400px] overflow-y-auto">
+                    <pre className="font-mono text-sm text-slate-100 whitespace-pre-wrap break-words leading-relaxed">
+                      {voiceProfile.master_prompt}
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Quick Copy Button */}
+                <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+                  <button
+                    onClick={handleCopyPrompt}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 ${
+                      copied
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-brand-600 text-white hover:bg-brand-700'
+                    }`}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied to Clipboard!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy Prompt to Clipboard
+                      </>
+                    )}
+                  </button>
+                </div>
+              </section>
+
+              {/* Output Options */}
+              <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-200">
+                  <h2 className="text-lg font-semibold text-slate-900">Export Options</h2>
+                  <p className="text-sm text-slate-500 mt-1">Download your prompt or follow step-by-step guides</p>
+                </div>
+
+                <div className="p-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {/* File Download Option */}
+                    <div className="border border-slate-200 rounded-xl p-5 bg-slate-50">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center">
+                          <Download className="w-5 h-5 text-brand-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">Download Files</h3>
+                          <p className="text-xs text-slate-500">Save prompt for offline use</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleDownloadTxt}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          .txt
+                        </button>
+                        <button
+                          onClick={handleDownloadMd}
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          .md
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Step-by-Step Guides Option */}
+                    <div className="border border-slate-200 rounded-xl p-5 bg-slate-50">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center">
+                          <BookOpen className="w-5 h-5 text-brand-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">Step-by-Step Guides</h3>
+                          <p className="text-xs text-slate-500">Platform-specific instructions</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-slate-600">
+                        Detailed setup guides for each platform are available below.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Platform Deployment Guides */}
+              <section>
+                <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-brand-600" />
+                  Step-by-Step Setup Guides
+                </h2>
+                <p className="text-slate-600 mb-4">
+                  Follow these detailed instructions for your selected platforms.
+                </p>
+
+                <div className="space-y-3">
+                  {/* ChatGPT */}
+                  {selectedPlatforms.includes('chatgpt') && (
+                    <PlatformAccordion
+                      title="ChatGPT (Custom GPT)"
+                      icon={<ChatGPTIcon />}
+                      isOpen={openAccordion === 'chatgpt'}
+                      onToggle={() => toggleAccordion('chatgpt')}
+                    >
+                      <div className="space-y-4">
+                        <Step
+                          number={1}
+                          title="Go to chat.openai.com"
+                          description="Navigate to Explore GPTs in the sidebar, then click 'Create'"
+                        />
+                        <Step
+                          number={2}
+                          title='Name your GPT (e.g., "My Writing Assistant")'
+                          description="Choose a memorable name that reflects your voice"
+                        />
+                        <Step
+                          number={3}
+                          title='In "Instructions", paste your master prompt'
+                          description="Copy the entire prompt above and paste it in the Instructions field"
+                        />
+                        <Step
+                          number={4}
+                          title="Configure conversation starters"
+                          description='Add helpful prompts like "Help me write an email to..." or "Draft a message for..."'
+                        />
+                        <Step
+                          number={5}
+                          title="Save and test"
+                          description="Click Save, then start a conversation to test your Voice Twin"
+                        />
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                          <a
+                            href="https://chat.openai.com/gpts/editor"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
+                          >
+                            Open GPT Editor
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    </PlatformAccordion>
+                  )}
+
+                  {/* Claude */}
+                  {selectedPlatforms.includes('claude') && (
+                    <PlatformAccordion
+                      title="Claude (Projects)"
+                      icon={<ClaudeIcon />}
+                      isOpen={openAccordion === 'claude'}
+                      onToggle={() => toggleAccordion('claude')}
+                    >
+                      <div className="space-y-4">
+                        <Step
+                          number={1}
+                          title="Go to claude.ai"
+                          description="Navigate to Projects in the sidebar, then click 'New Project'"
+                        />
+                        <Step
+                          number={2}
+                          title="Name your project"
+                          description='Give it a descriptive name like "My Voice Twin" or "Writing Assistant"'
+                        />
+                        <Step
+                          number={3}
+                          title='In "Instructions", paste your master prompt'
+                          description="Add the prompt as project instructions so Claude uses your voice in every conversation"
+                        />
+                        <Step
+                          number={4}
+                          title="Optionally upload reference docs"
+                          description="Add writing samples or style guides for even better results"
+                        />
+                        <Step
+                          number={5}
+                          title="Start chatting"
+                          description="Open the project and start a new conversation with your Voice Twin"
+                        />
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                          <a
+                            href="https://claude.ai"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
+                          >
+                            Open Claude
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    </PlatformAccordion>
+                  )}
+
+                  {/* Gemini */}
+                  {selectedPlatforms.includes('gemini') && (
+                    <PlatformAccordion
+                      title="Gemini (Gems)"
+                      icon={<GeminiIcon />}
+                      isOpen={openAccordion === 'gemini'}
+                      onToggle={() => toggleAccordion('gemini')}
+                    >
+                      <div className="space-y-4">
+                        <Step
+                          number={1}
+                          title="Go to gemini.google.com"
+                          description="Click on 'Gems' in the sidebar to access custom AI personas"
+                        />
+                        <Step
+                          number={2}
+                          title="Create a new Gem"
+                          description='Click "New Gem" and give it a name'
+                        />
+                        <Step
+                          number={3}
+                          title='In "Instructions", paste your master prompt'
+                          description="Add your voice profile to define how the Gem should communicate"
+                        />
+                        <Step
+                          number={4}
+                          title="Save and test"
+                          description="Save your Gem and start a conversation to experience your Voice Twin"
+                        />
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                          <a
+                            href="https://gemini.google.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
+                          >
+                            Open Gemini
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    </PlatformAccordion>
+                  )}
+
+                  {/* API Usage */}
+                  {selectedPlatforms.includes('api') && (
+                    <PlatformAccordion
+                      title="API/Developer Integration"
+                      icon={<Code className="w-5 h-5" />}
+                      isOpen={openAccordion === 'api'}
+                      onToggle={() => toggleAccordion('api')}
+                    >
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
+                            <ChatGPTIcon />
+                            OpenAI API
+                          </h4>
+                          <CodeBlock code={openaiSnippet} language="javascript" />
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
+                            <ClaudeIcon />
+                            Claude API
+                          </h4>
+                          <CodeBlock code={claudeSnippet} language="javascript" />
+                        </div>
+
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                          <p className="text-sm text-amber-800">
+                            <strong>Note:</strong> Replace the truncated system prompt with your full
+                            master prompt for best results. Store it in an environment variable for
+                            security.
+                          </p>
+                        </div>
+                      </div>
+                    </PlatformAccordion>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -837,13 +1178,23 @@ console.log(response.content[0].text);`;
                 </li>
               </ul>
 
-              <Link
-                href="/dashboard/upgrade"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold bg-white text-brand-600 hover:bg-brand-50 transition-colors"
+              <button
+                onClick={handleSubscriptionCheckout}
+                disabled={isCheckingOut}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold bg-white text-brand-600 hover:bg-brand-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Crown className="w-4 h-4" />
-                Upgrade for $29/year
-              </Link>
+                {isCheckingOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Crown className="w-4 h-4" />
+                    {isProUser ? 'First year $10, then $29/year' : 'Subscribe for $29/year'}
+                  </>
+                )}
+              </button>
             </div>
           )}
         </div>

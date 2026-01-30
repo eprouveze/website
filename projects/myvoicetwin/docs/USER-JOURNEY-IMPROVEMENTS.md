@@ -170,13 +170,14 @@
 | Tier | Price | Type | Includes |
 |------|-------|------|----------|
 | **Starter** | $49 | One-time | 1 language, 3 matrix sections, 1 regeneration |
-| **Pro** | $99 | One-time | Unlimited languages/sections, 3 regenerations |
-| **Executive** | $249 | One-time | Pro + 1 year edit subscription + audio credits + priority support |
+| **Pro** | $99 | One-time | Unlimited languages/sections, 1 regeneration, first year subscription at $10 |
+| **Executive** | $249 | One-time | Pro + 1 year edit subscription included + audio credits + priority support |
 
 - [ ] **Executive exists as pricing anchor** to make Pro look reasonable
+- [ ] **Pro incentive**: First year of edit subscription at $10 (instead of $29) to encourage ongoing engagement
 - [ ] **Add-ons** (available to all tiers):
   - **Audio transcription**: Usage-based (Whisper API cost + margin), show estimate before upload
-  - **Edit subscription**: $29/year — unlimited edits to corpus + unlimited regenerations
+  - **Edit subscription**: $29/year ($10 first year for Pro) — unlimited edits to corpus + unlimited regenerations
 
 ---
 

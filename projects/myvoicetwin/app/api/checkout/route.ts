@@ -10,26 +10,38 @@ const PRICING_TIERS = {
   starter: {
     price: 4900, // $49
     name: 'My Voice Twin - Starter',
-    description: '1 language, 3 contexts, no subscription',
+    description: '1 language, 3 matrix sections, 1 regeneration',
     regeneration_limit: 1,
+    languages: 1,
+    matrix_sections: 3,
+    first_year_discount: false,
+    includes_subscription: false,
+    audio_credits: false,
+    priority_support: false,
   },
-  complete: {
+  pro: {
     price: 9900, // $99
-    name: 'My Voice Twin - Complete',
-    description: 'Multi-language, all contexts, 1 year subscription included',
-    regeneration_limit: 3,
+    name: 'My Voice Twin - Pro',
+    description: 'Unlimited languages & sections, 1 regeneration, subscription discount',
+    regeneration_limit: 1,
+    languages: -1, // unlimited
+    matrix_sections: -1, // unlimited
+    first_year_discount: true, // Eligible for $10 first year subscription
+    includes_subscription: false,
+    audio_credits: false,
+    priority_support: false,
   },
   executive: {
     price: 24900, // $249
     name: 'My Voice Twin - Executive',
-    description: 'Everything + priority support',
-    regeneration_limit: 5,
-  },
-  'done-for-you': {
-    price: 49900, // $499
-    name: 'My Voice Twin - Done For You',
-    description: 'We do everything for you',
-    regeneration_limit: 10, // unlimited represented as 10
+    description: 'Everything in Pro + 1 year subscription + audio credits + priority support',
+    regeneration_limit: 1,
+    languages: -1, // unlimited
+    matrix_sections: -1, // unlimited
+    first_year_discount: false, // already includes subscription
+    includes_subscription: true,
+    audio_credits: true,
+    priority_support: true,
   },
 } as const
 
@@ -42,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Validate product tier
     if (!product || !PRICING_TIERS[product as ProductTier]) {
       return NextResponse.json(
-        { error: 'Valid product tier is required (starter, complete, executive, done-for-you)' },
+        { error: 'Valid product tier is required (starter, pro, executive)' },
         { status: 400 }
       )
     }
@@ -69,10 +81,16 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      // Store product info and regeneration limit in metadata for the webhook
+      // Store product info and tier details in metadata for the webhook
       metadata: {
         product: product,
         regeneration_limit: String(tier.regeneration_limit),
+        languages: String(tier.languages),
+        matrix_sections: String(tier.matrix_sections),
+        first_year_discount: String(tier.first_year_discount),
+        includes_subscription: String(tier.includes_subscription),
+        audio_credits: String(tier.audio_credits),
+        priority_support: String(tier.priority_support),
       },
       // Collect customer email
       customer_creation: 'always',
