@@ -18,6 +18,107 @@ function unixToISO(timestamp: number | null): string | null {
   return new Date(timestamp * 1000).toISOString()
 }
 
+// Product display names
+const PRODUCT_NAMES: Record<string, string> = {
+  starter: 'Starter',
+  complete: 'Complete',
+  executive: 'Executive',
+  'done-for-you': 'Done-For-You',
+}
+
+// Send purchase confirmation email via Resend
+async function sendPurchaseConfirmationEmail(
+  email: string,
+  product: string,
+  downloadToken: string
+): Promise<boolean> {
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
+  if (!resendApiKey) {
+    console.error('RESEND_API_KEY not configured')
+    return false
+  }
+
+  const siteUrl = Deno.env.get('SITE_URL') || 'https://myvoicetwin.io'
+  const productName = PRODUCT_NAMES[product] || product
+  const downloadUrl = `${siteUrl}/api/download?token=${downloadToken}`
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'My Voice Twin <hello@myvoicetwin.io>',
+        to: email,
+        subject: `Your My Voice Twin ${productName} Package is Ready!`,
+        html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="color: #7c3aed; margin: 0;">My Voice Twin</h1>
+  </div>
+
+  <div style="background: #10b981; color: white; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px;">
+    <h2 style="margin: 0;">Payment Confirmed!</h2>
+  </div>
+
+  <p>Thank you for your purchase! Your <strong>My Voice Twin ${productName}</strong> package is ready for download.</p>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="${downloadUrl}"
+       style="background: linear-gradient(to right, #10b981, #059669); color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; font-size: 18px;">
+      Download Your Files
+    </a>
+  </div>
+
+  <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin: 20px 0;">
+    <p style="margin: 0; color: #92400e;">
+      <strong>Important:</strong> Your download link expires in 7 days. You have 5 download attempts.
+    </p>
+  </div>
+
+  <h3 style="color: #1f2937;">Getting Started</h3>
+  <ol style="padding-left: 20px;">
+    <li>Download and unzip your package</li>
+    <li>Open <strong>00-START-HERE.pdf</strong></li>
+    <li>Follow the step-by-step instructions</li>
+    <li>Deploy your Voice Twin to any AI platform</li>
+  </ol>
+
+  <p style="color: #6b7280; font-size: 14px;">
+    Questions? Contact us at support@myvoicetwin.io - we typically respond within 48 hours.
+  </p>
+
+  <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px; text-align: center; color: #9ca3af; font-size: 12px;">
+    <p>&copy; ${new Date().getFullYear()} My Voice Twin. All rights reserved.</p>
+  </div>
+</body>
+</html>
+        `,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      console.error('Resend API error:', error)
+      return false
+    }
+
+    console.log('Purchase confirmation email sent to:', email)
+    return true
+  } catch (err) {
+    console.error('Email send error:', err)
+    return false
+  }
+}
+
 serve(async (req: Request) => {
   // Only allow POST
   if (req.method !== 'POST') {
@@ -105,8 +206,8 @@ serve(async (req: Request) => {
         token,
       })
 
-      // Optional: Send confirmation email via Supabase Edge Function or external service
-      // await sendConfirmationEmail(email, product, token)
+      // Send purchase confirmation email
+      await sendPurchaseConfirmationEmail(email, product, token)
     }
 
     // Handle other events if needed

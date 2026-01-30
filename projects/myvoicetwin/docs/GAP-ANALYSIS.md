@@ -12,8 +12,8 @@ This document identifies gaps between the PRD/business plan and the actual imple
 
 **Current Status:**
 - Phase 1 (Revenue Critical): COMPLETED
-- Phase 2 (Growth): PENDING
-- Phase 3 (Documentation): IN PROGRESS
+- Phase 2 (Growth - Email): COMPLETED
+- Phase 3 (Documentation): COMPLETED
 
 ---
 
@@ -40,23 +40,22 @@ This document identifies gaps between the PRD/business plan and the actual imple
 | Profile Locking | Without subscription = read-only | **ENFORCED** |
 | Regeneration Limits | 3 for $99, unlimited for subscribers | **TRACKED & ENFORCED** |
 
-### 1.3 Still Pending - Phase 2
+### 1.3 Still Pending (Future Phases)
 
 | Feature | Priority | Status |
 |---------|----------|--------|
-| Email Sequences (Lead nurture) | HIGH | NOT IMPLEMENTED |
 | 30-day Support ticket system | LOW | NOT IMPLEMENTED |
+| Discount code system | LOW | NOT IMPLEMENTED |
 
-### 1.4 Email Automation (Phase 2 - Not Implemented)
+### 1.4 Email Automation - NOW IMPLEMENTED (Resend)
 
 | Trigger | Email | Status |
 |---------|-------|--------|
-| Sign up | Welcome + explain process | PENDING |
-| Questionnaire done | Congrats + samples CTA | PENDING |
-| 3+ samples added | "You're ready!" + pricing | PENDING |
-| Abandoned (3 days) | "Finish your twin" | PENDING |
-| Abandoned (7 days) | Limited-time offer (-20%) | PENDING |
-| Abandoned (30 days) | "Still want your twin?" | PENDING |
+| Sign up | Welcome + explain process | **IMPLEMENTED** |
+| Questionnaire done | Congrats + samples CTA | **IMPLEMENTED** |
+| 3+ samples added | "You're ready!" + pricing | **IMPLEMENTED** |
+| Purchase completed | Confirmation + download link | **IMPLEMENTED** |
+| Abandoned cart | "Finish your twin" | **IMPLEMENTED** |
 
 ---
 
