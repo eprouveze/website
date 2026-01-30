@@ -165,12 +165,18 @@
 **Current State**: 4 tiers (Starter $49, Complete $99, Executive $249, Done-For-You $499) but inconsistently applied
 
 **Feedback/Improvements**:
-- [ ] **Revisit plan structure** — need to clarify:
-  - What's included in each tier?
-  - One-time vs subscription?
-  - Regeneration limits per tier?
-  - Audio transcription pricing model?
-  - How do tiers map to matrix/corpus features?
+- [ ] **Simplify to 3 tiers** (remove Done-For-You):
+
+| Tier | Price | Type | Includes |
+|------|-------|------|----------|
+| **Starter** | $49 | One-time | 1 language, 3 matrix sections, 1 regeneration |
+| **Pro** | $99 | One-time | Unlimited languages/sections, 3 regenerations |
+| **Executive** | $249 | One-time | Pro + 1 year edit subscription + audio credits + priority support |
+
+- [ ] **Executive exists as pricing anchor** to make Pro look reasonable
+- [ ] **Add-ons** (available to all tiers):
+  - **Audio transcription**: Usage-based (Whisper API cost + margin), show estimate before upload
+  - **Edit subscription**: $29/year — unlimited edits to corpus + unlimited regenerations
 
 ---
 
