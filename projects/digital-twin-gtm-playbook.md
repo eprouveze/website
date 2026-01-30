@@ -2,7 +2,7 @@
 
 **Purpose**: Tactical guide for acquiring users and driving traffic to myvoicetwin.io
 **Focus**: Automated + organic (non-paid) strategies
-**Version**: 1.1
+**Version**: 1.2
 **Updated**: January 2026
 
 ---
@@ -75,19 +75,25 @@
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                    AUTOMATED REFERRAL PROGRAM                    │
+│              AUTOMATED REFERRAL PROGRAM ✅ IMPLEMENTED           │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  Customer Purchase                                               │
 │       │                                                          │
 │       ▼                                                          │
-│  Auto-generate referral link (Supabase function)                │
+│  Stripe Webhook ──▶ /api/webhooks/stripe                        │
 │       │                                                          │
 │       ▼                                                          │
-│  Include in thank-you email + dashboard                         │
+│  DB Trigger: Auto-generate referral code (VDN-XXXXXX)           │
 │       │                                                          │
 │       ▼                                                          │
-│  Track referrals ──▶ Auto-credit discounts                      │
+│  Dashboard: ReferralCard shows code + stats                     │
+│       │                                                          │
+│       ▼                                                          │
+│  Friend uses code ──▶ 20% discount applied                      │
+│       │                                                          │
+│       ▼                                                          │
+│  Webhook: Create referral_credit (20% commission)               │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -437,110 +443,154 @@ Best,
 
 ### 4.2 Passive Affiliate Discovery
 
+**Status**: ✅ IMPLEMENTED at `/affiliates`
+
 **Let affiliates find you** (no outreach required):
 
-**Setup**:
-1. Create `/affiliates` page explaining program
-2. Add "Become an affiliate" link in footer
-3. List on affiliate directories (free):
-   - ShareASale (if you use their platform)
-   - Impact affiliate marketplace
-   - PartnerStack directory
+**Implemented Features**:
+1. ✅ `/affiliates` page with program details
+2. ✅ Self-service application form
+3. ✅ Application status checking
+4. ✅ Admin approval API (`/api/affiliates/approve`)
+5. 🔲 Add "Become an affiliate" link in footer (TODO)
+6. 🔲 List on affiliate directories (TODO)
 
-**Self-Service Affiliate Signup**:
+**Self-Service Affiliate Signup** (LIVE):
 ```
 /affiliates page includes:
-├── Commission structure (20% lifetime)
-├── Cookie duration (30 days)
-├── Marketing materials (auto-download)
-├── Self-signup form → auto-generates links
-└── Dashboard for tracking
+├── ✅ Commission structure (20% commission)
+├── ✅ Discount for referrals (20% off)
+├── ✅ Benefits overview (3 cards)
+├── ✅ Application form (name, email, payout info)
+├── ✅ Status checker (by email)
+├── ✅ Approved affiliate dashboard (code + stats)
+└── ✅ FAQ section
 ```
 
-**Automated Affiliate Flow**:
+**Automated Affiliate Flow** (LIVE):
 ```
 Affiliate signs up on /affiliates page
        │
        ▼
-Auto-generate unique affiliate code
+Application stored with status='pending'
        │
        ▼
-Email with link + marketing materials
+Admin reviews and approves via API
+       │
+       ▼
+Referral code generated (AFF-XXXXXX prefix)
+       │
+       ▼
+Affiliate checks status → sees code + share URL
        │
        ▼
 They promote (no involvement from you)
        │
        ▼
-Sales tracked automatically via Stripe
+Sales tracked via referral_credits table
        │
        ▼
-Monthly auto-payout (Stripe Connect)
+Manual payout (Stripe Connect integration TODO)
 ```
 
-**Zero maintenance** after initial setup.
+**Current State**: Application + approval flow live. Auto-payout requires Stripe Connect setup.
 
 ---
 
 ## 5. Automated Referral System
 
-### 5.1 Database Schema Addition
+**Status**: ✅ IMPLEMENTED (Migration 007)
+
+### 5.1 Database Schema (Implemented)
 
 ```sql
--- Add to Supabase
+-- Migration: 007_add_referral_system.sql
+
 referral_codes (
   id uuid primary key,
   user_id uuid references profiles,
-  code text unique,  -- e.g., "JOHN20"
+  code text unique,  -- Auto-generated: "VDN-ABC123"
   discount_percent int default 20,
+  commission_percent int default 20,
   uses int default 0,
-  max_uses int default null,  -- null = unlimited
+  max_uses int,  -- null = unlimited
+  is_active boolean default true,
   created_at timestamp
 )
 
 referral_credits (
   id uuid primary key,
   referrer_id uuid references profiles,
-  referred_purchase_id uuid references purchases,
-  credit_amount_cents int,  -- e.g., 2000 = $20
-  status text,  -- 'pending', 'credited', 'paid_out'
+  referred_user_id uuid references profiles,
+  purchase_id uuid references purchases,
+  referral_code_id uuid references referral_codes,
+  credit_amount_cents int,  -- e.g., 1980 = $19.80
+  status text,  -- 'pending', 'approved', 'paid_out', 'cancelled'
+  payout_date timestamp,
+  payout_reference text,
+  created_at timestamp
+)
+
+affiliates (
+  id uuid primary key,
+  email text unique,
+  name text,
+  payout_email text,
+  payout_method text,  -- 'paypal', 'stripe', 'bank_transfer'
+  referral_code_id uuid references referral_codes,
+  status text,  -- 'pending', 'approved', 'rejected', 'suspended'
+  total_referrals int default 0,
+  total_earnings_cents int default 0,
+  total_paid_out_cents int default 0,
+  application_note text,
   created_at timestamp
 )
 ```
 
-### 5.2 Referral Flow (Fully Automated)
+### 5.2 API Routes (Implemented)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/referral/validate` | POST | Validate code at checkout |
+| `/api/referral/my-code` | GET | Get user's referral code + stats |
+| `/api/referral/credit` | POST | Record referral credit (internal) |
+| `/api/affiliates/apply` | POST | Self-service affiliate signup |
+| `/api/affiliates/status` | GET | Check application status |
+| `/api/affiliates/approve` | POST | Admin approval (API key required) |
+| `/api/webhooks/stripe` | POST | Process purchases + referrals |
+
+### 5.3 Referral Flow (Fully Automated - LIVE)
 
 ```
 Customer purchases
        │
        ▼
-Stripe webhook fires
+Stripe webhook fires → /api/webhooks/stripe
        │
        ▼
-Edge Function: Generate referral code
+Database trigger: Auto-generate referral code (VDN-XXXXXX)
        │
        ▼
-Store in referral_codes table
+Show in dashboard: ReferralCard component
+       │
+       ├── Referral link with copy button
+       ├── Stats: referrals, earnings, code uses
+       └── "Share & earn $20" messaging
        │
        ▼
-Include in thank-you email (auto)
+Friend uses code at checkout (passed to /api/checkout)
        │
        ▼
-Show in dashboard: "Share & earn $20"
+Checkout applies discount (20% off final price)
        │
        ▼
-Friend uses code at checkout
+Stripe webhook: Create referral_credit record
        │
        ▼
-Stripe applies discount (coupon)
-       │
-       ▼
-Edge Function: Credit referrer
-       │
-       ▼
-Email referrer: "You earned $20!"
+Increment referral_codes.uses counter
 ```
 
-### 5.3 Referral Incentives
+### 5.4 Referral Incentives
 
 | Action | Referrer Gets | Friend Gets |
 |--------|---------------|-------------|
@@ -683,13 +733,31 @@ Email referrer: "You earned $20!"
 
 ### Fully Automated (Zero Weekly Effort)
 
-- [x] New signups → welcome email sequence
-- [x] Abandoned carts → re-engagement emails
-- [x] Purchases → referral code + thank-you email
-- [x] Blog posts → auto-tweet
-- [x] SEO → auto-indexed, auto-reported
-- [x] Referrals → auto-tracked, auto-credited
+- [ ] New signups → welcome email sequence (needs Loops.so setup)
+- [ ] Abandoned carts → re-engagement emails (needs Loops.so setup)
+- [x] **Purchases → referral code auto-generated** (DB trigger)
+- [x] **Dashboard → ReferralCard shows code + stats** (component)
+- [x] **Checkout → referral discount applied** (/api/checkout)
+- [x] **Referral commission tracking** (referral_credits table)
+- [x] **Affiliate self-signup** (/affiliates page)
+- [ ] Blog posts → auto-tweet (needs IFTTT/Typefully setup)
+- [ ] SEO → auto-indexed, auto-reported (needs GSC setup)
+
+### Implementation Status
+
+| Feature | Status | Location |
+|---------|--------|----------|
+| Referral code generation | ✅ Live | DB trigger in migration 007 |
+| Referral validation | ✅ Live | `/api/referral/validate` |
+| Referral dashboard | ✅ Live | `ReferralCard` component |
+| Checkout with referral | ✅ Live | `/api/checkout` |
+| Stripe webhook | ✅ Live | `/api/webhooks/stripe` |
+| Affiliate signup | ✅ Live | `/affiliates` page |
+| Affiliate approval | ✅ Live | `/api/affiliates/approve` |
+| Email sequences | 🔲 TODO | Needs Loops.so integration |
+| Auto-tweet | 🔲 TODO | Needs IFTTT setup |
+| Payout automation | 🔲 TODO | Needs Stripe Connect |
 
 ---
 
-*GTM Playbook v1.0 — Ready for launch*
+*GTM Playbook v1.2 — Referral & Affiliate System Implemented*
