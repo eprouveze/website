@@ -25,7 +25,7 @@ export default function LandingPage() {
                 href="#pricing"
                 className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:shadow-xl hover:scale-105"
               >
-                Get VoiceDNA — $99
+                Get My Voice Twin — $99
               </a>
               <p className="text-sm text-gray-400">
                 <span className="line-through">$149</span> Launch Price
@@ -145,10 +145,10 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Introducing VoiceDNA: Your Digital Twin System
+              Introducing My Voice Twin: Your Digital Twin System
             </h2>
             <p className="mt-6 text-lg text-gray-600">
-              <span className="font-semibold text-gray-900">VoiceDNA is a complete methodology for cloning your authentic voice.</span>
+              <span className="font-semibold text-gray-900">My Voice Twin is a complete methodology for cloning your authentic voice.</span>
               {' '}Not a prompt. Not a template. A <em>system</em>—developed over months of real-world use by a multilingual executive
               who writes across English, Japanese, and French daily.
             </p>
@@ -290,10 +290,10 @@ export default function LandingPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-red-600">
-                      Before VoiceDNA
+                      Before My Voice Twin
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-green-600">
-                      After VoiceDNA
+                      After My Voice Twin
                     </th>
                   </tr>
                 </thead>
@@ -372,7 +372,7 @@ export default function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               What You Get
             </h2>
-            <p className="mt-4 text-lg text-gray-600">The Complete VoiceDNA Kit</p>
+            <p className="mt-4 text-lg text-gray-600">The Complete My Voice Twin Kit</p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
@@ -574,7 +574,7 @@ export default function LandingPage() {
                 How is this different from prompt packs?
               </h3>
               <p className="text-gray-600">
-                Prompt packs give you generic templates. VoiceDNA gives you a <strong>complete system</strong> to clone
+                Prompt packs give you generic templates. My Voice Twin gives you a <strong>complete system</strong> to clone
                 <em>your specific voice</em>. The output is customized to your sentence rhythm, your transitions, your
                 cultural context—not generic &ldquo;professional&rdquo; writing.
               </p>
@@ -632,7 +632,7 @@ export default function LandingPage() {
                 What if it doesn&apos;t work for me?
               </h3>
               <p className="text-gray-600">
-                We offer a 14-day satisfaction guarantee. If VoiceDNA doesn&apos;t help you create a Digital Twin
+                We offer a 14-day satisfaction guarantee. If My Voice Twin doesn&apos;t help you create a Digital Twin
                 that sounds like you, email us for a full refund.
               </p>
             </div>
@@ -688,7 +688,7 @@ export default function LandingPage() {
               href="#pricing"
               className="block w-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:shadow-xl hover:scale-105"
             >
-              Get VoiceDNA Now
+              Get My Voice Twin Now
             </a>
           </div>
         </div>
@@ -746,15 +746,15 @@ export default function LandingPage() {
               <p className="text-gray-500 mb-2">
                 Questions? We respond within 48 hours.
               </p>
-              <a href="mailto:support@voicedna.ai" className="text-purple-400 hover:text-purple-300 transition-colors">
-                support@voicedna.ai
+              <a href="mailto:support@myvoicetwin.io" className="text-purple-400 hover:text-purple-300 transition-colors">
+                support@myvoicetwin.io
               </a>
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-800 text-center">
             <p className="text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} VoiceDNA. All rights reserved.
+              &copy; {new Date().getFullYear()} My Voice Twin. All rights reserved.
             </p>
             <p className="text-gray-600 text-xs mt-2">
               Instant digital download. Start building your Digital Twin today.

@@ -1,4 +1,4 @@
--- VoiceDNA Purchases Table
+-- My Voice Twin Purchases Table
 -- Run this in Supabase SQL Editor
 
 -- Create purchases table
@@ -33,7 +33,7 @@ alter table purchases enable row level security;
 -- create policy "Service role access" on storage.objects
 --   for all using (bucket_id = 'products' and auth.role() = 'service_role');
 
-comment on table purchases is 'VoiceDNA product purchases with secure download tokens';
+comment on table purchases is 'My Voice Twin product purchases with secure download tokens';
 comment on column purchases.product is 'Product tier: starter, complete, executive, or done-for-you';
 comment on column purchases.download_token is 'UUID token for secure download access';
 comment on column purchases.max_downloads is 'Maximum number of times file can be downloaded';

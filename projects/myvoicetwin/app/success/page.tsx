@@ -122,10 +122,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             If you completed a purchase and are seeing this message, please
             contact us at{' '}
             <a
-              href="mailto:support@voicedna.io"
+              href="mailto:support@myvoicetwin.io"
               className="text-blue-600 hover:underline"
             >
-              support@voicedna.io
+              support@myvoicetwin.io
             </a>{' '}
             with your receipt.
           </p>
@@ -167,10 +167,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             We encountered an error while retrieving your purchase. Please try
             refreshing the page or contact us at{' '}
             <a
-              href="mailto:support@voicedna.io"
+              href="mailto:support@myvoicetwin.io"
               className="text-blue-600 hover:underline"
             >
-              support@voicedna.io
+              support@myvoicetwin.io
             </a>
             .
           </p>
@@ -229,7 +229,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <div className="flex items-center justify-between mb-4">
               <span className="text-gray-600">Product</span>
               <span className="font-semibold text-gray-900">
-                VoiceDNA {productNames[purchase.product] || purchase.product}
+                My Voice Twin {productNames[purchase.product] || purchase.product}
               </span>
             </div>
             <div className="flex items-center justify-between mb-4">
@@ -271,10 +271,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <p className="text-red-600 text-sm">
                   Your download link has expired. Please contact{' '}
                   <a
-                    href="mailto:support@voicedna.io"
+                    href="mailto:support@myvoicetwin.io"
                     className="underline hover:no-underline"
                   >
-                    support@voicedna.io
+                    support@myvoicetwin.io
                   </a>{' '}
                   for assistance.
                 </p>
@@ -303,10 +303,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                   You have used all available downloads. If you need additional
                   downloads, please contact{' '}
                   <a
-                    href="mailto:support@voicedna.io"
+                    href="mailto:support@myvoicetwin.io"
                     className="underline hover:no-underline"
                   >
-                    support@voicedna.io
+                    support@myvoicetwin.io
                   </a>
                   .
                 </p>
@@ -353,7 +353,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                   1
                 </span>
                 <span>
-                  Download and unzip your VoiceDNA package
+                  Download and unzip your My Voice Twin package
                 </span>
               </li>
               <li className="flex items-start">
@@ -382,10 +382,10 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <p className="text-blue-800 text-sm">
               Need help? Contact us at{' '}
               <a
-                href="mailto:support@voicedna.io"
+                href="mailto:support@myvoicetwin.io"
                 className="font-medium underline hover:no-underline"
               >
-                support@voicedna.io
+                support@myvoicetwin.io
               </a>
             </p>
           </div>

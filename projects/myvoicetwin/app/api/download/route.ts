@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Construct file name
-    const fileName = `voicedna-${purchase.product}.zip`
+    const fileName = `myvoicetwin-${purchase.product}.zip`
 
     // Increment download count BEFORE serving file
     // This prevents race conditions where multiple downloads could be initiated

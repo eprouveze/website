@@ -9,9 +9,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'VoiceDNA — Create an AI That Writes Like You',
+  title: 'My Voice Twin — Create an AI That Writes & Speaks Like You',
   description:
-    'Transform your unique writing style into an AI-powered digital twin. VoiceDNA captures your voice, tone, and personality to create content that sounds authentically you. Stop spending hours writing — let your AI twin handle it while you focus on what matters.',
+    'Transform your unique writing and speaking style into an AI-powered digital twin. My Voice Twin captures your voice, tone, and personality across languages and contexts. Stop spending hours rewriting AI drafts — let your twin handle it.',
   keywords: [
     'AI writing assistant',
     'digital twin',
@@ -20,35 +20,37 @@ export const metadata: Metadata = {
     'writing style AI',
     'personal AI writer',
     'brand voice AI',
+    'multilingual AI',
+    'speech to text voice',
   ],
-  authors: [{ name: 'VoiceDNA' }],
-  creator: 'VoiceDNA',
-  publisher: 'VoiceDNA',
-  metadataBase: new URL('https://voicedna.ai'),
+  authors: [{ name: 'My Voice Twin' }],
+  creator: 'My Voice Twin',
+  publisher: 'My Voice Twin',
+  metadataBase: new URL('https://myvoicetwin.io'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://voicedna.ai',
-    siteName: 'VoiceDNA',
-    title: 'VoiceDNA — Create an AI That Writes Like You',
+    url: 'https://myvoicetwin.io',
+    siteName: 'My Voice Twin',
+    title: 'My Voice Twin — Create an AI That Writes & Speaks Like You',
     description:
-      'Transform your unique writing style into an AI-powered digital twin. Create content that sounds authentically you.',
+      'Transform your unique writing and speaking style into an AI-powered digital twin. Create content that sounds authentically you.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'VoiceDNA - Your AI Writing Twin',
+        alt: 'My Voice Twin - Your AI Writing & Speaking Twin',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'VoiceDNA — Create an AI That Writes Like You',
+    title: 'My Voice Twin — Create an AI That Writes & Speaks Like You',
     description:
-      'Transform your unique writing style into an AI-powered digital twin.',
+      'Transform your unique writing and speaking style into an AI-powered digital twin.',
     images: ['/og-image.png'],
-    creator: '@voicedna',
+    creator: '@myvoicetwin',
   },
   robots: {
     index: true,
