@@ -11,6 +11,11 @@
 
 **Feedback/Improvements**:
 - [ ] Missing copy for multilingual target users
+- [ ] **Add Q&A section**: Users need clarity on how deliverables work and integrate into their normal workflow
+  - How does the output work with ChatGPT/Claude/Gemini?
+  - Do I need to re-run this every time?
+  - What if my writing style evolves?
+  - Can I use this with multiple AI tools?
 
 ---
 
@@ -108,10 +113,64 @@
 
 ## Step 8: Deploy/Test
 
-**Current State**: *(to be reviewed)*
+**Current State**: Shows master prompt, platform guides (ChatGPT, Claude, Gemini, API), download options (.txt, .md), subscription upsell ($29/year)
 
 **Feedback/Improvements**:
-- *(awaiting feedback)*
+- [ ] **Deployment flow change**: Select deployment target(s) FIRST, then generate the digital twin file
+  - Allow multiple platform selection
+  - Generate platform-specific outputs based on selection
+- [ ] **Two output options**:
+  1. **File Download**: Prompt + Golden Corpus bundled
+  2. **Step-by-step Guidance**: Interactive walkthrough for implementation
+- [ ] Inconsistent pricing ($29/year subscription vs $99 one-time elsewhere)
+
+---
+
+## Step 9: Payment Success Page
+
+**Current State**: Does NOT exist — user redirected directly to dashboard or generate page
+
+**Feedback/Improvements**:
+- [ ] **Create success page** after payment:
+  - Confirmation message with order details
+  - What happens next (generation, emails, etc.)
+  - Clear CTA to proceed to generation
+  - Receipt/invoice link
+
+---
+
+## Cross-Cutting Concerns
+
+### Data Security & Persistence
+
+**Current State**: Basic Supabase storage, no clear data retention policy
+
+**Feedback/Improvements**:
+- [ ] **Securely save all customer data**:
+  - Golden corpus (writing samples)
+  - Output prompt / digital twin style guide
+  - Payment history
+  - Audio files and transcripts
+- [ ] **User data access**:
+  - Login and return anytime
+  - View all their data
+  - Re-download outputs
+- [ ] **Subscription benefits**:
+  - Add new sections to the matrix
+  - Edit corpus (add/remove samples)
+  - Regenerate output files/prompts
+
+### Plan Options
+
+**Current State**: 4 tiers (Starter $49, Complete $99, Executive $249, Done-For-You $499) but inconsistently applied
+
+**Feedback/Improvements**:
+- [ ] **Revisit plan structure** — need to clarify:
+  - What's included in each tier?
+  - One-time vs subscription?
+  - Regeneration limits per tier?
+  - Audio transcription pricing model?
+  - How do tiers map to matrix/corpus features?
 
 ---
 
