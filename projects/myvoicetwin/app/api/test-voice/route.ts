@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const withTwinCompletion = await anthropic.messages.create({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: voiceProfile.master_prompt,
         messages: [
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
     if (body.includeComparison) {
       try {
         const withoutTwinCompletion = await anthropic.messages.create({
-          model: 'claude-3-5-haiku-20241022',
+          model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
           system: 'You are a helpful writing assistant.',
           messages: [

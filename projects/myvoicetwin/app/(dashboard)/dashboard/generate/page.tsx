@@ -71,6 +71,13 @@ const LANGUAGES = [
   { value: 'zh', label: 'Chinese' },
 ];
 
+const TARGET_PLATFORMS = [
+  { value: 'chatgpt', label: 'ChatGPT', icon: '🤖' },
+  { value: 'claude', label: 'Claude', icon: '🟠' },
+  { value: 'gemini', label: 'Gemini', icon: '✨' },
+  { value: 'other', label: 'Other LLM', icon: '🔧' },
+];
+
 const GENERATION_STEPS = [
   { label: 'Formatting corpus...', duration: 3000 },
   { label: 'Analyzing voice patterns...', duration: 8000 },
@@ -417,6 +424,8 @@ function TestingInterface({
   const [error, setError] = useState<string | null>(null);
   const [contextDropdownOpen, setContextDropdownOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [targetPlatform, setTargetPlatform] = useState('chatgpt');
+  const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -607,6 +616,59 @@ function TestingInterface({
                   </>
                 )}
               </div>
+            </div>
+
+            {/* Target Platform Dropdown */}
+            <div className="relative">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Target Platform
+              </label>
+              <button
+                type="button"
+                onClick={() => setPlatformDropdownOpen(!platformDropdownOpen)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-300 rounded-lg text-left hover:border-slate-400 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">
+                    {TARGET_PLATFORMS.find((p) => p.value === targetPlatform)?.icon}
+                  </span>
+                  <span className="text-slate-900">
+                    {TARGET_PLATFORMS.find((p) => p.value === targetPlatform)?.label}
+                  </span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </button>
+              {platformDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setPlatformDropdownOpen(false)}
+                  />
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1">
+                    {TARGET_PLATFORMS.map((platform) => (
+                      <button
+                        key={platform.value}
+                        type="button"
+                        onClick={() => {
+                          setTargetPlatform(platform.value);
+                          setPlatformDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-slate-50 ${
+                          targetPlatform === platform.value
+                            ? 'bg-brand-50 text-brand-700'
+                            : 'text-slate-700'
+                        }`}
+                      >
+                        <span className="text-base">{platform.icon}</span>
+                        {platform.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              <p className="mt-1.5 text-xs text-slate-500">
+                Testing uses Claude. Results may vary slightly on other platforms.
+              </p>
             </div>
 
             {/* Audience */}
