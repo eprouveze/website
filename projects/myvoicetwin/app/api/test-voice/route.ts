@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import Anthropic from '@anthropic-ai/sdk'
 import { createServerComponentClient, createServiceClient } from '@/lib/supabase'
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// Initialize Anthropic client
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
 // Rate limiting constants
@@ -31,6 +31,7 @@ interface TestVoiceResponse {
 /**
  * POST /api/test-voice
  * Test the user's voice profile with a sample message
+ * Uses Claude 3.5 Haiku for fast, cheap responses
  */
 export async function POST(request: NextRequest) {
   try {
@@ -156,31 +157,29 @@ export async function POST(request: NextRequest) {
     }
     contextPrompt += ` in ${languageName}.`
 
-    // 4. Generate "with twin" response using user's master_prompt
+    // 4. Generate "with twin" response using Claude Haiku
     let totalTokensUsed = 0
     let withTwinResponse: string
 
     try {
-      const withTwinCompletion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+      const withTwinCompletion = await anthropic.messages.create({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 1000,
+        system: voiceProfile.master_prompt,
         messages: [
-          {
-            role: 'system',
-            content: voiceProfile.master_prompt,
-          },
           {
             role: 'user',
             content: `${contextPrompt}\n\n${body.message}`,
           },
         ],
-        max_tokens: 1000,
-        temperature: 0.7,
       })
 
-      withTwinResponse = withTwinCompletion.choices[0]?.message?.content || ''
-      totalTokensUsed += withTwinCompletion.usage?.total_tokens || 0
-    } catch (openaiError) {
-      console.error('OpenAI API error (with twin):', openaiError)
+      // Extract text from content blocks
+      const textContent = withTwinCompletion.content.find(block => block.type === 'text')
+      withTwinResponse = textContent?.type === 'text' ? textContent.text : ''
+      totalTokensUsed += (withTwinCompletion.usage?.input_tokens || 0) + (withTwinCompletion.usage?.output_tokens || 0)
+    } catch (anthropicError) {
+      console.error('Anthropic API error (with twin):', anthropicError)
       return NextResponse.json(
         { error: 'Failed to generate response with voice profile. Please try again.' },
         { status: 500 }
@@ -192,26 +191,23 @@ export async function POST(request: NextRequest) {
 
     if (body.includeComparison) {
       try {
-        const withoutTwinCompletion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+        const withoutTwinCompletion = await anthropic.messages.create({
+          model: 'claude-3-5-haiku-20241022',
+          max_tokens: 1000,
+          system: 'You are a helpful writing assistant.',
           messages: [
-            {
-              role: 'system',
-              content: 'You are a helpful writing assistant.',
-            },
             {
               role: 'user',
               content: `${contextPrompt}\n\n${body.message}`,
             },
           ],
-          max_tokens: 1000,
-          temperature: 0.7,
         })
 
-        withoutTwinResponse = withoutTwinCompletion.choices[0]?.message?.content || ''
-        totalTokensUsed += withoutTwinCompletion.usage?.total_tokens || 0
-      } catch (openaiError) {
-        console.error('OpenAI API error (without twin):', openaiError)
+        const textContent = withoutTwinCompletion.content.find(block => block.type === 'text')
+        withoutTwinResponse = textContent?.type === 'text' ? textContent.text : ''
+        totalTokensUsed += (withoutTwinCompletion.usage?.input_tokens || 0) + (withoutTwinCompletion.usage?.output_tokens || 0)
+      } catch (anthropicError) {
+        console.error('Anthropic API error (without twin):', anthropicError)
         // Continue without the comparison - don't fail the whole request
         withoutTwinResponse = undefined
       }
@@ -222,12 +218,9 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       voice_profile_id: voiceProfile.id,
       input_message: body.message,
-      context: body.context,
-      audience: body.audience || null,
-      language: language,
       output_with_twin: withTwinResponse,
       output_without_twin: withoutTwinResponse || null,
-      model_used: 'gpt-4o-mini',
+      model_used: 'claude-3-5-haiku-20241022',
       tokens_used: totalTokensUsed,
     })
 
