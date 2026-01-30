@@ -26,7 +26,23 @@
 
 ---
 
-## Step 3: Success Page
+## Step 5: Questionnaire
+
+**Current State**: 4-step wizard collecting profession, industry, formality level, tone preferences, pet phrases, goals, etc.
+
+**Feedback/Improvements**:
+- [ ] **MAJOR**: Questions are wrong. Most details (tone, formality, phrases) will be deduced from the golden corpus analysis.
+- [ ] Should focus on building the **Corpus Matrix** instead:
+  - **Languages**: Which languages does the user communicate in?
+  - **Communication Format**: Text only OR Text + Voice (for speech/presentation scripts)
+  - **Communication Tools**: Email, Slack, Teams, Documents, Social media, etc.
+  - **Communication Targets**: Customers, Internal team, Executives, Public, etc.
+- [ ] Matrix is sparse — not all combinations apply. Example: User may never communicate with customers via Slack in French.
+- [ ] Purpose: Guide sample collection (Phase 1) by identifying which matrix cells the user needs.
+
+---
+
+## Step 6: Success Page
 
 **Current State**: *(to be reviewed)*
 
