@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Profile Self-Assessment | My Voice Twin</title>
+  <style>
+    @media print {
+      body { margin: 0; }
+      .page-break { page-break-after: always; }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #1e293b;
+    }
+    h1 {
+      color: #0f172a;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      color: #334155;
+      font-size: 20px;
+      margin-top: 32px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .intro-box {
+      background: #f8fafc;
+      border-left: 4px solid #3b82f6;
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+    .question {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .question-number {
+      display: inline-block;
+      background: #3b82f6;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 28px;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .option {
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+    .option-score {
+      color: #64748b;
+      font-size: 12px;
+    }
+    .score-section {
+      background: #f0f9ff;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    .score-range {
+      display: flex;
+      align-items: center;
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .score-excellent { background: #dcfce7; }
+    .score-moderate { background: #fef9c3; }
+    .score-poor { background: #fee2e2; }
+    .score-label {
+      font-weight: bold;
+      min-width: 80px;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 32px;
+    }
+    .cta-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+    }
+    .cta-box p {
+      margin: 0 0 16px 0;
+      opacity: 0.9;
+    }
+    .cta-button {
+      display: inline-block;
+      background: white;
+      color: #1d4ed8;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">MY VOICE TWIN</div>
+
+  <h1>Voice Profile Self-Assessment</h1>
+  <p class="subtitle">Does AI really sound like you? Find out in 5 minutes.</p>
+
+  <div class="intro-box">
+    <strong>How to use this assessment:</strong><br>
+    Answer each question honestly based on your recent experience with AI writing tools (ChatGPT, Claude, etc.).
+    Rate each aspect on a scale of 1-5, then calculate your total score.
+  </div>
+
+  <h2>The 10 Questions</h2>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">1</span>
+      When I read AI drafts, I usually need to:
+    </div>
+    <div class="options">
+      <div class="option">Use as-is <span class="option-score">(5)</span></div>
+      <div class="option">Minor tweaks <span class="option-score">(3)</span></div>
+      <div class="option">Heavy rewrite <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">2</span>
+      AI captures my sentence length preferences:
+    </div>
+    <div class="options">
+      <div class="option">Always <span class="option-score">(5)</span></div>
+      <div class="option">Sometimes <span class="option-score">(3)</span></div>
+      <div class="option">Never <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">3</span>
+      AI uses transition words I actually use:
+    </div>
+    <div class="options">
+      <div class="option">Yes <span class="option-score">(5)</span></div>
+      <div class="option">Partially <span class="option-score">(3)</span></div>
+      <div class="option">No, sounds generic <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">4</span>
+      AI matches my punctuation style (em-dashes, semicolons, etc.):
+    </div>
+    <div class="options">
+      <div class="option">Exactly <span class="option-score">(5)</span></div>
+      <div class="option">Close <span class="option-score">(3)</span></div>
+      <div class="option">Not at all <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">5</span>
+      When writing to executives vs. peers, AI adjusts appropriately:
+    </div>
+    <div class="options">
+      <div class="option">Yes <span class="option-score">(5)</span></div>
+      <div class="option">Sometimes <span class="option-score">(3)</span></div>
+      <div class="option">Same tone for everyone <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">6</span>
+      AI handles my industry jargon correctly:
+    </div>
+    <div class="options">
+      <div class="option">Always <span class="option-score">(5)</span></div>
+      <div class="option">Hit or miss <span class="option-score">(3)</span></div>
+      <div class="option">Gets it wrong <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">7</span>
+      For multilingual users: AI maintains my voice across languages:
+    </div>
+    <div class="options">
+      <div class="option">Yes <span class="option-score">(5)</span></div>
+      <div class="option">Partially <span class="option-score">(3)</span></div>
+      <div class="option">Completely different <span class="option-score">(1)</span></div>
+      <div class="option">N/A <span class="option-score">(—)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">8</span>
+      AI captures my level of directness:
+    </div>
+    <div class="options">
+      <div class="option">Perfectly <span class="option-score">(5)</span></div>
+      <div class="option">Close <span class="option-score">(3)</span></div>
+      <div class="option">Too soft/harsh <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">9</span>
+      I can send AI drafts without editing:
+    </div>
+    <div class="options">
+      <div class="option">Often <span class="option-score">(5)</span></div>
+      <div class="option">Rarely <span class="option-score">(3)</span></div>
+      <div class="option">Never <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="question-text">
+      <span class="question-number">10</span>
+      Time spent editing AI drafts vs. writing from scratch:
+    </div>
+    <div class="options">
+      <div class="option">Saves 75%+ <span class="option-score">(5)</span></div>
+      <div class="option">Saves 25-50% <span class="option-score">(3)</span></div>
+      <div class="option">No time saved <span class="option-score">(1)</span></div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Your Score</h2>
+
+  <div class="score-section">
+    <p><strong>Add up your scores from all 10 questions:</strong></p>
+    <p style="font-size: 24px; text-align: center; margin: 16px 0;">
+      My Total Score: _______ / 50
+    </p>
+
+    <div class="score-range score-excellent">
+      <span class="score-label">40-50</span>
+      <span><strong>Excellent alignment</strong> — Rare! Your AI setup is working well.</span>
+    </div>
+
+    <div class="score-range score-moderate">
+      <span class="score-label">25-39</span>
+      <span><strong>Moderate alignment</strong> — Room for improvement. Voice documentation would help.</span>
+    </div>
+
+    <div class="score-range score-poor">
+      <span class="score-label">10-24</span>
+      <span><strong>Poor alignment</strong> — Significant voice gap. Full voice profile extraction recommended.</span>
+    </div>
+  </div>
+
+  <h2>What Your Score Means</h2>
+
+  <p><strong>If you scored 40-50:</strong> You've likely invested time in custom instructions or have a naturally AI-friendly writing style. Focus on fine-tuning specific contexts where AI still misses.</p>
+
+  <p><strong>If you scored 25-39:</strong> AI captures some aspects of your voice but misses others. Creating structured voice documentation—covering tone, formality levels, and context-specific adjustments—would significantly improve output quality.</p>
+
+  <p><strong>If you scored 10-24:</strong> There's a major gap between how you write and how AI writes for you. Generic prompts won't fix this. You need a comprehensive voice profile that captures your unique patterns, preferences, and contextual variations.</p>
+
+  <div class="cta-box">
+    <h3>Want to Fix Your Score?</h3>
+    <p>Create a Voice Twin that actually sounds like you.</p>
+    <a href="https://myvoicetwin.com" class="cta-button">Get Started Free →</a>
+  </div>
+
+  <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 32px;">
+    © My Voice Twin — myvoicetwin.com
+  </p>
+</body>
+</html>

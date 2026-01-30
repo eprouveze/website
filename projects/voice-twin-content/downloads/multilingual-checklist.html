@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multilingual AI Writing Checklist | My Voice Twin</title>
+  <style>
+    @media print {
+      body { margin: 0; }
+      .page-break { page-break-after: always; }
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #1e293b;
+    }
+    h1 {
+      color: #0f172a;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      color: #334155;
+      font-size: 20px;
+      margin-top: 32px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    h3 {
+      color: #475569;
+      font-size: 16px;
+      margin-top: 24px;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .intro-box {
+      background: #f8fafc;
+      border-left: 4px solid #3b82f6;
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+    .language-section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .language-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .language-flag {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+    .language-name {
+      font-weight: 700;
+      font-size: 18px;
+      color: #0f172a;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      margin: 12px 0;
+      padding: 8px 0;
+    }
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 4px;
+      margin-right: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .checklist-label {
+      flex-grow: 1;
+    }
+    .checklist-options {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .fill-line {
+      border-bottom: 1px solid #e2e8f0;
+      min-width: 200px;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+    }
+    .pitfall-list {
+      background: #fef2f2;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .pitfall-item {
+      display: flex;
+      align-items: flex-start;
+      margin: 10px 0;
+    }
+    .pitfall-icon {
+      color: #ef4444;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 32px;
+    }
+    .cta-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+      color: white;
+    }
+    .cta-box p {
+      margin: 0 0 16px 0;
+      opacity: 0.9;
+    }
+    .cta-button {
+      display: inline-block;
+      background: white;
+      color: #1d4ed8;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .tip-box {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 12px 16px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">MY VOICE TWIN</div>
+
+  <h1>Multilingual AI Writing Checklist</h1>
+  <p class="subtitle">Your voice changes across languages. Your AI instructions should too.</p>
+
+  <div class="intro-box">
+    <strong>The Problem:</strong> Generic AI prompts produce generic output in every language. But your voice isn't the same in English as it is in Japanese, French, or Spanish. This checklist helps you document language-specific requirements so AI can match your voice in each language you use.
+  </div>
+
+  <h2>Language Voice Mapping</h2>
+  <p>Fill out this section for each language you regularly write in.</p>
+
+  <div class="language-section">
+    <div class="language-header">
+      <span class="language-flag">🇬🇧</span>
+      <span class="language-name">English</span>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Formality default
+        <div class="checklist-options">[ ] Formal  [ ] Neutral  [ ] Casual</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Typical sentence length
+        <div class="checklist-options">[ ] Short  [ ] Medium  [ ] Long</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Use contractions?
+        <div class="checklist-options">[ ] Yes  [ ] No  [ ] Context-dependent</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Active vs passive voice preference
+        <div class="checklist-options">[ ] Active  [ ] Passive  [ ] Mixed</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Industry jargon level
+        <div class="checklist-options">[ ] Heavy  [ ] Moderate  [ ] Minimal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <div class="language-header">
+      <span class="language-flag">🇯🇵</span>
+      <span class="language-name">Japanese (日本語)</span>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Default politeness level
+        <div class="checklist-options">[ ] 敬語 (keigo)  [ ] 丁寧語 (polite)  [ ] Casual</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Keigo usage contexts: <span class="fill-line"></span>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Sentence-ending particles you use: <span class="fill-line"></span>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Formality markers to always include: <span class="fill-line"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <div class="language-header">
+      <span class="language-flag">🇫🇷</span>
+      <span class="language-name">French (Français)</span>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Tu vs Vous default
+        <div class="checklist-options">[ ] Tu  [ ] Vous  [ ] Context-dependent</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Formality level
+        <div class="checklist-options">[ ] Soutenu  [ ] Courant  [ ] Familier</div>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Anglicisms
+        <div class="checklist-options">[ ] Avoid  [ ] Accept common ones  [ ] Use freely</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <div class="language-header">
+      <span class="language-flag">🇪🇸</span>
+      <span class="language-name">Spanish (Español)</span>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Tú vs Usted default: <span class="fill-line"></span>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Regional variation (Spain/Mexico/etc.): <span class="fill-line"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="language-section">
+    <div class="language-header">
+      <span class="language-flag">🇩🇪</span>
+      <span class="language-name">German (Deutsch)</span>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Du vs Sie default: <span class="fill-line"></span>
+      </div>
+    </div>
+
+    <div class="checklist-item">
+      <div class="checkbox"></div>
+      <div class="checklist-label">
+        Compound word preferences: <span class="fill-line"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Context-Language Matrix</h2>
+  <p>Map how your formality changes across contexts AND languages:</p>
+
+  <table>
+    <tr>
+      <th>Context</th>
+      <th>English</th>
+      <th>Language 2</th>
+      <th>Language 3</th>
+    </tr>
+    <tr>
+      <td>Email to CEO/Executive</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Slack/Teams to team</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Client proposal</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Internal documentation</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Meeting follow-up</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Performance feedback</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <div class="tip-box">
+    <strong>Tip:</strong> Your matrix might reveal that you're formal in Japanese across all contexts, but shift between formal and casual in English. Document these patterns—AI can't guess them.
+  </div>
+
+  <h2>Common Pitfalls Checklist</h2>
+  <p>Check any issues you've experienced with AI writing across languages:</p>
+
+  <div class="pitfall-list">
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        AI doesn't switch formality when language changes
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Keigo/honorifics missing or incorrect in Japanese
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Wrong Tu/Vous choice in French
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Anglicisms overused in non-English output
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Sentence structure too "English" in other languages
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Cultural references don't translate appropriately
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Idioms used incorrectly across languages
+      </div>
+    </div>
+    <div class="pitfall-item">
+      <span class="pitfall-icon">⚠</span>
+      <div>
+        <div class="checkbox" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        Tone mismatch (direct English → too harsh in Japanese)
+      </div>
+    </div>
+  </div>
+
+  <h2>Voice Profile Template (Per Language)</h2>
+  <p>Use this structure to document your voice for each language:</p>
+
+  <div class="language-section">
+    <h3>Language: <span class="fill-line" style="min-width: 150px;"></span></h3>
+
+    <p><strong>1. Default formality setting:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+
+    <p><strong>2. Audience-specific adjustments:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+
+    <p><strong>3. Words/phrases to always use:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+
+    <p><strong>4. Words/phrases to never use:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+
+    <p><strong>5. Sentence structure preferences:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+
+    <p><strong>6. Cultural considerations:</strong><br>
+    <span class="fill-line" style="min-width: 100%;"></span></p>
+  </div>
+
+  <div class="cta-box">
+    <h3>Auto-Generate Multilingual Voice Profiles</h3>
+    <p>Skip the manual work. Create voice profiles for every language you use.</p>
+    <a href="https://myvoicetwin.com" class="cta-button">Get Started Free →</a>
+  </div>
+
+  <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 32px;">
+    © My Voice Twin — myvoicetwin.com
+  </p>
+</body>
+</html>
