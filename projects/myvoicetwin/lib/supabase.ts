@@ -243,6 +243,58 @@ export interface DiscountRedemption {
   created_at: string
 }
 
+// Referral code types
+export interface ReferralCode {
+  id: string
+  user_id: string
+  code: string
+  discount_percent: number
+  commission_percent: number
+  uses: number
+  max_uses: number | null
+  is_active: boolean
+  created_at: string
+}
+
+// Referral credit status
+export type ReferralCreditStatus = 'pending' | 'approved' | 'paid_out' | 'cancelled'
+
+// Referral credits
+export interface ReferralCredit {
+  id: string
+  referrer_id: string
+  referred_user_id: string | null
+  purchase_id: string | null
+  referral_code_id: string | null
+  credit_amount_cents: number
+  status: ReferralCreditStatus
+  payout_date: string | null
+  payout_reference: string | null
+  created_at: string
+}
+
+// Affiliate status
+export type AffiliateStatus = 'pending' | 'approved' | 'rejected' | 'suspended'
+export type PayoutMethod = 'paypal' | 'stripe' | 'bank_transfer'
+
+// Affiliates
+export interface Affiliate {
+  id: string
+  email: string
+  name: string
+  payout_email: string | null
+  payout_method: PayoutMethod
+  referral_code_id: string | null
+  status: AffiliateStatus
+  total_referrals: number
+  total_earnings_cents: number
+  total_paid_out_cents: number
+  application_note: string | null
+  rejection_reason: string | null
+  approved_at: string | null
+  created_at: string
+}
+
 // ============================================
 // DATABASE SCHEMA TYPE
 // ============================================
@@ -352,6 +404,34 @@ export interface Database {
           created_at?: string
         }
         Update: Partial<Omit<DiscountRedemption, 'id'>>
+      }
+      referral_codes: {
+        Row: ReferralCode
+        Insert: Omit<ReferralCode, 'id' | 'created_at' | 'uses'> & {
+          id?: string
+          created_at?: string
+          uses?: number
+        }
+        Update: Partial<Omit<ReferralCode, 'id'>>
+      }
+      referral_credits: {
+        Row: ReferralCredit
+        Insert: Omit<ReferralCredit, 'id' | 'created_at'> & {
+          id?: string
+          created_at?: string
+        }
+        Update: Partial<Omit<ReferralCredit, 'id'>>
+      }
+      affiliates: {
+        Row: Affiliate
+        Insert: Omit<Affiliate, 'id' | 'created_at' | 'total_referrals' | 'total_earnings_cents' | 'total_paid_out_cents'> & {
+          id?: string
+          created_at?: string
+          total_referrals?: number
+          total_earnings_cents?: number
+          total_paid_out_cents?: number
+        }
+        Update: Partial<Omit<Affiliate, 'id'>>
       }
     }
   }

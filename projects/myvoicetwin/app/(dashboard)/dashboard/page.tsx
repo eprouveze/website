@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/lib/supabase';
 import ProgressTracker from '@/components/dashboard/ProgressTracker';
+import ReferralCard from '@/components/dashboard/ReferralCard';
 import { FileText, Globe, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -262,6 +263,12 @@ export default function DashboardPage() {
         hasPaid={data.hasPaid}
         voiceProfileGenerated={data.voiceProfileGenerated}
       />
+
+      {/* Referral Program */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Referral Program</h2>
+        <ReferralCard />
+      </div>
     </div>
   );
 }

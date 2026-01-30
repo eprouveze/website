@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { createServiceClient } from '@/lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
@@ -49,7 +50,7 @@ type ProductTier = keyof typeof PRICING_TIERS
 
 export async function POST(request: NextRequest) {
   try {
-    const { product } = await request.json()
+    const { product, referral_code } = await request.json()
 
     // Validate product tier
     if (!product || !PRICING_TIERS[product as ProductTier]) {
@@ -60,9 +61,57 @@ export async function POST(request: NextRequest) {
     }
 
     const tier = PRICING_TIERS[product as ProductTier]
+    let finalPrice = tier.price
+    let validReferralCode: string | null = null
+    let discountPercent = 0
+
+    // Validate and apply referral code if provided
+    if (referral_code) {
+      const supabase = createServiceClient()
+      const { data: referral } = await supabase
+        .from('referral_codes')
+        .select('*')
+        .eq('code', referral_code.toUpperCase().trim())
+        .eq('is_active', true)
+        .single()
+
+      if (referral) {
+        // Check usage limits
+        if (referral.max_uses === null || referral.uses < referral.max_uses) {
+          validReferralCode = referral.code
+          discountPercent = referral.discount_percent
+          const discountAmount = Math.round((tier.price * discountPercent) / 100)
+          finalPrice = tier.price - discountAmount
+        }
+      }
+    }
 
     // Get the origin for redirect URLs
     const origin = request.headers.get('origin') || 'http://localhost:3000'
+
+    // Build metadata
+    const metadata: Record<string, string> = {
+      product: product,
+      regeneration_limit: String(tier.regeneration_limit),
+      languages: String(tier.languages),
+      matrix_sections: String(tier.matrix_sections),
+      first_year_discount: String(tier.first_year_discount),
+      includes_subscription: String(tier.includes_subscription),
+      audio_credits: String(tier.audio_credits),
+      priority_support: String(tier.priority_support),
+    }
+
+    // Add referral code to metadata if valid
+    if (validReferralCode) {
+      metadata.referral_code = validReferralCode
+      metadata.referral_discount_percent = String(discountPercent)
+    }
+
+    // Build line item description
+    let description = tier.description
+    if (validReferralCode) {
+      description += ` (${discountPercent}% referral discount applied)`
+    }
 
     // Create Stripe Checkout session with dynamic pricing
     const session = await stripe.checkout.sessions.create({
@@ -72,36 +121,37 @@ export async function POST(request: NextRequest) {
         {
           price_data: {
             currency: 'usd',
-            unit_amount: tier.price,
+            unit_amount: finalPrice,
             product_data: {
               name: tier.name,
-              description: tier.description,
+              description: description,
             },
           },
           quantity: 1,
         },
       ],
       // Store product info and tier details in metadata for the webhook
-      metadata: {
-        product: product,
-        regeneration_limit: String(tier.regeneration_limit),
-        languages: String(tier.languages),
-        matrix_sections: String(tier.matrix_sections),
-        first_year_discount: String(tier.first_year_discount),
-        includes_subscription: String(tier.includes_subscription),
-        audio_credits: String(tier.audio_credits),
-        priority_support: String(tier.priority_support),
-      },
+      metadata,
       // Collect customer email
       customer_creation: 'always',
       // Success and cancel URLs
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#pricing`,
-      // Allow promotion codes
+      // Allow promotion codes (in addition to our referral codes)
       allow_promotion_codes: true,
     })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({
+      url: session.url,
+      applied_referral: validReferralCode
+        ? {
+            code: validReferralCode,
+            discount_percent: discountPercent,
+            original_price: tier.price,
+            final_price: finalPrice,
+          }
+        : null,
+    })
   } catch (error) {
     console.error('Stripe checkout error:', error)
 
