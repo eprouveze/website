@@ -1,6 +1,7 @@
 # My Voice Twin - API Documentation
 
-**Version**: 1.0.0
+**Version**: 2.0.0
+**Last Updated**: January 2026
 **Base URL**: `https://myvoicetwin.io/api`
 
 ---
@@ -233,26 +234,28 @@ Create a Stripe checkout session for product purchase.
 **Request Body**:
 ```json
 {
-  "priceId": "price_xxx",
-  "email": "user@example.com"
+  "product": "starter|pro|executive"
 }
 ```
 
 **Pricing Tiers**:
-| Product | Price | Regenerations |
-|---------|-------|---------------|
-| starter | $49 | 1 |
-| complete | $99 | 3 |
-| executive | $249 | 5 |
-| done-for-you | $499 | Unlimited |
+| Product | Price | Features |
+|---------|-------|----------|
+| starter | $49 | 1 language, 3 sections, 1 regeneration |
+| pro | $99 | Unlimited languages/sections, 1 regen, subscription discount |
+| executive | $249 | All Pro features + 1yr subscription + audio credits + 30-day support |
 
 **Response** (200):
 ```json
 {
-  "url": "https://checkout.stripe.com/...",
-  "sessionId": "cs_xxx"
+  "url": "https://checkout.stripe.com/..."
 }
 ```
+
+**Notes**:
+- Stripe Checkout supports promotion codes (enabled by default)
+- Users can enter discount codes directly in the Stripe Checkout UI
+- Metadata is passed to webhook for processing tier benefits
 
 ---
 
@@ -326,3 +329,202 @@ HTTP Status Codes:
 - `405`: Method Not Allowed
 - `429`: Too Many Requests
 - `500`: Internal Server Error
+
+---
+
+## Support Tickets
+
+### GET `/api/support/tickets`
+
+List all support tickets for the authenticated user.
+
+**Authentication**: Required
+
+**Response** (200):
+```json
+{
+  "tickets": [
+    {
+      "id": "uuid",
+      "subject": "Help with voice profile",
+      "description": "...",
+      "status": "open",
+      "priority": "medium",
+      "support_expires_at": "2026-03-01T00:00:00Z",
+      "created_at": "2026-01-30T00:00:00Z"
+    }
+  ]
+}
+```
+
+### POST `/api/support/tickets`
+
+Create a new support ticket.
+
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "subject": "Help with voice profile",
+  "description": "Detailed description of the issue...",
+  "priority": "low|medium|high|urgent"
+}
+```
+
+**Response** (200):
+```json
+{
+  "ticket": { ... },
+  "has_priority_support": true,
+  "support_expires_at": "2026-03-01T00:00:00Z"
+}
+```
+
+**Notes**:
+- Executive tier users get 30-day priority support
+- Priority setting only applies to Executive tier
+
+### GET `/api/support/tickets/[id]`
+
+Get a specific ticket with all messages.
+
+**Authentication**: Required
+
+**Response** (200):
+```json
+{
+  "ticket": { ... },
+  "messages": [
+    {
+      "id": "uuid",
+      "sender_type": "user|support",
+      "message": "...",
+      "created_at": "..."
+    }
+  ]
+}
+```
+
+### PATCH `/api/support/tickets/[id]`
+
+Update ticket status.
+
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "status": "open|in_progress|resolved|closed"
+}
+```
+
+### POST `/api/support/tickets/[id]/messages`
+
+Add a reply to a ticket.
+
+**Authentication**: Required
+
+**Request Body**:
+```json
+{
+  "message": "Reply text..."
+}
+```
+
+**Notes**:
+- Adding a reply to a resolved ticket reopens it
+- Cannot add messages to closed tickets
+
+---
+
+## Discount Codes
+
+### POST `/api/discount/validate`
+
+Validate a discount code before checkout.
+
+**Authentication**: Not required
+
+**Request Body**:
+```json
+{
+  "code": "LAUNCH10",
+  "product": "executive",
+  "amount_cents": 24900
+}
+```
+
+**Response - Valid** (200):
+```json
+{
+  "valid": true,
+  "discount": {
+    "code": "LAUNCH10",
+    "description": "10% off - Launch promotion",
+    "type": "percentage",
+    "value": 10
+  },
+  "original_amount_cents": 24900,
+  "discount_amount_cents": 2490,
+  "final_amount_cents": 22410
+}
+```
+
+**Response - Invalid** (200):
+```json
+{
+  "valid": false,
+  "error": "This discount code has expired"
+}
+```
+
+**Notes**:
+- Stripe promotion codes work automatically at checkout
+- This endpoint validates custom referral/affiliate codes
+- Discount types: `percentage` (10 = 10%) or `fixed` (cents)
+
+---
+
+## Corpus Analysis
+
+### POST `/api/analyze-corpus`
+
+Analyze writing samples to generate corpus insights.
+
+**Authentication**: Required
+
+**Request Body**: None (uses samples from database)
+
+**Response** (200):
+```json
+{
+  "analysis": {
+    "totalSamples": 5,
+    "totalWords": 2500,
+    "avgWordsPerSample": 500,
+    "sampleTypes": { "email_formal": 2, "slack_message": 3 },
+    "languages": ["en"],
+    "topPhrases": ["best regards", "quick update"],
+    "toneIndicators": ["professional", "friendly"],
+    "readabilityScore": 65
+  }
+}
+```
+
+---
+
+## Email Automation
+
+### POST `/api/email`
+
+Send transactional emails (internal use).
+
+**Authentication**: Service role (internal)
+
+**Email Types**:
+- `welcome`: New user signup
+- `questionnaire_complete`: After questionnaire submission
+- `samples_ready`: When 3+ samples added
+- `purchase_confirmation`: After successful purchase
+- `abandoned_cart`: Cart reminder (triggered by cron)

@@ -178,6 +178,71 @@ export interface VoiceTest {
   created_at: string
 }
 
+// Support ticket types
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed'
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent'
+export type SenderType = 'user' | 'support'
+
+// Support tickets
+export interface SupportTicket {
+  id: string
+  user_id: string
+  purchase_id: string | null
+  email: string
+  subject: string
+  description: string
+  status: TicketStatus
+  priority: TicketPriority
+  support_expires_at: string | null
+  created_at: string
+  updated_at: string
+  resolved_at: string | null
+}
+
+// Ticket messages
+export interface TicketMessage {
+  id: string
+  ticket_id: string
+  sender_type: SenderType
+  sender_id: string | null
+  message: string
+  attachments: { name: string; url: string; size: number }[]
+  created_at: string
+}
+
+// Discount code types
+export type DiscountType = 'percentage' | 'fixed'
+
+// Discount codes
+export interface DiscountCode {
+  id: string
+  code: string
+  description: string | null
+  discount_type: DiscountType
+  discount_value: number
+  max_uses: number | null
+  current_uses: number
+  min_purchase_cents: number | null
+  applicable_products: string[]
+  valid_from: string
+  valid_until: string | null
+  is_active: boolean
+  created_by: string | null
+  created_at: string
+}
+
+// Discount redemptions
+export interface DiscountRedemption {
+  id: string
+  discount_code_id: string
+  user_id: string | null
+  purchase_id: string | null
+  original_amount_cents: number
+  discount_amount_cents: number
+  final_amount_cents: number
+  created_at: string
+}
+
 // ============================================
 // DATABASE SCHEMA TYPE
 // ============================================
@@ -253,6 +318,40 @@ export interface Database {
           updated_at?: string
         }
         Update: Partial<Omit<Subscription, 'id'>>
+      }
+      support_tickets: {
+        Row: SupportTicket
+        Insert: Omit<SupportTicket, 'id' | 'created_at' | 'updated_at'> & {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<Omit<SupportTicket, 'id'>>
+      }
+      ticket_messages: {
+        Row: TicketMessage
+        Insert: Omit<TicketMessage, 'id' | 'created_at'> & {
+          id?: string
+          created_at?: string
+        }
+        Update: Partial<Omit<TicketMessage, 'id'>>
+      }
+      discount_codes: {
+        Row: DiscountCode
+        Insert: Omit<DiscountCode, 'id' | 'created_at' | 'current_uses'> & {
+          id?: string
+          created_at?: string
+          current_uses?: number
+        }
+        Update: Partial<Omit<DiscountCode, 'id'>>
+      }
+      discount_redemptions: {
+        Row: DiscountRedemption
+        Insert: Omit<DiscountRedemption, 'id' | 'created_at'> & {
+          id?: string
+          created_at?: string
+        }
+        Update: Partial<Omit<DiscountRedemption, 'id'>>
       }
     }
   }

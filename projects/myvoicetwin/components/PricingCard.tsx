@@ -15,7 +15,8 @@ interface PricingCardProps {
   description: string;
   features: FeatureItem[];
   bestFor: string;
-  priceId?: string;
+  priceId?: string; // Legacy: maps to product tier
+  product?: string; // Product tier: starter, pro, executive
   highlighted?: boolean;
   badge?: string;
   ctaLink?: string;
@@ -30,6 +31,7 @@ export default function PricingCard({
   features,
   bestFor,
   priceId,
+  product,
   highlighted = false,
   badge,
   ctaLink,
@@ -37,23 +39,26 @@ export default function PricingCard({
 }: PricingCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  // Use product if provided, otherwise fall back to priceId
+  const productTier = product || priceId;
+
   const handleCheckout = async () => {
-    if (!priceId) {
-      console.error('No price ID configured');
+    if (!productTier) {
+      console.error('No product tier configured');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Redirect to Stripe Checkout
+      // Redirect to Stripe Checkout (which supports promotion codes)
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId,
+          product: productTier,
         }),
       });
 
@@ -161,7 +166,7 @@ export default function PricingCard({
       ) : (
         <button
           onClick={handleCheckout}
-          disabled={isLoading || !priceId}
+          disabled={isLoading || !productTier}
           className={`
             w-full rounded-lg px-6 py-3 text-base font-semibold transition-all duration-200
             focus:outline-none focus:ring-2 focus:ring-offset-2

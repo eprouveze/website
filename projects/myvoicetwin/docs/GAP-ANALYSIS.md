@@ -14,6 +14,7 @@ This document identifies gaps between the PRD/business plan and the actual imple
 - Phase 1 (Revenue Critical): COMPLETED
 - Phase 2 (Growth - Email): COMPLETED
 - Phase 3 (Documentation): COMPLETED
+- Phase 4 (Low Priority): COMPLETED
 
 ---
 
@@ -40,12 +41,12 @@ This document identifies gaps between the PRD/business plan and the actual imple
 | Profile Locking | Without subscription = read-only | **ENFORCED** |
 | Regeneration Limits | 3 for $99, unlimited for subscribers | **TRACKED & ENFORCED** |
 
-### 1.3 Still Pending (Future Phases)
+### 1.3 Previously Pending - NOW IMPLEMENTED
 
 | Feature | Priority | Status |
 |---------|----------|--------|
-| 30-day Support ticket system | LOW | NOT IMPLEMENTED |
-| Discount code system | LOW | NOT IMPLEMENTED |
+| 30-day Support ticket system | LOW | **IMPLEMENTED** |
+| Discount code system | LOW | **IMPLEMENTED** |
 
 ### 1.4 Email Automation - NOW IMPLEMENTED (Resend)
 
@@ -123,10 +124,14 @@ This document identifies gaps between the PRD/business plan and the actual imple
 6. Lead nurture sequences
 7. Abandoned cart recovery emails
 
-### Phase 3: Documentation - IN PROGRESS
+### Phase 3: Documentation - COMPLETED
 8. ~~Update PRD with new features~~ **DONE**
-9. API documentation (Swagger/OpenAPI) - PENDING
-10. User guides - PENDING
+9. ~~API documentation~~ **DONE** - See `/docs/API.md`
+10. ~~User guides~~ **DONE** - See `/docs/USER-GUIDE.md`
+
+### Phase 4: Low Priority Features - COMPLETED
+11. ~~Support ticket system~~ **DONE** - 30-day priority support for Executive tier
+12. ~~Discount code system~~ **DONE** - Stripe promotion codes + custom validation API
 
 ---
 
