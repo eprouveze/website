@@ -385,7 +385,7 @@ Stop wasting time rewriting AI drafts. Create a Digital Twin that actually sound
 
 ## Trust Badges
 
-- Secure checkout via LemonSqueezy
+- Secure checkout via Stripe
 - Instant access after purchase
 - 14-day money-back guarantee
 

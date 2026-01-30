@@ -223,41 +223,204 @@ VoiceDNA-DoneForYou/
 
 ---
 
-## LemonSqueezy Setup
+## Payment & Delivery Setup (Stripe Japan)
 
-### Products to Create
+### Why Stripe Direct (from Japan)
 
-| Product | Price | Type | Files |
-|---------|-------|------|-------|
-| VoiceDNA Starter | $49 | Digital download | VoiceDNA-Starter.zip |
-| VoiceDNA Complete | $99 | Digital download | VoiceDNA-Complete.zip |
-| VoiceDNA Executive | $249 | Digital download + service | VoiceDNA-Executive.zip + manual fulfillment |
-| VoiceDNA Done-For-You | $499 | Service | Intake form + manual fulfillment |
+| Factor | Stripe Direct | LemonSqueezy | Gumroad |
+|--------|---------------|--------------|---------|
+| Japan bank payout | ✅ Native | ⚠️ PayPal only | ⚠️ Via Stripe Connect |
+| Fees (domestic) | 3.6% + ¥40 | ~8-9% total | ~13% total |
+| Fees (international) | 3.9% + ¥40 | ~8-9% total | ~13% total |
+| Tax handling | You handle | They handle | They handle |
+| Setup complexity | Medium | Easy | Easy |
+
+**Note on tax**: Japanese Consumption Tax (JCT) does NOT apply to digital content sold to overseas customers. Most of your customers will likely be non-Japan residents.
+
+---
+
+### Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  Landing Page   │────▶│ Stripe Checkout │────▶│    Delivery     │
+│  (Carrd/Framer) │     │  (hosted page)  │     │  (see options)  │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+---
+
+### Step 1: Stripe Japan Account
+
+1. Go to [stripe.com/jp](https://stripe.com/jp)
+2. Create account (individual or business)
+3. Complete identity verification (本人確認)
+4. Add Japanese bank account for payouts
+5. Enable Checkout in Dashboard → Settings → Checkout
+
+**Required documents** (individual):
+- 運転免許証 or マイナンバーカード or パスポート
+- Bank account details
+
+---
+
+### Step 2: Create Products in Stripe
+
+In Stripe Dashboard → Products:
+
+| Product | Price | Price ID (example) |
+|---------|-------|-------------------|
+| VoiceDNA Starter | ¥7,500 (~$49) | price_starter_xxx |
+| VoiceDNA Complete | ¥15,000 (~$99) | price_complete_xxx |
+| VoiceDNA Executive | ¥38,000 (~$249) | price_executive_xxx |
+| VoiceDNA Done-For-You | ¥76,000 (~$499) | price_dfy_xxx |
+
+**Pricing strategy**: Price in JPY for Japanese customers, but also enable USD for international.
+
+---
+
+### Step 3: Landing Page Options
+
+| Option | Cost | Complexity | Best For |
+|--------|------|------------|----------|
+| **Carrd** | $19/year | Very easy | MVP, fast launch |
+| **Framer** | $5-15/mo | Easy | Better design |
+| **Super.so** | $12/mo | Easy | Notion-based |
+| **Own site** | Hosting cost | Medium | Full control |
+
+**Carrd recommended for MVP**:
+- Create payment links in Stripe
+- Embed buttons on Carrd page
+- Simple, fast, looks professional
+
+---
+
+### Step 4: Delivery Options
+
+Since Stripe doesn't deliver files, you need a delivery mechanism:
+
+#### Option A: Manual Email (Simplest for MVP)
+1. Stripe webhook triggers on successful payment
+2. You receive email notification
+3. You manually send download link
+4. **Pros**: Zero setup, works immediately
+5. **Cons**: Not instant, requires your attention
+
+#### Option B: Hosted Files + Thank You Page
+1. Host ZIP files on Cloudflare R2, Vercel, or Google Drive (unlisted)
+2. Stripe Checkout redirects to thank-you page with download links
+3. Links are obfuscated but not fully protected
+4. **Pros**: Instant delivery, simple
+5. **Cons**: Links could be shared
+
+#### Option C: SendOwl ($9/mo)
+1. Integrates directly with Stripe
+2. Handles secure file delivery, download limits
+3. Sends automatic delivery emails
+4. **Pros**: Professional, secure, automatic
+5. **Cons**: Monthly cost
+
+#### Option D: Gumroad for Delivery Only
+1. Create $0 products on Gumroad
+2. After Stripe payment, send Gumroad unlock link
+3. **Pros**: Proven delivery system
+4. **Cons**: Extra step, feels hacky
+
+**Recommendation**: Start with Option B (hosted files + thank-you page) for MVP. Upgrade to SendOwl if volume justifies.
+
+---
+
+### Step 5: Thank-You Page Setup
+
+Create a simple thank-you page with:
+
+```
+✅ Payment Confirmed!
+
+Thank you for purchasing VoiceDNA [Tier].
+
+📥 Download Your Files:
+[Download VoiceDNA-Complete.zip] (button)
+
+📺 Video Walkthrough:
+[Watch Now] (link to unlisted YouTube/Loom)
+
+📧 Questions?
+Email: [your-email] — I respond within 48 hours.
+
+🎁 What's Next:
+1. Download and unzip the files
+2. Start with 00-START-HERE.pdf
+3. Follow the 4-stage process
+4. Reply to your confirmation email with any questions
+```
+
+---
+
+### Step 6: Stripe Checkout Links
+
+Create Payment Links in Stripe Dashboard → Payment Links:
+
+| Tier | Link Format |
+|------|-------------|
+| Starter | `https://buy.stripe.com/xxx_starter` |
+| Complete | `https://buy.stripe.com/xxx_complete` |
+| Executive | `https://buy.stripe.com/xxx_executive` |
+| Done-For-You | `https://buy.stripe.com/xxx_dfy` |
+
+Embed these as buttons on your Carrd/landing page.
+
+---
 
 ### Checkout Settings
 
-- **Refund policy**: 14 days
-- **License**: Personal use, non-transferable
-- **Delivery**: Instant (Starter, Complete), Manual follow-up (Executive, DFY)
+- **Success URL**: Your thank-you page with download links
+- **Cancel URL**: Back to landing page
+- **Collect email**: Yes (required for delivery)
+- **Collect billing address**: Optional (helps with tax records)
+- **Allow promotion codes**: Yes (for launch discounts)
 
-### Email Sequences
+---
+
+### Products to Create
+
+| Product | Price (JPY) | Price (USD) | Type |
+|---------|-------------|-------------|------|
+| VoiceDNA Starter | ¥7,500 | $49 | One-time |
+| VoiceDNA Complete | ¥15,000 | $99 | One-time |
+| VoiceDNA Executive | ¥38,000 | $249 | One-time + manual service |
+| VoiceDNA Done-For-You | ¥76,000 | $499 | Manual service |
+
+### Refund Policy
+
+Configure in Stripe:
+- **Refund window**: 14 days
+- **Process**: Customer emails you, you issue refund in Dashboard
+- **Note**: Add refund policy to landing page and thank-you page
+
+### Email Follow-up (Manual for MVP)
+
+Since Stripe doesn't have built-in email automation, handle manually or use simple tools:
+
+**Tools for automation (optional)**:
+- Buttondown (free tier) — for follow-up sequences
+- Resend — transactional emails via API
+- Zapier — connect Stripe to email
+
+**MVP approach (manual)**:
 
 **Post-purchase (Starter/Complete):**
-1. Immediate: Download link + quick start
-2. Day 2: "How's it going? Here's a tip..."
-3. Day 7: "Need help? Reply to this email"
-4. Day 14: "Share your success? Leave a review"
+1. Stripe sends automatic receipt
+2. Thank-you page provides download
+3. Day 2-3: Manual check-in email (optional)
 
 **Post-purchase (Executive):**
-1. Immediate: Download link + "Submit your output when ready"
-2. Day 3: "Ready for review? Here's how to submit"
-3. After review: Personalized feedback delivery
+1. Thank-you page provides download + submission instructions
+2. You email when review is ready
 
 **Post-purchase (Done-For-You):**
-1. Immediate: "Welcome! Here's your intake form"
-2. After intake: "Scheduling your voice interview"
-3. After delivery: "Your Digital Twin is ready"
-4. Day 7: "How's it working? Any refinements needed?"
+1. You email intake form within 24 hours
+2. Manual coordination from there
 
 ---
 
@@ -308,12 +471,16 @@ VoiceDNA-DoneForYou/
 - [ ] README in every folder
 - [ ] Total size reasonable (<10MB per tier)
 
-### Platform
-- [ ] LemonSqueezy products created
-- [ ] Pricing correct
-- [ ] Download delivery tested
-- [ ] Refund policy configured
-- [ ] Email sequences set up
+### Platform (Stripe Japan)
+- [ ] Stripe account created and verified
+- [ ] Japanese bank account connected
+- [ ] Products created with correct pricing (JPY + USD)
+- [ ] Payment Links generated
+- [ ] Checkout success/cancel URLs configured
+- [ ] Thank-you page with download links ready
+- [ ] Files hosted (Cloudflare R2, Vercel, or Drive)
+- [ ] Test purchase completed
+- [ ] Landing page live (Carrd/Framer)
 
 ### Legal
 - [ ] Terms of use included
