@@ -71,10 +71,20 @@
 
 ## Step 6: Samples
 
-**Current State**: *(to be reviewed)*
+**Current State**: Manual paste-only sample collection, global minimum of 5 samples, no connection to questionnaire, no audio support
 
 **Feedback/Improvements**:
-- *(awaiting feedback)*
+- [ ] **MAJOR**: Minimum 5 samples should be **per matrix section**, not global
+- [ ] Connect to matrix questionnaire — guide user through each matrix cell they defined
+- [ ] Make it gradual — walk user through sections one by one
+- [ ] Allow bypass with acknowledgment:
+  - If some sections meet minimum but others don't, user can proceed
+  - Must explicitly acknowledge: "These sections will not be representative"
+  - Show clear warning about incomplete sections
+- [ ] **Audio input** requires additional payment:
+  - Pricing based on file size OR recording length
+  - Use Whisper API costs + margin
+  - Show cost estimate before upload/recording
 
 ---
 
