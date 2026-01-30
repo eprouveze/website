@@ -1,7 +1,8 @@
 # My Voice Twin: GTM Launch Playbook
 
 **Purpose**: Tactical guide for acquiring users and driving traffic to myvoicetwin.io
-**Version**: 1.0
+**Focus**: Automated + organic (non-paid) strategies
+**Version**: 1.1
 **Updated**: January 2026
 
 ---
@@ -15,80 +16,184 @@
 
 **Goal**: 1,000 customers in Year 1 = $100K revenue (0.05% of 2M SAM)
 
+**Philosophy**: Automate everything possible. Build systems that generate leads while you sleep.
+
 ---
 
-## 1. Channel Strategy
+## 1. Automation Stack
 
-### 1.1 Priority Channels
+### 1.1 Recommended Tools (Free/Low-Cost)
 
-| Channel | Target Audience | Priority | Cost | Timeline |
-|---------|-----------------|----------|------|----------|
-| Twitter/X | AI enthusiasts, indie hackers, tech professionals | HIGH | Free | Launch week |
-| LinkedIn | Executives, multilingual professionals | HIGH | Free | Launch week |
-| Product Hunt | Early adopters, product enthusiasts | HIGH | Free | Launch day |
-| Reddit | AI subreddits, productivity communities | MEDIUM | Free | Week 1 |
-| AI Newsletters | Tech-forward professionals | MEDIUM | $50-500/placement | Week 2+ |
-| YouTube | How-to seekers, learners | LOW | Time investment | Month 2+ |
-| Paid Ads | Retargeting, lookalikes | LOW | $500+ test budget | Month 2+ |
+| Function | Tool | Cost | Automation Level |
+|----------|------|------|------------------|
+| **Email sequences** | Loops.so / Resend | Free tier | Full auto |
+| **Social scheduling** | Buffer / Typefully | Free tier | Schedule + auto-post |
+| **SEO monitoring** | Google Search Console | Free | Weekly reports |
+| **Analytics** | Vercel Analytics | Included | Auto tracking |
+| **Form handling** | Built into app | Free | Auto to Supabase |
+| **Webhook automation** | Supabase Edge Functions | Free tier | Event-driven |
+| **RSS to social** | IFTTT / Zapier | Free tier | Auto-post new content |
 
-### 1.2 Channel-Specific Tactics
+### 1.2 Automation Flows to Build
 
-#### Twitter/X Strategy
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AUTOMATED LEAD CAPTURE                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Blog Post Published                                             │
+│       │                                                          │
+│       ▼                                                          │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐          │
+│  │ Auto-tweet  │───▶│ Auto-LinkedIn│───▶│ RSS Feed    │          │
+│  │ (Typefully) │    │ (Buffer)     │    │ (built-in)  │          │
+│  └─────────────┘    └─────────────┘    └─────────────┘          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 
-**Account Positioning**: Build in public, share the journey
+┌─────────────────────────────────────────────────────────────────┐
+│                    AUTOMATED EMAIL SEQUENCES                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  User Signs Up ──▶ Welcome Email (Day 0)                        │
+│       │                    │                                     │
+│       │                    ▼                                     │
+│       │           Education Email (Day 2)                        │
+│       │                    │                                     │
+│       │                    ▼                                     │
+│       │           Social Proof Email (Day 4)                     │
+│       │                    │                                     │
+│       │                    ▼                                     │
+│       │           CTA Email (Day 7)                              │
+│       │                                                          │
+│       ▼                                                          │
+│  Completes Questionnaire ──▶ "Ready to generate!" (immediate)   │
+│       │                                                          │
+│       ▼                                                          │
+│  Abandons (3 days) ──▶ Re-engagement sequence                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 
-**Content Calendar (Launch Week)**:
-| Day | Content Type | Topic |
-|-----|--------------|-------|
-| -3 | Teaser | "Building something for multilingual professionals..." |
-| -2 | Problem post | "ChatGPT writes like ChatGPT. Here's why that's a problem." |
-| -1 | Solution tease | "Tomorrow I'm launching the system I built for myself." |
-| 0 | Launch | Full announcement + link |
-| +1 | Social proof | First user reactions, screenshots |
-| +2 | Deep dive | Thread: How the methodology works |
-| +3 | Use case | Specific example (Japanese keigo, French formality) |
+┌─────────────────────────────────────────────────────────────────┐
+│                    AUTOMATED REFERRAL PROGRAM                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Customer Purchase                                               │
+│       │                                                          │
+│       ▼                                                          │
+│  Auto-generate referral link (Supabase function)                │
+│       │                                                          │
+│       ▼                                                          │
+│  Include in thank-you email + dashboard                         │
+│       │                                                          │
+│       ▼                                                          │
+│  Track referrals ──▶ Auto-credit discounts                      │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-**Hashtags to Use**:
-- #buildinpublic
-- #indiehackers
-- #AI
-- #ChatGPT
-- #productivity
-- #multilingual
+---
 
-**Accounts to Engage**:
-- AI tool reviewers
-- Productivity influencers
-- Multilingual content creators
-- Indie hackers with audience
+## 2. Channel Strategy (Organic Only)
 
-#### LinkedIn Strategy
+### 2.1 Priority Channels (No Personal Involvement)
 
-**Profile Optimization**:
-- Headline: "Helping multilingual professionals get AI that sounds like them"
-- Featured: Link to landing page + testimonial graphic
+| Channel | Target Audience | Priority | Automation Level |
+|---------|-----------------|----------|------------------|
+| SEO/Blog | Search traffic | HIGH | 100% - publish and forget |
+| Reddit monitoring | AI communities | HIGH | 90% - auto-find, quick reply |
+| Product Hunt | Early adopters | MEDIUM | One-time launch |
+| Email sequences | Existing leads | HIGH | 100% automated |
+| Auto-tweet on publish | AI enthusiasts | MEDIUM | 100% - RSS trigger |
 
-**Content Types**:
-1. **Personal story**: "I was spending 2 hours/day rewriting AI drafts..."
-2. **Problem/Solution**: "The hidden cost of generic AI writing"
-3. **How-to**: "How I cloned my voice across 3 languages"
-4. **Results**: "My email time dropped by 80%"
+### 2.2 Reddit Automation Strategy
 
-**Posting Schedule**: 3x/week minimum
+#### Automated Monitoring Setup
 
-**Engagement Tactics**:
-- Comment on posts about AI writing, productivity, multilingual work
-- Join relevant groups (AI professionals, international business)
-- Direct outreach to warm connections
+**Tools**:
+- **F5Bot** (free) - Email alerts when keywords appear on Reddit
+- **Visualping** (free tier) - Monitor specific subreddit pages
+- **IFTTT** (free) - "If Reddit post contains X, then email me"
+
+**Keywords to Monitor**:
+```
+Primary (high intent):
+- "ChatGPT sounds like"
+- "AI doesn't sound like me"
+- "custom GPT voice"
+- "AI writing voice"
+
+Secondary (problem aware):
+- "rewriting AI drafts"
+- "ChatGPT generic"
+- "AI email writing"
+- "multilingual AI"
+
+Niche:
+- "keigo ChatGPT"
+- "Japanese business email AI"
+- "French formality AI"
+```
+
+**Target Subreddits**:
+| Subreddit | Size | Best Post Types |
+|-----------|------|-----------------|
+| r/ChatGPT | 5M+ | Helpful comments on voice problems |
+| r/artificial | 1M+ | Discussion about limitations |
+| r/productivity | 2M+ | Time-saving solutions |
+| r/languagelearning | 1M+ | Multilingual angle |
+| r/Entrepreneur | 1M+ | Tool recommendations |
+| r/SideProject | 100K | Launch announcements (allowed) |
+
+#### Response Templates (Copy-Paste Ready)
+
+**Template 1: Someone asks about AI voice**
+```
+I built something for exactly this problem. The key is giving the AI
+specific patterns from your actual writing - sentence length,
+transition words, punctuation habits.
+
+If you want to try a systematic approach: [link]
+
+Happy to answer questions about the methodology.
+```
+
+**Template 2: Someone complains about generic AI**
+```
+Yeah, "write in a professional tone" doesn't work because
+"professional" means different things to different people.
+
+What worked for me: analyzing 10+ of my own emails to extract
+the actual patterns, then creating detailed instructions from that.
+
+There are tools that automate this process if you don't want to
+do it manually.
+```
+
+**Template 3: Multilingual question**
+```
+This is a huge problem for multilingual writers. My Japanese emails
+need keigo, my English is more direct - ChatGPT treats them the same.
+
+The solution is language-specific voice profiles. I use [tool]
+to create separate patterns for each language that the AI
+auto-detects and applies.
+```
+
+#### Posting Rules (Stay Safe)
+1. **Never spam** - Only respond when genuinely helpful
+2. **Value first** - Give useful info before any link
+3. **Disclose** - If asked, admit you built the tool
+4. **Respect rules** - Each subreddit has different self-promo rules
+5. **Build karma** - Helpful comments with no links build credibility
 
 #### Product Hunt Launch
 
 **Preparation (2 weeks before)**:
 - [ ] Create Product Hunt maker account
-- [ ] Gather 5-10 beta testers for launch day upvotes
 - [ ] Prepare assets: logo, screenshots, tagline
 - [ ] Write compelling description
-- [ ] Prepare launch day responses
+- [ ] Pre-write 10 response templates
 
 **Launch Day Assets**:
 | Asset | Specs |
@@ -98,48 +203,54 @@
 | Tagline | "Your voice. Any AI. Every language." (60 chars max) |
 | Description | 260 chars first paragraph hook |
 
-**Tagline Options**:
-1. "Create an AI that writes exactly like you"
-2. "Your voice. Any AI. Every language."
-3. "Stop rewriting AI drafts. Clone your voice instead."
+**Pre-Written Response Templates**:
+```
+Q: "How is this different from custom instructions?"
+A: "Custom instructions are a starting point, but they're generic.
+   This analyzes YOUR actual writing patterns - sentence rhythm,
+   transitions, punctuation habits - and creates specific rules
+   the AI follows. The difference is night and day."
 
-**Launch Day Checklist**:
-- [ ] Post at 12:01 AM PST (optimal timing)
-- [ ] Share on Twitter immediately
-- [ ] Share on LinkedIn
-- [ ] Email list announcement
-- [ ] Respond to every comment within 1 hour
-- [ ] Thank supporters publicly
+Q: "Does this work with Claude/Gemini?"
+A: "Yes! The output is platform-agnostic. We include specific
+   setup guides for ChatGPT Custom GPTs, Claude Projects, and
+   Gemini Gems. Same voice profile works everywhere."
 
-#### Reddit Strategy
+Q: "How long does setup take?"
+A: "About 3 hours total: 1-2 hours gathering writing samples,
+   30-60 min running the extraction, 15 min deploying. One-time
+   setup for a system you use daily."
+```
 
-**Target Subreddits**:
-| Subreddit | Size | Approach |
-|-----------|------|----------|
-| r/ChatGPT | 5M+ | Value-first posts, no direct promotion |
-| r/artificial | 1M+ | Discussion about AI writing quality |
-| r/productivity | 2M+ | Time-saving focus |
-| r/languagelearning | 1M+ | Multilingual angle |
-| r/Entrepreneur | 1M+ | Build in public story |
-| r/SideProject | 100K | Launch announcement |
+#### Auto-Tweet on Publish (No Personal Involvement)
 
-**Reddit Rules**:
-1. **No direct self-promotion** in most subreddits
-2. Build karma first with helpful comments
-3. Share genuinely useful content
-4. Only link when asked or in appropriate threads
-5. Be transparent about being the creator
+**Setup with IFTTT/Zapier**:
+```
+Trigger: New item in blog RSS feed
+Action: Post tweet with title + link
 
-**Safe Approach**:
-- Post in r/SideProject (self-promo allowed)
-- Comment helpfully in other subs
-- Share methodology insights (not product links)
+Template:
+"New post: {title}
+
+{excerpt}
+
+Read more: {link}
+
+#AI #ChatGPT #productivity"
+```
+
+**Alternative: Typefully RSS Integration**
+1. Connect blog RSS to Typefully
+2. Auto-generate tweet from post title
+3. Posts automatically when blog publishes
+
+**Zero effort after setup** - just publish blog posts.
 
 ---
 
 ## 2. Content Marketing
 
-### 2.1 SEO Keywords
+### 3.1 SEO Keywords
 
 **Primary Keywords** (high intent):
 | Keyword | Monthly Volume | Difficulty | Landing Page |
@@ -163,7 +274,25 @@
 - "AI writing assistant multilingual"
 - "voice cloning for text not audio"
 
-### 2.2 Blog Content Plan
+### 3.2 Automated SEO Monitoring
+
+**Google Search Console Setup**:
+1. Verify domain ownership
+2. Submit sitemap.xml
+3. Enable email alerts for issues
+4. Set up weekly performance report (auto-email)
+
+**Automated Tracking**:
+```
+Weekly auto-report includes:
+├── Top performing pages
+├── Keywords gaining impressions
+├── Click-through rates
+├── Pages with errors
+└── New backlinks detected
+```
+
+### 3.3 Blog Content Plan
 
 **Launch Content** (publish before launch):
 | Title | Target Keyword | Purpose |
@@ -180,6 +309,37 @@
 | "5 Signs Your AI Writing Needs a Voice Profile" | listicle | Engagement |
 | "How to Write Japanese Business Emails with AI" | keigo | Niche SEO |
 | "AI Writing for Executives: A Time ROI Analysis" | executives | Segment |
+
+### 3.4 Content Repurposing Automation
+
+**One Blog Post → 10+ Content Pieces** (automated flow):
+
+```
+Blog Post Published
+       │
+       ├──▶ Auto-tweet thread (Typefully)
+       │         └── 5-7 tweets extracted from post
+       │
+       ├──▶ LinkedIn post (Buffer)
+       │         └── Key insight + link
+       │
+       ├──▶ Email newsletter (Loops)
+       │         └── Summary + link to full post
+       │
+       ├──▶ RSS feed update (automatic)
+       │
+       └──▶ [Manual] Reddit comment when relevant
+```
+
+**Content Template Library** (pre-written, just customize):
+
+| Template | Use Case | Time to Customize |
+|----------|----------|-------------------|
+| Twitter thread | New blog post | 5 min |
+| LinkedIn post | New blog post | 5 min |
+| Email newsletter | Weekly digest | 10 min |
+| Problem/solution post | Evergreen content | 10 min |
+| User result highlight | Social proof | 5 min |
 
 ### 2.3 Lead Magnets
 
@@ -240,146 +400,194 @@
 
 ## 4. Partnerships & Outreach
 
-### 4.1 Newsletter Sponsorships
+### 4.1 Newsletter Features (Free/Earned)
 
-**Target Newsletters**:
-| Newsletter | Audience | Est. Subscribers | Est. Cost |
-|------------|----------|------------------|-----------|
-| The Rundown AI | AI enthusiasts | 500K+ | $500-2K |
-| Superhuman | Productivity | 300K+ | $300-1K |
-| TLDR | Tech professionals | 1M+ | $1K-5K |
-| Ben's Bites | AI builders | 100K+ | $200-500 |
+**Approach**: Get featured organically, not through paid sponsorship.
 
-**Pitch Template**:
+**Target Newsletters for Organic Coverage**:
+| Newsletter | Approach | What to Pitch |
+|------------|----------|---------------|
+| The Rundown AI | Submit via tips form | "New tool for multilingual AI writing" |
+| Ben's Bites | Direct email to Ben | Indie hacker story angle |
+| Product Hunt Daily | Automatic if trending | Coordinate with PH launch |
+| Superhuman | Submit tip | Productivity angle |
+
+**Pitch Template (Organic Feature)**:
 ```
-Subject: Sponsorship inquiry — My Voice Twin
+Subject: Story tip — Solving the "ChatGPT sounds like ChatGPT" problem
 
 Hi [Name],
 
-I'm launching My Voice Twin — a tool that creates AI voice profiles for
-multilingual professionals. It solves the "ChatGPT sounds like ChatGPT" problem.
+Thought you might find this interesting for [Newsletter]:
 
-Your audience of [description] would be a great fit because [reason].
+I just launched My Voice Twin — it creates AI voice profiles for
+multilingual professionals. It solves a problem I was personally
+having: my Japanese emails need keigo, my French needs different
+formality, but ChatGPT treats them all the same.
 
-Interested in discussing a sponsorship for [date range]?
+Built it for myself, now others are using it.
+
+Happy to share more if you're interested.
 
 Best,
 [Name]
 ```
 
-### 4.2 Influencer Outreach
+**Key Difference**: Position as a story/tip, not an ad. Free coverage > paid ads.
 
-**Target Profiles**:
-| Type | Platform | Audience Size | Approach |
-|------|----------|---------------|----------|
-| AI reviewers | YouTube | 10K-100K | Free account for review |
-| Productivity creators | Twitter | 50K+ | Affiliate partnership |
-| Multilingual creators | YouTube | 5K-50K | Collaboration |
-| Indie hackers | Twitter | 10K+ | Cross-promotion |
+### 4.2 Passive Affiliate Discovery
 
-**Outreach Template**:
+**Let affiliates find you** (no outreach required):
+
+**Setup**:
+1. Create `/affiliates` page explaining program
+2. Add "Become an affiliate" link in footer
+3. List on affiliate directories (free):
+   - ShareASale (if you use their platform)
+   - Impact affiliate marketplace
+   - PartnerStack directory
+
+**Self-Service Affiliate Signup**:
 ```
-Subject: Would love your feedback on My Voice Twin
-
-Hi [Name],
-
-I've been following your content on [topic] — really enjoyed [specific piece].
-
-I just launched My Voice Twin, which helps [description]. Given your audience
-of [description], I thought you might find it interesting.
-
-Would you be open to trying it out? Happy to set you up with a free account.
-
-No pressure for a review — just curious what you think.
-
-Best,
-[Name]
+/affiliates page includes:
+├── Commission structure (20% lifetime)
+├── Cookie duration (30 days)
+├── Marketing materials (auto-download)
+├── Self-signup form → auto-generates links
+└── Dashboard for tracking
 ```
 
-### 4.3 Affiliate Program
+**Automated Affiliate Flow**:
+```
+Affiliate signs up on /affiliates page
+       │
+       ▼
+Auto-generate unique affiliate code
+       │
+       ▼
+Email with link + marketing materials
+       │
+       ▼
+They promote (no involvement from you)
+       │
+       ▼
+Sales tracked automatically via Stripe
+       │
+       ▼
+Monthly auto-payout (Stripe Connect)
+```
 
-**Structure**:
-| Tier | Commission | Cookie Duration |
-|------|------------|-----------------|
-| Standard | 20% | 30 days |
-| Partner | 30% | 60 days |
-| VIP | 40% | 90 days |
-
-**Affiliate Recruitment**:
-1. Reach out to AI tool reviewers
-2. Productivity bloggers and YouTubers
-3. Multilingual content creators
-4. Past customers (referral program)
+**Zero maintenance** after initial setup.
 
 ---
 
-## 5. Paid Acquisition (Phase 2)
+## 5. Automated Referral System
 
-### 5.1 Retargeting
+### 5.1 Database Schema Addition
 
-**Pixel Setup**:
-- [ ] Meta Pixel on all pages
-- [ ] Google Ads tag
-- [ ] LinkedIn Insight Tag
+```sql
+-- Add to Supabase
+referral_codes (
+  id uuid primary key,
+  user_id uuid references profiles,
+  code text unique,  -- e.g., "JOHN20"
+  discount_percent int default 20,
+  uses int default 0,
+  max_uses int default null,  -- null = unlimited
+  created_at timestamp
+)
 
-**Retargeting Audiences**:
-| Audience | Definition | Ad Type |
-|----------|------------|---------|
-| Homepage visitors | Visited homepage, didn't sign up | Awareness |
-| Free tier dropoffs | Started questionnaire, didn't finish | Re-engagement |
-| Pricing viewers | Visited pricing, didn't buy | Conversion |
+referral_credits (
+  id uuid primary key,
+  referrer_id uuid references profiles,
+  referred_purchase_id uuid references purchases,
+  credit_amount_cents int,  -- e.g., 2000 = $20
+  status text,  -- 'pending', 'credited', 'paid_out'
+  created_at timestamp
+)
+```
 
-### 5.2 Cold Acquisition (Test Budget: $500)
+### 5.2 Referral Flow (Fully Automated)
 
-**Platform Recommendations**:
-| Platform | Audience | Est. CPC | Test Budget |
-|----------|----------|----------|-------------|
-| Google Ads | Search intent | $2-5 | $200 |
-| Meta Ads | Interest targeting | $1-3 | $200 |
-| LinkedIn Ads | B2B professionals | $5-10 | $100 |
+```
+Customer purchases
+       │
+       ▼
+Stripe webhook fires
+       │
+       ▼
+Edge Function: Generate referral code
+       │
+       ▼
+Store in referral_codes table
+       │
+       ▼
+Include in thank-you email (auto)
+       │
+       ▼
+Show in dashboard: "Share & earn $20"
+       │
+       ▼
+Friend uses code at checkout
+       │
+       ▼
+Stripe applies discount (coupon)
+       │
+       ▼
+Edge Function: Credit referrer
+       │
+       ▼
+Email referrer: "You earned $20!"
+```
 
-**Google Ads Keywords**:
-- "custom ChatGPT voice" (exact)
-- "AI that sounds like me" (phrase)
-- "ChatGPT custom instructions" (broad)
+### 5.3 Referral Incentives
 
-**Meta Ads Interests**:
-- ChatGPT users
-- Productivity tools
-- Multilingual (language learning)
-- Executive roles
+| Action | Referrer Gets | Friend Gets |
+|--------|---------------|-------------|
+| Friend signs up (free) | Nothing | - |
+| Friend purchases Starter | $10 credit | 20% off |
+| Friend purchases Pro | $20 credit | 20% off |
+| Friend purchases Executive | $50 credit | 20% off |
+
+**Credit Usage**: Apply to subscription renewals or future purchases.
 
 ---
 
-## 6. Launch Week Timeline
+## 6. Launch Week Timeline (Minimal Involvement)
 
 ### Pre-Launch (Week -1)
 
-| Day | Task | Owner |
-|-----|------|-------|
-| -7 | Finalize landing pages | Dev |
-| -6 | Set up email sequences | Marketing |
-| -5 | Prepare Product Hunt assets | Marketing |
-| -4 | Queue social media posts | Marketing |
-| -3 | First teaser post (Twitter/LinkedIn) | Founder |
-| -2 | Notify beta testers of launch date | Founder |
-| -1 | Final testing, staging check | Dev |
+| Day | Task | Time | Automation |
+|-----|------|------|------------|
+| -7 | Finalize landing pages | 2 hrs | One-time |
+| -6 | Set up email sequences (Loops) | 3 hrs | 100% auto after |
+| -5 | Set up Reddit monitoring (F5Bot) | 30 min | Auto alerts |
+| -4 | Prepare Product Hunt assets | 2 hrs | One-time |
+| -3 | Set up RSS → Twitter automation | 30 min | 100% auto after |
+| -2 | Publish 3 launch blog posts | 4 hrs | Auto-distribute |
+| -1 | Final testing | 1 hr | One-time |
 
-### Launch Week
+### Launch Day
 
-| Day | Task | Channels |
-|-----|------|----------|
-| 0 (Launch) | Product Hunt submit (12:01 AM PST) | PH |
-| 0 | Announcement posts | Twitter, LinkedIn |
-| 0 | Email blast to list | Email |
-| 0 | Reddit post (r/SideProject) | Reddit |
-| 0 | Monitor and respond to all comments | All |
-| +1 | Share early reactions | Twitter, LinkedIn |
-| +2 | Methodology thread | Twitter |
-| +3 | Use case deep dive | LinkedIn |
-| +4 | Thank you post + early results | Twitter |
-| +5 | First week learnings | Twitter |
-| +6 | Weekend recap | LinkedIn |
+| Time | Task | Effort |
+|------|------|--------|
+| 12:01 AM PST | Submit to Product Hunt | 5 min |
+| Morning | Post to r/SideProject | 10 min |
+| Throughout | Respond to PH comments (use templates) | 30 min total |
+| End of day | Send email to list (pre-written) | 5 min |
+
+### Post-Launch (Autopilot)
+
+| Trigger | Auto-Action |
+|---------|-------------|
+| New PH comment | Email notification → respond with template |
+| Reddit keyword match | F5Bot email → respond if relevant |
+| New blog post | Auto-tweet via RSS |
+| New signup | Welcome email sequence starts |
+| Abandoned questionnaire | Re-engagement email (Day 3) |
+| Purchase | Referral code generated + thank-you email |
+
+**Daily time after launch**: 15-30 min (Reddit responses only)
 
 ---
 
@@ -419,26 +627,36 @@ Best,
 
 ## 8. Budget Summary
 
-### Organic (Free) Activities
+### Zero-Cost GTM Stack
 
-| Activity | Time Investment | Tools Cost |
-|----------|-----------------|------------|
-| Twitter/LinkedIn content | 5 hrs/week | $0 |
-| Product Hunt launch | 10 hrs total | $0 |
-| Blog content | 4 hrs/post | $0 |
-| Email sequences | 8 hrs setup | $0-29/mo |
-| SEO | 2 hrs/week | $0 |
+| Activity | Time Investment | Tools Cost | Automation Level |
+|----------|-----------------|------------|------------------|
+| Twitter/LinkedIn content | 2 hrs/week (batched) | $0 | 80% automated |
+| Product Hunt launch | 10 hrs total | $0 | One-time |
+| Blog content | 4 hrs/post | $0 | Auto-distribute |
+| Email sequences | 8 hrs setup | $0 (Loops free tier) | 100% automated |
+| SEO | 1 hr/week | $0 | Auto-reports |
+| Referral program | 4 hrs setup | $0 | 100% automated |
 
-### Paid Activities (Optional Phase 2)
+### Time Investment (After Setup)
 
-| Activity | Budget | Timeline |
-|----------|--------|----------|
-| Newsletter sponsorships | $500-2,000 | Month 2+ |
-| Paid ads test | $500 | Month 2+ |
-| Affiliate commissions | 20-40% of sales | Ongoing |
+| Phase | Weekly Time | Focus |
+|-------|-------------|-------|
+| Setup (Week 1-2) | 20 hrs | Build all automations |
+| Maintenance (Ongoing) | 3-5 hrs | Respond, create 1 post |
+| Content creation | 4 hrs/mo | 1-2 blog posts |
 
-**Total Recommended Budget (Month 1)**: $0-100 (mostly organic)
-**Total Recommended Budget (Month 2-3)**: $500-1,500 (testing paid)
+### Total Cost
+
+| Item | Cost |
+|------|------|
+| Domain | ~$15/year |
+| Email (Loops/Resend) | $0 (free tier) |
+| Scheduling (Buffer/Typefully) | $0 (free tier) |
+| Hosting (Vercel) | $0 (free tier) |
+| Database (Supabase) | $0 (free tier) |
+| **Total Monthly** | **$0** |
+| **Total Annual** | **~$15** |
 
 ---
 
@@ -446,24 +664,31 @@ Best,
 
 ### Launch Day Checklist
 
-- [ ] Product Hunt live at 12:01 AM PST
-- [ ] Twitter announcement posted
-- [ ] LinkedIn announcement posted
-- [ ] Email sent to list
-- [ ] Reddit post in r/SideProject
+- [ ] Product Hunt submitted at 12:01 AM PST
+- [ ] r/SideProject post published
+- [ ] Email sent to list (pre-written, one click)
 - [ ] All links tested and working
 - [ ] Stripe checkout tested
-- [ ] Support email monitored
-- [ ] Respond to PH comments within 1 hour
+- [ ] Respond to PH comments with templates
 
-### Weekly Marketing Tasks
+### Weekly Tasks (30 min/week max)
 
-- [ ] 3 Twitter posts minimum
-- [ ] 2 LinkedIn posts minimum
-- [ ] Respond to all comments/mentions
-- [ ] Check analytics dashboard
-- [ ] Review email sequence performance
-- [ ] One piece of content (blog/thread)
+| Task | Time | Frequency |
+|------|------|-----------|
+| Check F5Bot Reddit alerts | 10 min | Daily-ish |
+| Respond to relevant Reddit threads | 15 min | When alerted |
+| Review email sequence stats | 5 min | Weekly |
+| Check Vercel Analytics | 5 min | Weekly |
+| Publish blog post (optional) | 2-4 hrs | Monthly |
+
+### Fully Automated (Zero Weekly Effort)
+
+- [x] New signups → welcome email sequence
+- [x] Abandoned carts → re-engagement emails
+- [x] Purchases → referral code + thank-you email
+- [x] Blog posts → auto-tweet
+- [x] SEO → auto-indexed, auto-reported
+- [x] Referrals → auto-tracked, auto-credited
 
 ---
 
