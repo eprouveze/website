@@ -88,12 +88,21 @@
 
 ---
 
-## Step 7: Profile Generation
+## Step 7: Checkout & Generation
 
-**Current State**: *(to be reviewed)*
+**Current State**: Combined page with 4 states (not_ready, ready_not_paid, generating, generated). Hardcoded $99 + $29 audio add-on. No corpus analysis before payment.
 
 **Feedback/Improvements**:
-- *(awaiting feedback)*
+- [ ] **Stripe compliance**: Add required legal pages (TOS, Privacy Policy, Refund Policy) - confirm exact requirements
+- [ ] **Show all plan options**: Display the 4 pricing tiers (Starter $49, Complete $99, Executive $249, Done-For-You $499), not hardcoded single price
+- [ ] **Audio transcription pricing**: Should be dynamic (Whisper API cost + margin), not flat $29
+- [ ] **MAJOR - Pre-payment reassurance**: Before showing payment options, run initial AI analysis of golden corpus:
+  - Summarize data coverage: "That's comprehensive data across a rich set of scenarios"
+  - Analyze overall style: "Your overall style is humorous and friendly"
+  - Note context variations: "Customer-facing communication is frank and detail-oriented"
+  - Highlight quirks: "I noticed a few quirks such as X that we will include in the style guide"
+  - THEN show payment options
+- [ ] Flow becomes: Phase 1 complete → AI Analysis Preview → Payment → Full Generation
 
 ---
 
