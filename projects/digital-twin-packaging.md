@@ -9,10 +9,9 @@
 
 | Tier | Price | Target | Key Differentiator |
 |------|-------|--------|-------------------|
-| Starter | $49 | DIY experimenters | Prompts only |
-| Complete | $99 | Main offer | Full system + video |
-| Executive | $249 | Time-constrained | + Personal review |
-| Done-For-You | $499 | Hands-off | Full service |
+| Starter | $49 | Single-language users | 1 language, 3 contexts |
+| Pro | $99 | Main offer | Unlimited languages + video |
+| Executive | $249 | Leaders & executives | + Priority support, 1yr subscription |
 
 ---
 
@@ -49,12 +48,12 @@ VoiceDNA-Starter/
 
 ---
 
-## Tier 2: Complete ($99) ← MAIN OFFER
+## Tier 2: Pro ($99) ← MAIN OFFER
 
 ### Delivery: Single ZIP file
 
 ```
-VoiceDNA-Complete/
+VoiceDNA-Pro/
 │
 ├── 00-START-HERE.pdf (4 pages)
 │   ├── Welcome & overview
@@ -120,12 +119,12 @@ VoiceDNA-Complete/
 
 ## Tier 3: Executive ($249)
 
-### Delivery: Same as Complete + Personal Service
+### Delivery: Same as Pro + Personal Service
 
 ```
 VoiceDNA-Executive/
 │
-├── [Everything from Complete tier]
+├── [Everything from Pro tier]
 │
 ├── 07-Executive-Bonus/
 │   ├── Executive-Quick-Start.pdf (condensed 1-page workflow)
@@ -149,53 +148,6 @@ VoiceDNA-Executive/
 5. Customer implements feedback
 
 **Time investment (us)**: ~45 min per customer
-
----
-
-## Tier 4: Done-For-You ($499)
-
-### Delivery: Custom + Complete Package
-
-```
-VoiceDNA-DoneForYou/
-│
-├── [Everything from Complete tier - for reference]
-│
-├── CUSTOM/
-│   ├── [Customer-Name]-Golden-Corpus.md
-│   ├── [Customer-Name]-Master-Voice-Guide.pdf
-│   ├── [Customer-Name]-Runtime-Block.txt
-│   └── [Customer-Name]-Deployment-Notes.pdf
-│
-└── README.txt
-    └── Dedicated support for 30 days
-```
-
-### Service Workflow
-
-| Step | Action | Time |
-|------|--------|------|
-| 1 | Customer fills intake form | 15 min (them) |
-| 2 | Voice interview (async Loom or live Zoom) | 30 min |
-| 3 | Customer provides writing samples | 30 min (them) |
-| 4 | We curate Golden Corpus | 1 hour (us) |
-| 5 | We run extraction + generation | 1 hour (us) |
-| 6 | We review and refine | 30 min (us) |
-| 7 | We deploy to their platform | 15 min (us) |
-| 8 | Customer tests, we refine (round 1) | 30 min (us) |
-| 9 | Final refinement (round 2) | 30 min (us) |
-
-**Total time investment (us)**: ~4 hours per customer
-**Gross margin**: $499 - ~$100 (4hr × $25 opportunity cost) = ~$400 (80%)
-
-### Intake Form Questions
-
-1. Which languages do you use professionally?
-2. What are your main communication contexts? (email, Slack, presentations, etc.)
-3. Who are your typical audiences? (clients, team, executives)
-4. What AI platform do you prefer? (ChatGPT, Claude, Gemini)
-5. What's your biggest frustration with AI writing currently?
-6. Please provide 10-20 writing samples (or we'll guide you)
 
 ---
 
@@ -260,7 +212,7 @@ VoiceDNA-DoneForYou/
 │  ┌─────────────────┐    ┌─────────────────────────▼──────────┐   │
 │  │    purchases    │    │         Storage                    │   │
 │  │ (email, token,  │    │   /voicedna-starter.zip            │   │
-│  │  product, date) │    │   /voicedna-complete.zip           │   │
+│  │  product, date) │    │   /voicedna-pro.zip           │   │
 │  └────────▲────────┘    │   /voicedna-executive.zip          │   │
 │           │             └────────────────────────────────────┘   │
 │           │                                                      │
@@ -305,9 +257,8 @@ In Stripe Dashboard → Products:
 | Product | Price | Price ID (example) |
 |---------|-------|-------------------|
 | VoiceDNA Starter | ¥7,500 (~$49) | price_starter_xxx |
-| VoiceDNA Complete | ¥15,000 (~$99) | price_complete_xxx |
+| VoiceDNA Pro | ¥15,000 (~$99) | price_pro_xxx |
 | VoiceDNA Executive | ¥38,000 (~$249) | price_executive_xxx |
-| VoiceDNA Done-For-You | ¥76,000 (~$499) | price_dfy_xxx |
 
 **Pricing strategy**: Price in JPY for Japanese customers, but also enable USD for international.
 
@@ -359,7 +310,7 @@ In Supabase Dashboard → Storage:
 1. Create bucket: `products` (private)
 2. Upload:
    - `voicedna-starter.zip`
-   - `voicedna-complete.zip`
+   - `voicedna-pro.zip`
    - `voicedna-executive.zip`
 
 #### 4.4 Create Edge Function (Stripe Webhook)
@@ -598,9 +549,8 @@ In Stripe Dashboard → Payment Links (or Checkout Sessions):
 | Product | Price (JPY) | Price (USD) | Type |
 |---------|-------------|-------------|------|
 | VoiceDNA Starter | ¥7,500 | $49 | One-time |
-| VoiceDNA Complete | ¥15,000 | $99 | One-time |
-| VoiceDNA Executive | ¥38,000 | $249 | One-time + manual service |
-| VoiceDNA Done-For-You | ¥76,000 | $499 | Manual service |
+| VoiceDNA Pro | ¥15,000 | $99 | One-time |
+| VoiceDNA Executive | ¥38,000 | $249 | One-time + priority support |
 
 ### Refund Policy
 
@@ -620,18 +570,14 @@ Since Stripe doesn't have built-in email automation, handle manually or use simp
 
 **MVP approach (manual)**:
 
-**Post-purchase (Starter/Complete):**
+**Post-purchase (Starter/Pro):**
 1. Stripe sends automatic receipt
 2. Thank-you page provides download
 3. Day 2-3: Manual check-in email (optional)
 
 **Post-purchase (Executive):**
 1. Thank-you page provides download + submission instructions
-2. You email when review is ready
-
-**Post-purchase (Done-For-You):**
-1. You email intake form within 24 hours
-2. Manual coordination from there
+2. Priority support activated for 30 days
 
 ---
 
@@ -641,18 +587,16 @@ Since Stripe doesn't have built-in email automation, handle manually or use simp
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  STARTER          COMPLETE ⭐        EXECUTIVE     │
+│  STARTER             PRO ⭐          EXECUTIVE     │
 │    $49               $99               $249        │
 │                   Most Popular                      │
-│  ○ Prompts only   ○ Full system      ○ Everything  │
-│                   ○ Video            ○ + Review    │
+│  ○ 1 language     ○ Unlimited langs  ○ Everything  │
+│  ○ 3 contexts     ○ Video            ○ + 1yr sub   │
 │                   ○ Examples         ○ + Priority  │
-│                   ○ Support                        │
+│                   ○ Edit sub $10/yr                │
 │                                                     │
-│  [Get Starter]   [Get Complete]    [Get Executive] │
+│  [Get Starter]     [Get Pro]      [Get Executive]  │
 └─────────────────────────────────────────────────────┘
-
-        Need hands-off? → Done-For-You $499
 ```
 
 ### Launch Pricing
@@ -660,9 +604,8 @@ Since Stripe doesn't have built-in email automation, handle manually or use simp
 | Tier | Regular | Launch (first week) | Savings |
 |------|---------|---------------------|---------|
 | Starter | $49 | $39 | $10 |
-| Complete | $149 | $99 | $50 |
+| Pro | $149 | $99 | $50 |
 | Executive | $299 | $249 | $50 |
-| Done-For-You | $599 | $499 | $100 |
 
 ---
 

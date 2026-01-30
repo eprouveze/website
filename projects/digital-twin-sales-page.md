@@ -200,67 +200,50 @@ Not a prompt. Not a template. A *system*—developed over months of real-world u
 
 ### Tier 1: Starter — $49
 
-**For DIY experimenters**
+**For single-language users**
 
-- ✅ All 4 stages (prompts + guides)
+- ✅ 1 language
+- ✅ 3 voice matrix sections
+- ✅ 1 regeneration included
+- ✅ All deployment guides
 - ✅ Basic documentation
-- ❌ Video walkthrough
-- ❌ Example corpus
-- ❌ Email support
 
-**Best for**: Technical users comfortable with prompts
+**Best for**: Single-language users getting started
 
 [Get Starter →]
 
 ---
 
-### Tier 2: Complete — $99 ~~$149~~ (Launch Price)
+### Tier 2: Pro — $99 ~~$149~~ (Launch Price)
 
 **Most Popular — Best Value**
 
-- ✅ All 4 stages (prompts + guides)
-- ✅ Comprehensive documentation
-- ✅ 30-minute video walkthrough
-- ✅ Anonymized example corpus
-- ✅ Sample Voice DNA output
-- ✅ Email support (48hr response)
+- ✅ Unlimited languages
+- ✅ Unlimited voice matrix sections
+- ✅ 1 regeneration included
+- ✅ All deployment guides + video walkthrough
+- ✅ Example corpus + sample outputs
+- ✅ Edit subscription: $10 first year (then $29/yr)
 
-**Best for**: Professionals who want the full system
+**Best for**: Multilingual professionals
 
-[Get Complete →]
+[Get Pro →]
 
 ---
 
 ### Tier 3: Executive — $249
 
-**For time-constrained leaders**
+**Premium experience with extras**
 
-- ✅ Everything in Complete
-- ✅ Async review of your Voice DNA output
+- ✅ Everything in Pro
+- ✅ 1 year edit subscription included
+- ✅ Audio credits for voice notes
+- ✅ Priority email support (30 days)
 - ✅ Personalized recommendations
-- ✅ Priority email support
-- ✅ 1 round of refinement feedback
 
-**Best for**: Executives who want expert review
+**Best for**: Leaders who want the complete package
 
 [Get Executive →]
-
----
-
-### Tier 4: Done-For-You — $499
-
-**Hands-off white-glove service**
-
-- ✅ 30-min voice interview (async or live)
-- ✅ We curate your Golden Corpus
-- ✅ We run the full extraction
-- ✅ Delivered: Complete Voice DNA system
-- ✅ Deployed to your platform of choice
-- ✅ 2 rounds of refinement
-
-**Best for**: Those who want results without the work
-
-[Get Done-For-You →]
 
 ---
 

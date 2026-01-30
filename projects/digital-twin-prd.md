@@ -331,10 +331,9 @@ Why paid add-on:
 
 | Tier | Price | Includes |
 |------|-------|----------|
-| **Starter** | $49 | 1 language, 3 contexts, basic support |
-| **Complete** | $99 | Multi-language, all contexts, 1 year subscription |
-| **Executive** | $249 | Everything in Complete + priority support, advanced analytics, 5 regenerations |
-| **Done-For-You** | $499 | Full white-glove service: we collect samples, build profile, and deliver ready-to-use |
+| **Starter** | $49 | 1 language, 3 voice matrix sections, 1 regeneration |
+| **Pro** | $99 | Unlimited languages, unlimited sections, video walkthrough, edit sub $10/yr |
+| **Executive** | $249 | Everything in Pro + 1yr edit subscription, priority support (30 days), audio credits |
 
 ---
 
