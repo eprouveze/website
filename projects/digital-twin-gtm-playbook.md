@@ -2,7 +2,7 @@
 
 **Purpose**: Tactical guide for acquiring users and driving traffic to myvoicetwin.io
 **Focus**: Automated + organic (non-paid) strategies
-**Version**: 1.2
+**Version**: 1.3
 **Updated**: January 2026
 
 ---
@@ -17,6 +17,15 @@
 **Goal**: 1,000 customers in Year 1 = $100K revenue (0.05% of 2M SAM)
 
 **Philosophy**: Automate everything possible. Build systems that generate leads while you sleep.
+
+### Lead Generation Strategy
+
+| Type | Purpose | Channels | Status |
+|------|---------|----------|--------|
+| **Cold Lead Generation** | Bring new visitors who don't know you | SEO, Lead Magnets, Product Hunt | 🔲 Priority |
+| **Referral Multiplier** | Turn customers into promoters | Referral codes, Affiliate program | ✅ Implemented |
+
+**Important**: The referral/affiliate system is a **multiplier**, not a lead source. It amplifies growth but requires cold lead channels to work first.
 
 ---
 
@@ -497,9 +506,11 @@ Manual payout (Stripe Connect integration TODO)
 
 ---
 
-## 5. Automated Referral System
+## 5. Automated Referral System (Multiplier)
 
 **Status**: ✅ IMPLEMENTED (Migration 007)
+
+> ⚠️ **Note**: This is a **growth multiplier**, not a cold lead source. It converts existing customers into promoters but requires traffic from other channels (SEO, Product Hunt, lead magnets) to have customers in the first place.
 
 ### 5.1 Database Schema (Implemented)
 
@@ -760,4 +771,73 @@ Increment referral_codes.uses counter
 
 ---
 
-*GTM Playbook v1.2 — Referral & Affiliate System Implemented*
+---
+
+## 10. Cold Lead Generation (Priority)
+
+**Purpose**: Bring new visitors who don't know you yet.
+
+### 10.1 Lead Magnets (Implemented)
+
+| Resource | Target Segment | Capture Method | Status |
+|----------|---------------|----------------|--------|
+| "Voice Profile Self-Assessment" | All | Email gate | ✅ `/resources/voice-assessment` |
+| "10 Prompts to Test Your AI's Voice" | ChatGPT users | Email gate | ✅ `/resources/ai-prompts` |
+| "Multilingual AI Writing Checklist" | Multilingual pros | Email gate | ✅ `/resources/multilingual-checklist` |
+
+**Lead Magnet Flow**:
+```
+Visitor lands on /resources/[slug]
+       │
+       ▼
+Sees preview + email capture form
+       │
+       ▼
+Submits email → stored in leads table
+       │
+       ▼
+Redirect to PDF download
+       │
+       ▼
+Added to welcome email sequence (Loops.so)
+```
+
+### 10.2 SEO Content Strategy
+
+**Blog Setup**: `/blog` with MDX posts targeting search keywords.
+
+| Post | Target Keyword | Search Intent |
+|------|---------------|---------------|
+| "Why AI Writing Doesn't Sound Like You" | AI writing doesn't sound like me | Problem aware |
+| "Custom GPT Instructions Guide" | custom GPT instructions | How-to |
+| "ChatGPT for Multilingual Professionals" | multilingual AI writing | Solution aware |
+
+### 10.3 Product Hunt Launch
+
+One-time event but high-impact for initial traction.
+
+**Checklist**:
+- [ ] Create Product Hunt maker account
+- [ ] Prepare assets (logo, screenshots, tagline)
+- [ ] Schedule launch for Tuesday 12:01 AM PST
+- [ ] Pre-write response templates
+
+### 10.4 Lead Generation vs Referral: When Each Works
+
+```
+Week 1-4: Focus on COLD LEAD GENERATION
+├── Product Hunt launch (one-time spike)
+├── SEO blog posts (long-term compound)
+├── Lead magnets (capture visitors)
+└── Goal: Get first 50-100 customers
+
+Week 5+: REFERRAL MULTIPLIER kicks in
+├── Those 50-100 customers have referral codes
+├── Each shares with 2-3 colleagues on average
+├── 20% discount motivates conversions
+└── Organic growth compounds
+```
+
+---
+
+*GTM Playbook v1.3 — Added Cold Lead Generation Strategy*

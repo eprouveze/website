@@ -295,6 +295,34 @@ export interface Affiliate {
   created_at: string
 }
 
+// Lead sources
+export type LeadSource = 'voice-assessment' | 'ai-prompts' | 'multilingual-checklist' | 'blog' | 'homepage'
+
+// Leads (email captures from lead magnets)
+export interface Lead {
+  id: string
+  email: string
+  name: string | null
+  source: LeadSource
+  utm_source: string | null
+  utm_medium: string | null
+  utm_campaign: string | null
+  ip_address: string | null
+  user_agent: string | null
+  converted_to_user: boolean
+  converted_at: string | null
+  user_id: string | null
+  created_at: string
+}
+
+// Lead magnet downloads
+export interface LeadMagnetDownload {
+  id: string
+  lead_id: string
+  resource_slug: string
+  downloaded_at: string
+}
+
 // ============================================
 // DATABASE SCHEMA TYPE
 // ============================================
@@ -432,6 +460,23 @@ export interface Database {
           total_paid_out_cents?: number
         }
         Update: Partial<Omit<Affiliate, 'id'>>
+      }
+      leads: {
+        Row: Lead
+        Insert: Omit<Lead, 'id' | 'created_at' | 'converted_to_user'> & {
+          id?: string
+          created_at?: string
+          converted_to_user?: boolean
+        }
+        Update: Partial<Omit<Lead, 'id'>>
+      }
+      lead_magnet_downloads: {
+        Row: LeadMagnetDownload
+        Insert: Omit<LeadMagnetDownload, 'id' | 'downloaded_at'> & {
+          id?: string
+          downloaded_at?: string
+        }
+        Update: Partial<Omit<LeadMagnetDownload, 'id'>>
       }
     }
   }
