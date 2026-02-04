@@ -216,10 +216,11 @@ These pieces are live with updated "sales exec who builds" framing:
 - **GenUI LinkedIn Version**: Condensed version with same positioning
 
 ### ALREADY PUBLISHED (February 2026)
-- **Why I'm Always Smiling** — LINKEDIN PUBLISHED: Leadership/personal piece
+- **Why I'm Always Smiling** — LINKEDIN + BLOG PUBLISHED
+  - LinkedIn: Leadership post (340 words)
+  - Blog: `content/posts/why-i-am-always-smiling.mdx` (850 words, includes AI parallel)
   - Three disciplines: meaning over math, staying out of workflow, optimism as practice
   - Humanizing piece (not AI-focused), builds general thought leadership
-  - Blog version in drafts: `content/drafts/why-i-am-always-smiling-blog-v1.md`
   - Image: `public/images/why-i-am-always-smiling/hero.png`
 
 ### ANCHOR PIECES
