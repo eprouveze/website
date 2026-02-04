@@ -215,6 +215,13 @@ These pieces are live with updated "sales exec who builds" framing:
 - **GenUI Technical Piece**: "From Templates to Component Vocabulary" — first-person, hobby project framing
 - **GenUI LinkedIn Version**: Condensed version with same positioning
 
+### ALREADY PUBLISHED (February 2026)
+- **Why I'm Always Smiling** — LINKEDIN PUBLISHED: Leadership/personal piece
+  - Three disciplines: meaning over math, staying out of workflow, optimism as practice
+  - Humanizing piece (not AI-focused), builds general thought leadership
+  - Blog version in drafts: `content/drafts/why-i-am-always-smiling-blog-v1.md`
+  - Image: `public/images/why-i-am-always-smiling/hero.png`
+
 ### ANCHOR PIECES
 1. **#1 (I'm 50, Started Coding)** — PUBLISHED: `content/posts/im-50-started-coding-ai.mdx`
 2. **#6 (AI Coding Journey: Lapsed Hobbyist)** — longer version, full career arc narrative (pending)
