@@ -3,14 +3,11 @@
 interface ContainerProps {
   children: React.ReactNode
   className?: string
-  narrow?: boolean
 }
 
-export function Container({ children, className = '', narrow = false }: ContainerProps) {
-  const maxWidth = narrow ? 'max-w-3xl' : 'max-w-5xl'
-
+export function Container({ children, className = '' }: ContainerProps) {
   return (
-    <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${maxWidth} ${className}`}>
+    <div className={`mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl ${className}`}>
       {children}
     </div>
   )

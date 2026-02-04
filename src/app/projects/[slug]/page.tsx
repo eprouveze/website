@@ -53,7 +53,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <article className="py-12 sm:py-16">
-      <Container narrow>
+      <Container>
         {/* Back link */}
         <Link
           href="/projects"

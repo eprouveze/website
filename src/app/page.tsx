@@ -11,7 +11,7 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <section className="py-16 sm:py-24">
-        <Container narrow>
+        <Container>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-8">
             <Image
               src="/images/headshot.jpg"
@@ -50,7 +50,7 @@ export default function Home() {
       {/* Recent Posts Section */}
       {posts.length > 0 && (
         <section className="py-12 bg-slate-50">
-          <Container narrow>
+          <Container>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-slate-900">Recent Writing</h2>
               <Link

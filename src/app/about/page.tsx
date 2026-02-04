@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <section className="py-12 sm:py-16">
-      <Container narrow>
+      <Container>
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-8">
           <Image
             src="/images/headshot.jpg"
