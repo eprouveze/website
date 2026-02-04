@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Container } from '@/components/layout/Container'
+import { WritingLayout } from '@/components/blog/WritingLayout'
 import { getAllPosts, getPostBySlug, formatDate } from '@/lib/mdx'
 
 interface PostPageProps {
@@ -48,7 +48,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <article className="py-12 sm:py-16">
-      <Container narrow>
+      <WritingLayout currentSlug={slug}>
         {/* Back link */}
         <Link
           href="/writing"
@@ -74,12 +74,13 @@ export default async function PostPage({ params }: PostPageProps) {
           {post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
               {post.tags.map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded"
+                  href={`/writing/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                  className="px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded hover:bg-slate-200 transition-colors"
                 >
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}
@@ -89,7 +90,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="prose prose-slate prose-lg max-w-none">
           {post.content}
         </div>
-      </Container>
+      </WritingLayout>
     </article>
   )
 }

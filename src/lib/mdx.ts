@@ -149,3 +149,32 @@ export function formatDate(dateString: string): string {
     day: 'numeric',
   })
 }
+
+export function getAllTags(): { tag: string; count: number }[] {
+  const posts = getAllPosts()
+  const tagCounts = new Map<string, number>()
+
+  posts.forEach((post) => {
+    post.tags.forEach((tag) => {
+      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
+    })
+  })
+
+  return Array.from(tagCounts.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+}
+
+export function getRecentPosts(limit: number = 5, excludeSlug?: string): Post[] {
+  const posts = getAllPosts()
+  return posts
+    .filter((post) => post.slug !== excludeSlug)
+    .slice(0, limit)
+}
+
+export function getPostsByTag(tag: string): Post[] {
+  const posts = getAllPosts()
+  return posts.filter((post) =>
+    post.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
+  )
+}

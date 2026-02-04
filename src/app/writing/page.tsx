@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Container } from '@/components/layout/Container'
+import { WritingLayout } from '@/components/blog/WritingLayout'
 import { PostCard } from '@/components/blog/PostCard'
 import { getAllPosts } from '@/lib/mdx'
 
@@ -13,7 +13,7 @@ export default function WritingPage() {
 
   return (
     <section className="py-12 sm:py-16">
-      <Container narrow>
+      <WritingLayout>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-4">
           Writing
         </h1>
@@ -30,7 +30,7 @@ export default function WritingPage() {
         ) : (
           <p className="text-slate-500">No posts yet. Check back soon.</p>
         )}
-      </Container>
+      </WritingLayout>
     </section>
   )
 }
