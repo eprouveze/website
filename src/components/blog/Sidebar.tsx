@@ -43,6 +43,7 @@ export function Sidebar({ tags, recentPosts, activeTag }: SidebarProps) {
       <div className="lg:hidden mb-8">
         <button
           onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
           className="w-full flex items-center justify-between px-4 py-3 bg-slate-100 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors"
         >
           <span>Topics & Recent Posts</span>
@@ -52,6 +53,7 @@ export function Sidebar({ tags, recentPosts, activeTag }: SidebarProps) {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>

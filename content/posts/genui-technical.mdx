@@ -1,6 +1,6 @@
 ---
 title: "From Templates to Component Vocabulary: Letting the AI Decide UI Structure"
-description: "Technical notes from a sales exec building his own AI forecasting tool"
+description: "Technical notes from a sales exec building his own AI-powered analysis tool"
 publishedAt: "2026-01-17"
 tags: ["AI", "GenUI", "Technical"]
 ---
@@ -11,7 +11,7 @@ My first approach used rigid templates. The AI filled in predefined sections. It
 
 I rebuilt it using a component vocabulary approach. Instead of templates, I give the AI a set of typed components and let it compose them based on what the data demands.
 
-Context: I built a forecasting tool for my own pipeline that reconciles data from Salesforce, manager judgments, and commission systems. The AI synthesizes this into guidance. (The tool runs locally, and all data is anonymized before hitting any LLM API—I'm not playing fast and loose with company data.)
+Context: I built a tool that reconciles data from multiple sources—CRM exports, manual inputs, and other business systems. The AI synthesizes this into guidance. (The tool runs locally, and all data is anonymized before hitting any LLM API—I'm not playing fast and loose with company data.)
 
 This post covers what I built, what broke, and what I learned.
 
@@ -26,9 +26,9 @@ The AI receives a vocabulary of components and outputs a composition:
   "children": [
     {
       "type": "AccordionSection",
-      "props": { "title": "3 Deals Need Action", "variant": "danger" },
+      "props": { "title": "3 Items Need Attention", "variant": "danger" },
       "children": [
-        { "type": "DealInsight", "props": { "status": "blocked" } }
+        { "type": "RecordCard", "props": { "status": "blocked" } }
       ]
     }
   ]
@@ -58,9 +58,53 @@ The AI decides structure, emphasis, and ordering. I control styling and behavior
 
 **Emphasis via variants**: Cards and text have variants (`danger`, `warning`, `success`). The AI picks based on severity.
 
-**Domain components**: `DealInsight` shows opportunity details with status assessment. `VerifiedMetric` displays numbers that the backend validates against the database.
+**Domain components**: `RecordCard` shows entity details with AI-assessed status. `VerifiedMetric` displays numbers with backend trust verification (more on this below).
 
-**Embedded charts**: The AI specifies chart type and embeds data directly in the schema.
+**Embedded charts**: The AI specifies chart type and embeds data directly in the schema. No extra API calls—the schema is self-contained.
+
+## The Trust Problem: VerifiedMetric
+
+When AI generates financial figures, users doubt them. "Is that number real, or did the model make it up?" Fair question. I had the same reaction to my own tool.
+
+I built `VerifiedMetric` to address this. The AI states a number; the backend validates it against the database before the UI renders:
+
+```json
+{
+  "type": "VerifiedMetric",
+  "props": {
+    "label": "Total Revenue YTD",
+    "value": 1234567,
+    "metricType": "revenue_ytd",
+    "period": "2026"
+  }
+}
+```
+
+When the schema is processed, the backend looks up the actual value. If the AI's number is within 1% tolerance, the component renders with a green "Verified" badge. If not, a variance warning shows the database value alongside the AI's claim:
+
+```typescript
+const VerifiedMetricComponent: React.FC<VerifiedMetricProps> = ({
+  label, value, validation,
+}) => {
+  const isVerified = validation?.verified ?? false;
+
+  return (
+    <div className="verified-metric">
+      <span className="verified-value">{formatValue(value)}</span>
+      {validation && (
+        <span className={isVerified ? 'badge-verified' : 'badge-warning'}>
+          {isVerified ? '✓ Verified' : `⚠ ${validation.variancePct.toFixed(1)}% variance`}
+        </span>
+      )}
+      {validation && !validation.verified && (
+        <div className="verified-note">DB value: {formatValue(validation.dbValue)}</div>
+      )}
+    </div>
+  );
+};
+```
+
+The pattern is transferable well beyond my use case. Any system where AI states facts that can be checked against a source of truth could work this way: AI generates freely, backend validates, UI shows trust signals. It's a practical answer to the hallucination trust gap that doesn't require constraining what the AI can say—just verifying what it claims.
 
 ## What Broke
 
@@ -72,12 +116,12 @@ I had templates stored in the database. A refactor replaced them at runtime with
 
 ### 2. The AI invented syntax the renderer couldn't parse
 
-The AI generated data paths like `"quarterly_data[*].opportunities[*].amount"`. Wildcard notation that looked reasonable but `lodash.get()` doesn't support.
+The AI generated data paths like `"records[*].items[*].value"`. Wildcard notation that looked reasonable but `lodash.get()` doesn't support.
 
 **Fix**: Explicit documentation in the prompt with WRONG vs CORRECT examples:
 ```
-WRONG:  "quarterly_data[*].field"
-CORRECT: "quarterly_data"  (renderer iterates automatically)
+WRONG:  "records[*].field"
+CORRECT: "records"  (renderer iterates automatically)
 ```
 
 ### 3. Pre-defined risks killed insight quality

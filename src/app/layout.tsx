@@ -39,6 +39,11 @@ export const metadata: Metadata = {
     title: 'Emmanuel Prouvèze | Global Account Manager & AI Builder',
     description: 'Global Account Manager at Salesforce Japan with 20+ years in Japanese tech. Co-founder with successful exit. I build AI-powered tools as a hobby.',
   },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
   robots: {
     index: true,
     follow: true,

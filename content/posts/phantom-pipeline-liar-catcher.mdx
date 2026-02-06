@@ -33,11 +33,11 @@ But here's the insight: forecasting isn't just arithmetic. It's interpretation.
 
 Knowing hallucinations would happen, I built three layers:
 
-![Defense-in-depth: three layers protecting the trusted forecast](/images/defense-in-depth-shields.png)
+![Defense-in-depth: three layers protecting the trusted forecast](/images/defense-in-depth-shields.webp)
 
 **Evidence first.** The LLM never operates from memory. Instead, it follows a ReAct loop: reason about what data is needed, select a tool, execute it, observe the results, decide if more is needed. This iterative process means the AI builds its understanding from retrieved evidence, not training data. It doesn't "know" that Stage 4 deals typically close at 75%—it only sees what's actually in my CRM right now.
 
-![The ReAct loop: Reason, Select Tool, Execute, Observe, Decide—then either loop back or synthesize](/images/react-loop-diagram.png)
+![The ReAct loop: Reason, Select Tool, Execute, Observe, Decide—then either loop back or synthesize](/images/react-loop-diagram.webp)
 
 **Structured output.** Every response must be valid JSON matching a strict schema. This powers my [generative UI system](/writing/genui-thought-piece)—the AI outputs structured components, not freeform text. Malformed output gets auto-repaired or rejected. But here's the gap: the schema validates *structure*, not *meaning*. An invented stage name like "Perception Analysis" passes validation just fine. That's where the fact-checker earns its keep.
 

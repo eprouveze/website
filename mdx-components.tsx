@@ -1,5 +1,6 @@
 import type { MDXComponents } from 'mdx/types'
 import Link from 'next/link'
+import { MdxImage } from '@/components/MdxImage'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -67,6 +68,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </pre>
     ),
+    img: ({ src, alt }) => <MdxImage src={src} alt={alt} />,
     hr: () => <hr className="border-slate-200 my-8" />,
     strong: ({ children }) => (
       <strong className="font-semibold text-slate-900">{children}</strong>
